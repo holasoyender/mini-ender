@@ -1,0 +1,27 @@
+name: Kotlin Build
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - "src/**/*"
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    name: "Kotlin Build"
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set-up JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '18'
+          distribution: 'adopt'
+          cache: gradle
+      - name: Permisos para Gradle
+        run: chmod +x gradlew
+      - name: Build
+        run: ./gradlew build
