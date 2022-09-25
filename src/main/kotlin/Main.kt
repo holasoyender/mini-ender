@@ -1,7 +1,65 @@
-fun main(args: Array<String>) {
-    println("Hello World!")
 
-    // Try adding program arguments via Run/Debug configuration.
-    // Learn more about running applications: https://www.jetbrains.com/help/idea/running-applications.html.
-    println("Program arguments: ${args.joinToString()}")
+import config.Env
+import net.dv8tion.jda.api.entities.Activity
+import net.dv8tion.jda.api.requests.GatewayIntent
+import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
+import net.dv8tion.jda.api.utils.ChunkingFilter
+import net.dv8tion.jda.api.utils.Compression
+import net.dv8tion.jda.api.utils.MemberCachePolicy
+import net.dv8tion.jda.api.utils.cache.CacheFlag
+import net.dv8tion.jda.api.utils.messages.MessageRequest
+import javax.security.auth.login.LoginException
+fun main() {
+
+    val builder = DefaultShardManagerBuilder.createDefault(null)
+
+    MessageRequest.setDefaultMentionRepliedUser(false)
+    builder.disableCache(
+        CacheFlag.EMOJI,
+        CacheFlag.ACTIVITY,
+        CacheFlag.MEMBER_OVERRIDES,
+        CacheFlag.CLIENT_STATUS,
+        CacheFlag.ONLINE_STATUS,
+        CacheFlag.FORUM_TAGS,
+        CacheFlag.VOICE_STATE,
+        CacheFlag.STICKER,
+        CacheFlag.ROLE_TAGS,
+    )
+
+    builder.setBulkDeleteSplittingEnabled(true)
+    builder.setCompression(Compression.NONE)
+    builder.setActivity(Activity.watching("kenabot.xyz"))
+
+    builder.setToken(Env.TOKEN!!)
+
+    builder.setEventPassthrough(true)
+
+    builder.addEventListeners(
+    //todo
+    )
+
+    builder.setMemberCachePolicy(MemberCachePolicy.NONE)
+    builder.setChunkingFilter(ChunkingFilter.NONE)
+
+    builder.disableIntents(
+        GatewayIntent.GUILD_MESSAGE_TYPING,
+        GatewayIntent.GUILD_PRESENCES,
+        GatewayIntent.DIRECT_MESSAGE_REACTIONS,
+        GatewayIntent.DIRECT_MESSAGE_TYPING,
+        GatewayIntent.GUILD_MESSAGE_REACTIONS,
+        GatewayIntent.GUILD_INVITES
+    )
+    builder.enableIntents(
+        GatewayIntent.DIRECT_MESSAGES,
+        GatewayIntent.GUILD_MESSAGES,
+    )
+    builder.setLargeThreshold(50)
+
+    builder.setShardsTotal(-1)
+
+    try {
+        builder.build()
+    } catch (e: LoginException) {
+        e.printStackTrace()
+    }
 }

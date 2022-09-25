@@ -1,0 +1,39 @@
+
+<configuration debug="false">
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/miniender.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/miniender.%d{yyyyMMdd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>[%d{HH:mm:ss}] [%t] [%level] [%logger{0}] %X{jda.shard}: %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%boldMagenta([%d{HH:mm:ss}]) [%green(%t)/%highlight(%level)] %boldBlue([%logger{0}] %X{jda.shard}): %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="command-logs" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/commands.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/commands.%d{yyyyMMdd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>[%d{HH:mm:ss}] %X{jda.shard}: %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="command-log" level="DEBUG" additivity="false">
+        <appender-ref ref="command-logs"/>
+    </logger>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
+    </root>
+</configuration>

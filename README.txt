@@ -1,0 +1,1 @@
+Mini-ender es un pequeño bot de discord para que los moderadores y desarrolladores de kenabot puedan hacer las cosas que suele hacer ender cuando él no está (seguramente esté durmiendo)
