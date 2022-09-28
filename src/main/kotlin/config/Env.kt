@@ -5,6 +5,7 @@ import kotlin.system.exitProcess
 
 object Env {
     var TOKEN: String? = null
+    var PREFIX: String? = null
 
     init {
         val dotenv: Dotenv
@@ -16,6 +17,7 @@ object Env {
         }
 
         TOKEN = getEnv("TOKEN", dotenv)
+        PREFIX = getEnv("PREFIX", dotenv)
 
     }
 
