@@ -2,6 +2,7 @@
 import config.Env
 import events.*
 import managers.CommandManager
+import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
@@ -13,6 +14,7 @@ import net.dv8tion.jda.api.utils.messages.MessageRequest
 import javax.security.auth.login.LoginException
 
 var commandManager: CommandManager? = null
+var jda:JDA? = null
 fun main() {
 
     val builder = DefaultShardManagerBuilder.createDefault(null)
@@ -39,7 +41,8 @@ fun main() {
     builder.setEventPassthrough(true)
 
     builder.addEventListeners(
-        MessageHandler()
+        MessageHandler(),
+        ShardHandler()
     )
 
     builder.setMemberCachePolicy(MemberCachePolicy.NONE)
@@ -63,7 +66,12 @@ fun main() {
     builder.setShardsTotal(-1)
 
     try {
-        builder.build()
+        val shardingManager = builder.build()
+
+        shardingManager.getShardById(0)?.let {
+            jda = it
+        }
+
         commandManager = CommandManager()
     } catch (e: LoginException) {
         e.printStackTrace()

@@ -145,6 +145,11 @@ class CommandManager {
 
             val simpleCommand = simpleCommands.firstOrNull { it.name == invoker || it.aliases.contains(invoker) }
             if (simpleCommand != null) {
+
+                if(simpleCommand.components.isNotEmpty()) {
+                    event.message.reply(simpleCommand.response).addComponents(simpleCommand.components).queue()
+                    return
+                }
                 event.message.reply(simpleCommand.response).queue()
             }
 
