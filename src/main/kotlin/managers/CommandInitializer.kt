@@ -16,17 +16,20 @@ class CommandInitializer(manager: CommandManager) {
 
         manager.registerCommand(Ping())
         manager.registerCommand(Uptime())
+        manager.registerCommand(Help())
 
 
         /*
         * Comandos simples de una sola respuesta
         */
-        manager.registerSimpleCommand(SimpleCommand("hola", listOf("hi", "hello"), "Hola!", listOf()))
-        manager.registerSimpleCommand(SimpleCommand("github", listOf("git", "gh", "repo", "repositorio"), "${Emojis.success}  **Este bot es open source!** Y puedes ver su código fuente haciendo click en el **botón!**", listOf(
+        manager.registerSimpleCommand(SimpleCommand("hola", listOf("hi", "hello"), "Hola!", true, listOf()))
+        manager.registerSimpleCommand(SimpleCommand("github", listOf("git", "gh", "repo", "repositorio"), "${Emojis.success}  **Este bot es open source!** Y puedes ver su código fuente haciendo click en el **botón!**", true, listOf(
             ActionRow.of(
                 Button.link("https://github.com/holasoyender/mini-ender", "Repositorio")
             )
         )))
+        manager.registerSimpleCommand(SimpleCommand("shrug", listOf(), "¯\\_(ツ)_/¯", false, listOf()))
+        manager.registerSimpleCommand(SimpleCommand("ender", listOf(), "ender que?", true, listOf()))
 
     }
 }

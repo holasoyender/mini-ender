@@ -38,19 +38,22 @@ class CommandManager {
     fun registerSimpleCommand(command: SimpleCommand) {
         val name = command.name
         val aliases = command.aliases
+
         if (simpleCommands.stream().anyMatch { it.name == name || it.aliases.contains(name) }) {
             throw IllegalArgumentException("Un comando simple con el nombre $name ya existe")
         }
-        if (simpleCommands.stream().anyMatch { it.aliases.containsAll(aliases) }) {
-            throw IllegalArgumentException("Un comando simple con los alias $aliases ya existe")
-        }
+        if (aliases.isNotEmpty())
+            if (simpleCommands.stream().anyMatch { it.aliases.containsAll(aliases) }) {
+                throw IllegalArgumentException("Un comando simple con los alias $aliases ya existe")
+            }
 
         if (commands.stream().anyMatch { it.name == name || it.aliases.contains(name) }) {
             throw IllegalArgumentException("Un comando con el nombre $name ya existe (Simple)")
         }
-        if (commands.stream().anyMatch { it.aliases.containsAll(aliases) }) {
-            throw IllegalArgumentException("Un comando con los alias $aliases ya existe (Simple)")
-        }
+        if (aliases.isNotEmpty())
+            if (commands.stream().anyMatch { it.aliases.containsAll(aliases) }) {
+                throw IllegalArgumentException("Un comando con los alias $aliases ya existe (Simple)")
+            }
 
         simpleCommands.add(command)
     }
@@ -71,7 +74,7 @@ class CommandManager {
         val args = content.slice(prefix.length until content.length).split(" ")
         val invoker = args[0]
 
-        val command = commands.firstOrNull { it.name == invoker || it.aliases.contains(invoker) }
+        val command = commands.firstOrNull { it.name == invoker.lowercase() || it.aliases.contains(invoker.lowercase()) }
         if (command != null) {
 
             /*initial checks*/
@@ -146,11 +149,20 @@ class CommandManager {
             val simpleCommand = simpleCommands.firstOrNull { it.name == invoker || it.aliases.contains(invoker) }
             if (simpleCommand != null) {
 
-                if(simpleCommand.components.isNotEmpty()) {
-                    event.message.reply(simpleCommand.response).addComponents(simpleCommand.components).queue()
-                    return
+                if(simpleCommand.reply) {
+                    if(simpleCommand.components.isNotEmpty()) {
+                        event.message.reply(simpleCommand.response).addComponents(simpleCommand.components).queue()
+                        return
+                    }
+                    event.message.reply(simpleCommand.response).queue()
+                } else {
+                    if(simpleCommand.components.isNotEmpty()) {
+                        event.channel.sendMessage(simpleCommand.response).addComponents(simpleCommand.components).queue()
+                        return
+                    }
+                    event.channel.sendMessage(simpleCommand.response).queue()
                 }
-                event.message.reply(simpleCommand.response).queue()
+
             }
 
         }
