@@ -6,10 +6,15 @@ import interfaces.Command
 import interfaces.CommandResponse
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
+import net.dv8tion.jda.api.interactions.components.selections.SelectMenu
+import net.dv8tion.jda.api.interactions.components.selections.SelectOption
+import net.dv8tion.jda.internal.entities.emoji.CustomEmojiImpl
 import java.awt.Color
 import java.time.Instant
+
 
 class Help: Command {
     override fun execute(event: MessageReceivedEvent, args: List<String>): CommandResponse {
@@ -39,7 +44,7 @@ class Help: Command {
                 .setDescription(
                     """
 
-Para listar todos los comandos puedes usar `${PREFIX}help`
+    Para listar todos los comandos puedes usar `${PREFIX}help`
     
     **Nombre del comando:** `${command.name}`
     **Descripción:** ${command.description}
@@ -50,11 +55,37 @@ Para listar todos los comandos puedes usar `${PREFIX}help`
                 )
 
             event.channel.sendMessageEmbeds(embed.build()).setActionRow(
-                Button.primary("cmd::help", "Todos los comandos")
+                Button.primary("cmd::help:${event.author.id}", "Todos los comandos")
             ).queue()
             return CommandResponse.success()
 
         }
+
+        val embed: EmbedBuilder = EmbedBuilder()
+            .setAuthor("Lista de comandos de ${event.jda.selfUser.name}", null, event.jda.selfUser.avatarUrl)
+            .setFooter("> " + event.author.asTag, event.author.avatarUrl ?: "")
+            .setThumbnail("https://cdn.discordapp.com/attachments/934142973418016838/1025062210013249556/emoji.png")
+            .setColor(Color.decode("#2f3136"))
+            .setTimestamp(Instant.now())
+            .setDescription(
+                """**Hola** :wave:, soy `${event.jda.selfUser.name}`, un bot de ayuda para el servidor de **KenaBot**!
+                Para obtener información de un comando en específico usa `${PREFIX}help <comando>`
+                """
+            )
+
+        val categories = commandManager?.getCommands()?.groupBy { it.category }
+
+        event.message.replyEmbeds(embed.build()).addActionRow(
+                SelectMenu.create("cmd::help:${event.author.id}")
+                    .setPlaceholder("Selecciona una categoría")
+                    .setMaxValues(1)
+                    .setMinValues(0)
+                    .addOptions(
+                        categories?.map { SelectOption.of(it.key, "help:${it.key}").withDescription("Comandos de la categoría ${it.key}").withEmoji(
+                            Emoji.fromCustom(CustomEmojiImpl("rigth", 940316141782458418, false))) } ?: listOf()
+                    ).addOption("Comandos simples", "help:simple", "Lista de comandos simples", Emoji.fromCustom(CustomEmojiImpl("slash", 941024012270710874, false)))
+                    .build()
+        ).queue()
 
         return CommandResponse.success()
     }

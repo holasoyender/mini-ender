@@ -42,7 +42,8 @@ fun main() {
 
     builder.addEventListeners(
         MessageHandler(),
-        ShardHandler()
+        ShardHandler(),
+        InteractionHandler(),
     )
 
     builder.setMemberCachePolicy(MemberCachePolicy.NONE)

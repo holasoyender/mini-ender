@@ -14,6 +14,7 @@ class CommandManager {
     private val simpleCommands: MutableList<SimpleCommand> = ArrayList()
 
     fun getCommands(): List<Command> = commands
+    fun getSimpleCommands(): List<SimpleCommand> = simpleCommands
 
     init {
         CommandInitializer(this)
