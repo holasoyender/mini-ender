@@ -22,6 +22,7 @@ class CommandInitializer(manager: CommandManager) {
 
         //Info
         manager.registerCommand(Info())
+        manager.registerCommand(Server())
 
 
         /*

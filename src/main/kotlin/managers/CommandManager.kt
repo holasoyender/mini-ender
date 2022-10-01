@@ -83,7 +83,7 @@ class CommandManager {
                 event.message.reply("${f(Emojis.error)}  El comando ${command.name} está deshabilitado").queue()
                 return
             }
-            if (command.guildOnly && event.isFromGuild) {
+            if (command.guildOnly && !event.isFromGuild) {
                 event.message.reply("${f(Emojis.error)}  El comando ${command.name} solo puede ser usado en un servidor")
                     .queue()
                 return
