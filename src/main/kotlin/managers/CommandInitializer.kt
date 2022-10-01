@@ -30,6 +30,7 @@ class CommandInitializer(manager: CommandManager) {
         //Ocio
         manager.registerCommand(Perro())
         manager.registerCommand(Gato())
+        manager.registerCommand(Tirar())
 
 
         /*
