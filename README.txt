@@ -1,3 +1,5 @@
+⚠️ Este proyecto está en fase de desarrollo. No se recomienda su uso en producción. ⚠️
+
 Mini-ender es un pequeño bot de discord para que los moderadores y desarrolladores de KenaBot puedan hacer las cosas que suele hacer ender cuando él no está (seguramente esté durmiendo)
 
 Cualquier contribución es bienvenida, ya sea para corregir errores o para agregar nuevas funciones, siempre que se sigan las reglas de estilo de código de este proyecto.
