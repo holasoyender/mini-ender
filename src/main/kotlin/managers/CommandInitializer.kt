@@ -2,6 +2,7 @@ package managers
 
 import commands.bot.*
 import commands.info.*
+import commands.ocio.*
 import interfaces.SimpleCommand
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -25,6 +26,10 @@ class CommandInitializer(manager: CommandManager) {
         manager.registerCommand(Server())
         manager.registerCommand(JVM())
         manager.registerCommand(Avatar())
+
+        //Ocio
+        manager.registerCommand(Perro())
+        manager.registerCommand(Gato())
 
 
         /*
