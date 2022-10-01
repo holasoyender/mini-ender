@@ -1,6 +1,7 @@
 package managers
 
 import commands.bot.*
+import commands.info.*
 import interfaces.SimpleCommand
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -14,9 +15,13 @@ class CommandInitializer(manager: CommandManager) {
         * Comandos normales
         */
 
+        //Bot
         manager.registerCommand(Ping())
         manager.registerCommand(Uptime())
         manager.registerCommand(Help())
+
+        //Info
+        manager.registerCommand(Info())
 
 
         /*

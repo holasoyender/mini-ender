@@ -60,7 +60,8 @@ fun main() {
     builder.enableIntents(
         GatewayIntent.DIRECT_MESSAGES,
         GatewayIntent.GUILD_MESSAGES,
-        GatewayIntent.MESSAGE_CONTENT
+        GatewayIntent.MESSAGE_CONTENT,
+        GatewayIntent.GUILD_MEMBERS
     )
     builder.setLargeThreshold(50)
 
