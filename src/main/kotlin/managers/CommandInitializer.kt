@@ -24,6 +24,7 @@ class CommandInitializer(manager: CommandManager) {
         manager.registerCommand(Info())
         manager.registerCommand(Server())
         manager.registerCommand(JVM())
+        manager.registerCommand(Avatar())
 
 
         /*
