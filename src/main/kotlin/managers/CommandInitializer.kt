@@ -26,6 +26,7 @@ class CommandInitializer(manager: CommandManager) {
         manager.registerCommand(Server())
         manager.registerCommand(JVM())
         manager.registerCommand(Avatar())
+        manager.registerCommand(Bot())
 
         //Ocio
         manager.registerCommand(Perro())
