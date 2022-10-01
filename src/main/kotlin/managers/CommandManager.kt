@@ -80,16 +80,16 @@ class CommandManager {
 
             /*initial checks*/
             if (!command.enabled) {
-                event.message.reply("${f(Emojis.error)}  El comando ${command.name} está deshabilitado").queue()
+                event.message.reply("${f(Emojis.error)}  El comando `${command.name}` está deshabilitado").queue()
                 return
             }
             if (command.guildOnly && !event.isFromGuild) {
-                event.message.reply("${f(Emojis.error)}  El comando ${command.name} solo puede ser usado en un servidor")
+                event.message.reply("${f(Emojis.error)}  El comando `${command.name}` solo puede ser usado en un servidor")
                     .queue()
                 return
             }
             if (command.ownerOnly && !OWNER_IDS.contains(event.author.id)) {
-                event.message.reply("${f(Emojis.error)}  El comando ${command.name} solo puede ser usado por el equipo de desarrollo")
+                event.message.reply("${f(Emojis.error)}  El comando `${command.name}` solo puede ser usado por el equipo de desarrollo")
                     .queue()
                 return
             }
