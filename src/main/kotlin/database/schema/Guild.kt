@@ -130,8 +130,8 @@ class Guild(
         }
 
         fun getAll(): List<Guild> {
-            database.Postgres.dataSource?.connection.use {
-                val statement = it!!.prepareStatement("SELECT * FROM guilds")
+            database.Postgres.dataSource?.connection.use {connection ->
+                val statement = connection!!.prepareStatement("SELECT * FROM guilds")
                 val result = statement.executeQuery()
 
                 val guilds = mutableListOf<Guild>()

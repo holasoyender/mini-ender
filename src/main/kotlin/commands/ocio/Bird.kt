@@ -6,7 +6,7 @@ import interfaces.CommandResponse
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.utils.FileUpload
-import org.json.simple.JSONObject
+import org.json.simple.JSONArray
 import org.json.simple.parser.JSONParser
 import java.awt.image.BufferedImage
 import java.io.File
@@ -14,17 +14,17 @@ import java.net.URL
 import java.nio.file.Files
 import javax.imageio.ImageIO
 
-class Perro: Command {
+class Bird: Command {
     override fun execute(event: MessageReceivedEvent, args: List<String>): CommandResponse {
         try {
 
-            val url = URL("https://dog.ceo/api/breeds/image/random")
+            val url = URL("https://shibe.online/api/birds")
             val text = HttpManager.request(url)
 
             val parse = JSONParser()
-            val data: JSONObject = parse.parse(text) as JSONObject
+            val rawArray: JSONArray = parse.parse(text) as JSONArray
 
-            val image = data["message"] as String
+            val image = rawArray[0] as String
 
             val imageURL = URL(image)
             val img: BufferedImage = ImageIO.read(imageURL)
@@ -37,16 +37,17 @@ class Perro: Command {
             return CommandResponse.success()
 
         } catch (e: Exception) {
+            println(e)
             return CommandResponse.error("No he podido encontrar una imagen valida D:")
         }
     }
 
     override val name: String
-        get() = "perro"
+        get() = "bird"
     override val description: String
-        get() = "Muestra una foto de un perro aleatorio"
+        get() = "Muestra una imagen de un pájaro"
     override val aliases: List<String>
-        get() = listOf("dog", "perrete")
+        get() = listOf("pájaro", "pajaro")
     override val usage: String
         get() = ""
     override val category: String

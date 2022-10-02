@@ -30,11 +30,16 @@ class CommandInitializer(manager: CommandManager) {
         manager.registerCommand(JVM())
         manager.registerCommand(Avatar())
         manager.registerCommand(Bot())
+        manager.registerCommand(Error())
 
         //Ocio
         manager.registerCommand(Perro())
         manager.registerCommand(Gato())
         manager.registerCommand(Tirar())
+        manager.registerCommand(Panda())
+        manager.registerCommand(Koala())
+        manager.registerCommand(Duck())
+        manager.registerCommand(Bird())
 
         //Dev
         manager.registerCommand(Eval())

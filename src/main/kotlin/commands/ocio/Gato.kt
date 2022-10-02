@@ -63,5 +63,5 @@ class Gato: Command {
     override val permissions: List<Permission>
         get() = listOf()
     override val botPermissions: List<Permission>
-        get() = listOf()
+        get() = listOf(Permission.MESSAGE_ATTACH_FILES)
 }

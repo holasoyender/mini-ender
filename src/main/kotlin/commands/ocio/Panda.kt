@@ -14,17 +14,19 @@ import java.net.URL
 import java.nio.file.Files
 import javax.imageio.ImageIO
 
-class Perro: Command {
+class Panda: Command {
     override fun execute(event: MessageReceivedEvent, args: List<String>): CommandResponse {
         try {
 
-            val url = URL("https://dog.ceo/api/breeds/image/random")
+            val urls = listOf("https://some-random-api.ml/img/panda", "https://some-random-api.ml/img/red_panda")
+
+            val url = URL(urls.random())
             val text = HttpManager.request(url)
 
             val parse = JSONParser()
             val data: JSONObject = parse.parse(text) as JSONObject
 
-            val image = data["message"] as String
+            val image = data["link"] as String
 
             val imageURL = URL(image)
             val img: BufferedImage = ImageIO.read(imageURL)
@@ -42,11 +44,11 @@ class Perro: Command {
     }
 
     override val name: String
-        get() = "perro"
+        get() = "panda"
     override val description: String
-        get() = "Muestra una foto de un perro aleatorio"
+        get() = "Muestra una imagen de un panda"
     override val aliases: List<String>
-        get() = listOf("dog", "perrete")
+        get() = listOf()
     override val usage: String
         get() = ""
     override val category: String
