@@ -20,6 +20,7 @@ class CommandInitializer(manager: CommandManager) {
         manager.registerCommand(Ping())
         manager.registerCommand(Uptime())
         manager.registerCommand(Help())
+        manager.registerCommand(Say())
 
         //Info
         manager.registerCommand(Info())

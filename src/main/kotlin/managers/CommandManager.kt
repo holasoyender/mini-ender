@@ -28,9 +28,10 @@ class CommandManager {
         if (commands.stream().anyMatch { it.name == name || it.aliases.contains(name) }) {
             throw IllegalArgumentException("Un comando con el nombre $name ya existe")
         }
-        if (commands.stream().anyMatch { it.aliases.containsAll(aliases) }) {
-            throw IllegalArgumentException("Un comando con los alias $aliases ya existe")
-        }
+        if (aliases.isNotEmpty())
+            if (commands.stream().anyMatch { it.aliases.containsAll(aliases) }) {
+                throw IllegalArgumentException("Un comando con los alias $aliases ya existe")
+            }
 
         commands.add(command)
     }
@@ -75,7 +76,8 @@ class CommandManager {
         val args = content.slice(prefix.length until content.length).split(" ")
         val invoker = args[0]
 
-        val command = commands.firstOrNull { it.name == invoker.lowercase() || it.aliases.contains(invoker.lowercase()) }
+        val command =
+            commands.firstOrNull { it.name == invoker.lowercase() || it.aliases.contains(invoker.lowercase()) }
         if (command != null) {
 
             /*initial checks*/
@@ -141,7 +143,7 @@ class CommandManager {
             val worker = command.run { execute(event, args) }
 
             if (worker.exitStatus != 0) {
-                event.message.reply( "${f(Emojis.error)}  El comando ${command.name} ha fallado con el siguiente error: \n`${worker.error ?: "Desconocido"}`")
+                event.message.reply("${f(Emojis.error)}  El comando ${command.name} ha fallado con el siguiente error: \n`${worker.error ?: "Desconocido"}`")
                     .queue()
             }
 
@@ -150,15 +152,16 @@ class CommandManager {
             val simpleCommand = simpleCommands.firstOrNull { it.name == invoker || it.aliases.contains(invoker) }
             if (simpleCommand != null) {
 
-                if(simpleCommand.reply) {
-                    if(simpleCommand.components.isNotEmpty()) {
+                if (simpleCommand.reply) {
+                    if (simpleCommand.components.isNotEmpty()) {
                         event.message.reply(simpleCommand.response).addComponents(simpleCommand.components).queue()
                         return
                     }
                     event.message.reply(simpleCommand.response).queue()
                 } else {
-                    if(simpleCommand.components.isNotEmpty()) {
-                        event.channel.sendMessage(simpleCommand.response).addComponents(simpleCommand.components).queue()
+                    if (simpleCommand.components.isNotEmpty()) {
+                        event.channel.sendMessage(simpleCommand.response).addComponents(simpleCommand.components)
+                            .queue()
                         return
                     }
                     event.channel.sendMessage(simpleCommand.response).queue()
