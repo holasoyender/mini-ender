@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.internal.entities.emoji.CustomEmojiImpl
+import utils.Constants.OWNER_IDS
 import java.awt.Color
 import java.time.Instant
 
@@ -32,6 +33,11 @@ class InteractionHandler: ListenerAdapter() {
                     "help" -> {
                         val selected = event.selectedOptions[0].value
                         val category = selected.split(":")[1]
+
+                        if(category == "Dev" && !OWNER_IDS.contains(event.user.id)) {
+                            event.reply("No puedes ver los comandos de desarrollador!").setEphemeral(true).queue()
+                            return
+                        }
 
                         if (category != "simple") {
 

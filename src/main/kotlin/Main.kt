@@ -74,6 +74,8 @@ fun main() {
             jda = it
         }
 
+        services.ServiceManager.load()
+
         commandManager = CommandManager()
     } catch (e: LoginException) {
         e.printStackTrace()

@@ -3,6 +3,8 @@ package managers
 import commands.bot.*
 import commands.info.*
 import commands.ocio.*
+import commands.dev.*
+import commands.config.*
 import interfaces.SimpleCommand
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -33,6 +35,12 @@ class CommandInitializer(manager: CommandManager) {
         manager.registerCommand(Perro())
         manager.registerCommand(Gato())
         manager.registerCommand(Tirar())
+
+        //Dev
+        manager.registerCommand(Eval())
+
+        //Config
+        manager.registerCommand(Prefix())
 
 
         /*

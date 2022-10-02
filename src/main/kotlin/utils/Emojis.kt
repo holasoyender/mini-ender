@@ -8,6 +8,7 @@ object Emojis {
     var success = "<:Tick:771737882288717845>"
     var time = "<:Time:913509404614230016>"
     var invite = "<:Invite:913508352108150784>"
+    var slash = "<:slash:941024012270710874>"
 
     var STAFF = "<:Staff:913504958912024626>"
     var PARTNER = "<:Partner:913504958362583061>"
