@@ -73,6 +73,9 @@ class Guild(
         if (isDeleted)
             return this
 
+        if(!exists())
+            return this
+
         database.Postgres.dataSource?.connection.use { connection ->
             val statement = connection!!.prepareStatement("DELETE FROM guilds WHERE id = ?")
             statement.setString(1, id)

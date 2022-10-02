@@ -44,6 +44,7 @@ fun main() {
         MessageHandler(),
         ShardHandler(),
         InteractionHandler(),
+        ModalHandler()
     )
 
     builder.setMemberCachePolicy(MemberCachePolicy.NONE)

@@ -41,6 +41,7 @@ object Postgres {
     fun load() {
 
         database.schema.Guild.createTable()
+        database.schema.Error.createTable()
         
     }
 }

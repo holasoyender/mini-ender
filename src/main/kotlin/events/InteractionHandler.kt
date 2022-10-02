@@ -2,13 +2,18 @@ package events
 
 import commandManager
 import config.Env.PREFIX
+import handlers.ErrorReporter
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import net.dv8tion.jda.api.interactions.components.ActionRow
+import net.dv8tion.jda.api.interactions.components.Modal
 import net.dv8tion.jda.api.interactions.components.selections.SelectMenu
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
+import net.dv8tion.jda.api.interactions.components.text.TextInput
+import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.internal.entities.emoji.CustomEmojiImpl
 import utils.Constants.OWNER_IDS
 import java.awt.Color
@@ -34,7 +39,7 @@ class InteractionHandler: ListenerAdapter() {
                         val selected = event.selectedOptions[0].value
                         val category = selected.split(":")[1]
 
-                        if(category == "Dev" && !OWNER_IDS.contains(event.user.id)) {
+                        if (category == "Dev" && !OWNER_IDS.contains(event.user.id)) {
                             event.reply("No puedes ver los comandos de desarrollador!").setEphemeral(true).queue()
                             return
                         }
@@ -81,10 +86,11 @@ class InteractionHandler: ListenerAdapter() {
     override fun onButtonInteraction(event: ButtonInteractionEvent) {
         val type = event.componentId.split("::")[0]
         val command = event.componentId.split("::")[1].split(":")[0]
-        val userId = event.componentId.split("::")[1].split(":")[1]
 
         when (type) {
             "cmd" -> {
+
+                val userId = event.componentId.split("::")[1].split(":")[1]
 
                 if (userId != event.user.id) {
                     event.reply("No puedes usar este botón!").setEphemeral(true).queue()
@@ -120,8 +126,8 @@ class InteractionHandler: ListenerAdapter() {
                                     categories?.map {
                                         SelectOption.of(it.key, "help:${it.key}")
                                             .withDescription("Comandos de la categoría ${it.key}").withEmoji(
-                                            Emoji.fromCustom(CustomEmojiImpl("rigth", 940316141782458418, false))
-                                        )
+                                                Emoji.fromCustom(CustomEmojiImpl("rigth", 940316141782458418, false))
+                                            )
                                     } ?: listOf()
                                 ).addOption(
                                     "Comandos simples", "help:simple", "Lista de comandos simples", Emoji.fromCustom(
@@ -131,8 +137,30 @@ class InteractionHandler: ListenerAdapter() {
                                 .build()
                         ).queue()
                     }
+
+                    "error" -> {
+
+                        val body: TextInput = TextInput.create("body", "Descripción del error", TextInputStyle.PARAGRAPH)
+                            .setPlaceholder("Una breve descripción del error que has encontrado")
+                            .setMinLength(30)
+                            .setMaxLength(4000)
+                            .build()
+
+                        val modal: Modal = Modal.create("error", "Reportar un error - KenaBot")
+                            .addActionRows(ActionRow.of(body))
+                            .build()
+
+                        event.replyModal(modal).queue()
+                    }
                 }
 
+            }
+            "error" -> {
+                when(command) {
+                    "acknowledge" -> ErrorReporter.acknowledgeError(event)
+                    "solve" -> ErrorReporter.solveError(event)
+                    "delete" -> ErrorReporter.deleteError(event)
+                }
             }
         }
     }
