@@ -1,6 +1,7 @@
 package managers
 
 import config.Env.PREFIX
+import database.schema.Guild
 import interfaces.Command
 import interfaces.SimpleCommand
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -72,7 +73,7 @@ class CommandManager {
     fun run(event: MessageReceivedEvent) {
 
         val content = event.message.contentRaw
-        val prefix = PREFIX ?: "-"
+        val prefix = Guild.get(event.guild.id)?.prefix ?: PREFIX ?: "-"
         val args = content.slice(prefix.length until content.length).split(" ")
         val invoker = args[0]
 

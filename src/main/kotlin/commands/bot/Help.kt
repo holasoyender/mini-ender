@@ -2,6 +2,7 @@ package commands.bot
 
 import commandManager
 import config.Env.PREFIX
+import database.schema.Guild
 import interfaces.Command
 import interfaces.CommandResponse
 import net.dv8tion.jda.api.EmbedBuilder
@@ -28,6 +29,8 @@ class Help: Command {
         *  - holasoyender 29/09/2022
         * */
 
+        val config = Guild.get(event.guild.id) ?: Guild(event.guild.id, PREFIX ?: "-", null, null)
+
         if(args.size > 1) {
             val _input = args[1]
             val input = _input.lowercase()
@@ -44,11 +47,11 @@ class Help: Command {
                 .setDescription(
                     """
 
-    Para listar todos los comandos puedes usar `${PREFIX}help`
+    Para listar todos los comandos puedes usar `${config.prefix}help`
     
     **Nombre del comando:** `${command.name}`
     **Descripción:** ${command.description}
-    **Forma de uso:** `${PREFIX}${command.name} ${command.usage}`
+    **Forma de uso:** `${config.prefix}${command.name} ${command.usage}`
     **Aliases:** ${command.aliases.joinToString(", ")}
     **Permisos:** ```${ if(command.permissions.isEmpty()) "Ninguno!" else command.permissions.joinToString(", ") { it.getName() } }```
         """.trimIndent()
@@ -69,7 +72,7 @@ class Help: Command {
             .setTimestamp(Instant.now())
             .setDescription(
                 """**Hola** :wave:, soy `${event.jda.selfUser.name}`, un bot de ayuda para el servidor de **KenaBot**!
-                Para obtener información de un comando en específico usa `${PREFIX}help <comando>`
+                Para obtener información de un comando en específico usa `${config.prefix}help <comando>`
                 """
             )
 

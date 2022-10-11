@@ -6,6 +6,7 @@ import kotlin.system.exitProcess
 object Env {
     var TOKEN: String? = null
     var PREFIX: String? = null
+    var API_TOKEN: String? = null
 
     var POSTGRES_USER: String? = null
     var POSTGRES_PASSWORD: String? = null
@@ -26,6 +27,7 @@ object Env {
 
         TOKEN = getEnv("TOKEN", dotenv)
         PREFIX = getEnv("PREFIX", dotenv)
+        API_TOKEN = getEnv("API_TOKEN", dotenv)
         POSTGRES_USER = getEnv("POSTGRES_USER", dotenv)
         POSTGRES_PASSWORD = getEnv("POSTGRES_PASSWORD", dotenv)
         POSTGRES_HOST = getEnv("POSTGRES_HOST", dotenv)

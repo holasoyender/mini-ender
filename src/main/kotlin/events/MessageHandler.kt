@@ -2,6 +2,7 @@ package events
 
 import commandManager
 import config.Env.PREFIX
+import database.schema.Guild
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 
@@ -12,7 +13,7 @@ class MessageHandler: ListenerAdapter() {
         val author = event.author
         val message = event.message
         val content = message.contentRaw
-        val prefix = PREFIX ?: "-"
+        val prefix = Guild.get(event.guild.id)?.prefix ?: PREFIX ?: "-"
 
         if(message.mentions.getMentions().isNotEmpty()) {
             val mentioned = message.mentions.getMentions().first()

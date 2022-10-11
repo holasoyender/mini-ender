@@ -2,6 +2,7 @@ package events
 
 import commandManager
 import config.Env.PREFIX
+import database.schema.Guild
 import handlers.ErrorReporter
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.emoji.Emoji
@@ -36,6 +37,9 @@ class InteractionHandler: ListenerAdapter() {
 
                 when (command) {
                     "help" -> {
+
+                        val config = Guild.get(event.guild?.id ?: "") ?: Guild(event.guild?.id ?: "", PREFIX ?: "-", null, null)
+
                         val selected = event.selectedOptions[0].value
                         val category = selected.split(":")[1]
 
@@ -59,10 +63,10 @@ class InteractionHandler: ListenerAdapter() {
                                 .setThumbnail(event.jda.selfUser.avatarUrl)
                                 .setColor(Color.decode("#2f3136"))
                                 .setTimestamp(Instant.now())
-                                .setDescription("Usa `${PREFIX}help <Comando>` para más información sobre un comando específico")
+                                .setDescription("Usa `${config.prefix}help <Comando>` para más información sobre un comando específico")
 
                             for (cmd in commands) {
-                                embed.addField("`${PREFIX}${cmd.name}`", cmd.description, true)
+                                embed.addField("`${config.prefix}${cmd.name}`", cmd.description, true)
                             }
                             event.editMessageEmbeds(embed.build()).queue()
                         } else {
@@ -99,6 +103,9 @@ class InteractionHandler: ListenerAdapter() {
 
                 when (command) {
                     "help" -> {
+
+                        val config = Guild.get(event.guild?.id ?: "") ?: Guild(event.guild?.id ?: "", PREFIX ?: "-", null, null)
+
                         val embed: EmbedBuilder = EmbedBuilder()
                             .setAuthor(
                                 "Lista de comandos de ${event.jda.selfUser.name}",
@@ -111,7 +118,7 @@ class InteractionHandler: ListenerAdapter() {
                             .setTimestamp(Instant.now())
                             .setDescription(
                                 """**Hola** :wave:, soy `${event.jda.selfUser.name}`, un bot de ayuda para el servidor de **KenaBot**!
-                                Para obtener información de un comando en específico usa `${PREFIX}help <comando>`
+                                Para obtener información de un comando en específico usa `${config.prefix}help <comando>`
                                 """
                             )
 
