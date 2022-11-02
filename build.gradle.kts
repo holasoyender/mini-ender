@@ -15,7 +15,7 @@ repositories {
 }
 
 dependencies {
-    implementation("net.dv8tion:JDA:5.0.0-alpha.21")
+    implementation("net.dv8tion:JDA:5.0.0-alpha.22")
     implementation("ch.qos.logback:logback-classic:1.4.4")
     implementation("io.github.cdimascio:dotenv-kotlin:6.3.1")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.20")
@@ -26,7 +26,7 @@ dependencies {
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions.jvmTarget = "18"
 }
 
 application {

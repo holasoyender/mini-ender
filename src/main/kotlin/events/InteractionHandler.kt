@@ -7,14 +7,14 @@ import handlers.ErrorReporter
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
-import net.dv8tion.jda.api.events.interaction.component.SelectMenuInteractionEvent
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.components.ActionRow
-import net.dv8tion.jda.api.interactions.components.Modal
-import net.dv8tion.jda.api.interactions.components.selections.SelectMenu
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
+import net.dv8tion.jda.api.interactions.modals.Modal
 import net.dv8tion.jda.internal.entities.emoji.CustomEmojiImpl
 import utils.Constants.OWNER_IDS
 import java.awt.Color
@@ -22,7 +22,7 @@ import java.time.Instant
 
 class InteractionHandler: ListenerAdapter() {
 
-    override fun onSelectMenuInteraction(event: SelectMenuInteractionEvent) {
+    override fun onStringSelectInteraction(event: StringSelectInteractionEvent) {
         val type = event.componentId.split("::")[0]
         val command = event.componentId.split("::")[1].split(":")[0]
         val userId = event.componentId.split("::")[1].split(":")[1]
@@ -125,7 +125,7 @@ class InteractionHandler: ListenerAdapter() {
                         val categories = commandManager?.getCommands()?.groupBy { it.category }
 
                         event.editMessageEmbeds(embed.build()).setActionRow(
-                            SelectMenu.create("cmd::help:${event.user.id}")
+                            StringSelectMenu.create("cmd::help:${event.user.id}")
                                 .setPlaceholder("Selecciona una categoría")
                                 .setMaxValues(1)
                                 .setMinValues(0)

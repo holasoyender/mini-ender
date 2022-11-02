@@ -10,8 +10,8 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
-import net.dv8tion.jda.api.interactions.components.selections.SelectMenu
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
+import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import net.dv8tion.jda.internal.entities.emoji.CustomEmojiImpl
 import java.awt.Color
 import java.time.Instant
@@ -79,7 +79,7 @@ class Help: Command {
         val categories = commandManager?.getCommands()?.groupBy { it.category }
 
         event.message.replyEmbeds(embed.build()).addActionRow(
-                SelectMenu.create("cmd::help:${event.author.id}")
+                StringSelectMenu.create("cmd::help:${event.author.id}")
                     .setPlaceholder("Selecciona una categoría")
                     .setMaxValues(1)
                     .setMinValues(0)
