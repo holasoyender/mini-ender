@@ -1,8 +1,7 @@
 package database.schema
 
 import interfaces.Schema
-import org.json.simple.JSONObject
-import org.json.simple.parser.JSONParser
+import org.json.JSONObject
 
 class Guild(
     id: String,
@@ -124,7 +123,7 @@ class Guild(
                         result.getString("id"),
                         result.getString("prefix"),
                         //esta linea ha causado un daño permanente en mi cerebro
-                        (result.getArray("custom_commands")?.array as Array<String>?)?.map { JSONParser().parse(it) as JSONObject }?.toTypedArray() ?: arrayOf(),
+                        (result.getArray("custom_commands")?.array as Array<String>?)?.map { JSONObject(it) }?.toTypedArray() ?: arrayOf(),
                         result.getString("log_channel_id"),
                     )
                 }
@@ -132,6 +131,7 @@ class Guild(
             return null
         }
 
+        @Suppress("unused")
         fun getAll(): List<Guild> {
             database.Postgres.dataSource?.connection.use {connection ->
                 val statement = connection!!.prepareStatement("SELECT * FROM guilds")
@@ -143,7 +143,7 @@ class Guild(
                         Guild(
                             result.getString("id"),
                             result.getString("prefix"),
-                            (result.getArray("custom_commands")?.array as Array<String>?)?.map { JSONParser().parse(it) as JSONObject }?.toTypedArray() ?: arrayOf(),
+                            (result.getArray("custom_commands")?.array as Array<String>?)?.map { JSONObject(it) }?.toTypedArray() ?: arrayOf(),
                             result.getString("log_channel_id"),
                         )
                     )

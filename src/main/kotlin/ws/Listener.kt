@@ -4,8 +4,7 @@ package ws
 import okhttp3.Response
 import okhttp3.WebSocket
 import okhttp3.WebSocketListener
-import org.json.simple.JSONObject
-import org.json.simple.parser.JSONParser
+import org.json.JSONObject
 import org.slf4j.LoggerFactory
 
 class Listener(
@@ -26,7 +25,7 @@ class Listener(
         println(text)
         var json: JSONObject? = null
         try {
-            json = JSONParser().parse(text) as JSONObject
+            json = JSONObject(text)
         } catch (e: Exception) {
             logger.error("Error al parsear el JSON recibido del WebSocket: ${e.message}")
         }

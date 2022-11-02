@@ -20,10 +20,9 @@ dependencies {
     implementation("io.github.cdimascio:dotenv-kotlin:6.3.1")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.20")
     implementation("org.openjdk.nashorn:nashorn-core:15.4")
-    implementation("com.googlecode.json-simple:json-simple:1.1.1")
+    implementation("org.json:json:20210307")
     implementation("com.zaxxer:HikariCP:5.0.1")
     implementation("org.postgresql:postgresql:42.5.0")
-
 }
 
 tasks.withType<KotlinCompile> {

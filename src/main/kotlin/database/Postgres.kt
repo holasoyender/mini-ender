@@ -42,6 +42,7 @@ object Postgres {
 
         database.schema.Guild.createTable()
         database.schema.Error.createTable()
+        database.schema.Sorteo.createTable()
         
     }
 }

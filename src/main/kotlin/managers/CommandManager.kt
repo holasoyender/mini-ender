@@ -61,7 +61,7 @@ class CommandManager {
         simpleCommands.add(command)
     }
 
-    /*void*/
+    @Suppress("unused") /*void*/
     fun unregisterCommand(command: Command) {
         if (commands.contains(command)) {
             commands.remove(command)

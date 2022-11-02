@@ -1,10 +1,10 @@
 package managers
 
-import commands.bot.*
-import commands.info.*
-import commands.ocio.*
-import commands.dev.*
-import commands.config.*
+import commands.message.bot.*
+import commands.message.info.*
+import commands.message.ocio.*
+import commands.message.dev.*
+import commands.message.config.*
 import interfaces.SimpleCommand
 import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.buttons.Button
