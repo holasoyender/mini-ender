@@ -1,15 +1,23 @@
 package commands.slash.giveaway
 
+import database.schema.Sorteo
 import interfaces.CommandResponse
 import interfaces.SlashCommand
+import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
+import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.*
+import net.dv8tion.jda.api.interactions.components.buttons.Button
+import net.dv8tion.jda.api.utils.TimeFormat
+import net.dv8tion.jda.internal.entities.emoji.CustomEmojiImpl
 import plugins.giveaway.GiveawayManager
 import utils.Emojis
+import utils.Emojis.f
 import utils.Time
+import java.awt.Color
 
 class Sorteo: SlashCommand {
     override fun execute(event: SlashCommandInteractionEvent): CommandResponse {
@@ -34,13 +42,72 @@ class Sorteo: SlashCommand {
 
             }
             "acabar" -> {
+                val messageId = event.getOption("mensaje")?.asString ?: return CommandResponse.error("Debes especificar un id de un mensaje valida")
+
+                val giveaway = Sorteo.get(messageId) ?: return CommandResponse.error("No se ha encontrado un sorteo con esa id de mensaje")
+
+                if(giveaway.ended) return CommandResponse.error("Este sorteo ya ha terminado")
+                val channel = event.guild!!.getTextChannelById(giveaway.channelId) ?: return CommandResponse.error("No se ha encontrado el canal del sorteo")
+
+                channel.retrieveWebhooks().queue { webhooks ->
+                    val webhook = webhooks.firstOrNull { w -> w.name == "Sorteos" }
+
+                    if(webhook == null) {
+                        event.reply("${f(Emojis.error)} No se ha encontrado el webhook del sorteo").queue()
+                    } else {
+                        event.reply("${Emojis.loading} Finalizando el sorteo...").queue { msg ->
+                            GiveawayManager.endGiveaway(webhook, giveaway, msg, event.guild!!)
+                        }
+                    }
+                }
 
             }
             "repetir" -> {
+                val messageId = event.getOption("mensaje")?.asString ?: return CommandResponse.error("Debes especificar un id de un mensaje valida")
 
+                val giveaway = Sorteo.get(messageId) ?: return CommandResponse.error("No se ha encontrado un sorteo con esa id de mensaje")
+
+                if(!giveaway.ended) return CommandResponse.error("Este sorteo no ha terminado")
+                val channel = event.guild!!.getTextChannelById(giveaway.channelId) ?: return CommandResponse.error("No se ha encontrado el canal del sorteo")
+
+                channel.retrieveWebhooks().queue { webhooks ->
+                    val webhook = webhooks.firstOrNull { w -> w.name == "Sorteos" }
+
+                    if(webhook == null) {
+                        event.reply("${f(Emojis.error)} No se ha encontrado el webhook del sorteo").queue()
+                    } else {
+                        event.reply("${Emojis.loading} Repitiendo el sorteo...").queue { msg ->
+                            GiveawayManager.redoGiveaway(webhook, giveaway, msg, event.guild!!)
+                        }
+                    }
+                }
             }
             "info" -> {
+                val messageId = event.getOption("mensaje")?.asString ?: return CommandResponse.error("Debes especificar un id de un mensaje valida")
 
+                val giveaway = Sorteo.get(messageId) ?: return CommandResponse.error("No se ha encontrado un sorteo con esa id de mensaje")
+
+                event.replyEmbeds(
+                    EmbedBuilder()
+                        .setTitle("Información del sorteo")
+                        .setColor(Color.decode("#2f3136"))
+                        .addField("Canal", "<#${giveaway.channelId}>", true)
+                        .addField("Tiempo", "${TimeFormat.DEFAULT.format(giveaway.endAfter + giveaway.startedAt)}  (${ TimeFormat.RELATIVE.format(giveaway.endAfter + giveaway.startedAt)})", true)
+                        .addField("Ganadores", "`${giveaway.winnerCount}` ganador${if(giveaway.winnerCount > 1) "es" else ""}", true)
+                        .addField("Premio", "```${giveaway.prize}```", false)
+                        .addField("Host", "<@${giveaway.hostId}>", true)
+                        .addField("Mensaje", "[Click aquí](https://discord.com/channels/${event.guild!!.id}/${giveaway.channelId}/${giveaway.messageId})", true)
+                        .addField("Estado", if(giveaway.ended) "Terminado" else "En curso", true)
+                        .addField("Ganadores", if(giveaway.ended) giveaway.winnerIds.joinToString(", ") { "<@${it}>" } else "Ninguno", true)
+                        .addField("Participantes totales", "`${giveaway.clickers.size}` participantes", true)
+                        .setThumbnail(event.jda.selfUser.avatarUrl ?: event.jda.selfUser.defaultAvatarUrl)
+                        .build()
+                ).setEphemeral(false).addActionRow(
+                    Button.danger("cmd::giveaway:end:${giveaway.messageId}", "Acabar el sorteo").withDisabled(giveaway.ended),
+                    Button.success("cmd::giveaway:redo:${giveaway.messageId}", "Repetir el sorteo").withDisabled(!giveaway.ended),
+                    Button.link("https://discord.com/channels/${event.guild!!.id}/${giveaway.channelId}/${giveaway.messageId}", "Ir al mensaje"),
+                    Button.primary("cmd::giveaway:reload:${giveaway.messageId}", Emoji.fromCustom(CustomEmojiImpl("loop", 952242523521294456, false)))
+                ).queue()
             }
             else -> {
                 return CommandResponse.error("No se ha especificado una acción valida")
@@ -80,19 +147,19 @@ class Sorteo: SlashCommand {
             .addSubcommands(
                 SubcommandData("acabar", "Acabar un sorteo")
                     .addOptions(
-                        OptionData(OptionType.INTEGER, "mensaje", "La ID del mensaje del sorteo a acabar", true)
+                        OptionData(OptionType.STRING, "mensaje", "La ID del mensaje del sorteo a acabar", true)
                     ),
             )
             .addSubcommands(
                 SubcommandData("repetir", "Repetir un sorteo")
                     .addOptions(
-                        OptionData(OptionType.INTEGER, "mensaje", "La ID del mensaje del sorteo a repetir", true)
+                        OptionData(OptionType.STRING, "mensaje", "La ID del mensaje del sorteo a repetir", true)
                     ),
             )
             .addSubcommands(
                 SubcommandData("info", "Información de un sorteo")
                     .addOptions(
-                        OptionData(OptionType.INTEGER, "mensaje", "La ID del mensaje del sorteo a dar información", true)
+                        OptionData(OptionType.STRING, "mensaje", "La ID del mensaje del sorteo a dar información", true)
                     ),
             )
 }

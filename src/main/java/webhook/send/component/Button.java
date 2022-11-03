@@ -57,6 +57,11 @@ public class Button implements ActionComponent, SingleEmojiContainer<Button> {
 		return new Button(Style.PRIMARY, label, customId, null, false);
 	}
 
+	@NotNull
+	public static Button primary(@NotNull String customId, @NotNull String label, boolean disabled) {
+		return new Button(Style.PRIMARY, label, customId, null, disabled);
+	}
+
 	/**
 	 * A button with style set to {@link Style#SUCCESS}
 	 *
@@ -85,6 +90,11 @@ public class Button implements ActionComponent, SingleEmojiContainer<Button> {
 	@NotNull
 	public static Button secondary(@NotNull String customId, @NotNull String label) {
 		return new Button(Style.SECONDARY, label, customId, null, false);
+	}
+
+	@NotNull
+	public static Button secondary(@NotNull String customId, @NotNull String label, boolean disabled) {
+		return new Button(Style.SECONDARY, label, customId, null, disabled);
 	}
 
 	/**

@@ -6,6 +6,8 @@ import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.utils.TimeFormat
+import utils.Emojis
+import utils.Emojis.f
 import webhook.external.JDAWebhookClient
 import webhook.send.WebhookEmbedBuilder
 import webhook.send.WebhookMessageBuilder
@@ -29,7 +31,7 @@ object GiveawayManager {
         winners: Long,
         prize: String,
         host: User,
-        interaction: InteractionHook
+        hook: InteractionHook
     ): Boolean {
 
         try {
@@ -53,7 +55,7 @@ object GiveawayManager {
                         }
                     } catch (e: java.lang.Exception) {
                         e.printStackTrace()
-                        interaction.editOriginal("No se ha podido crear el sorteo: \n`El webhook no se ha podido crear`")
+                        hook.editOriginal("No se ha podido crear el sorteo: \n`El webhook no se ha podido crear`")
                             .queue()
                     }
                 } else {
@@ -79,6 +81,11 @@ object GiveawayManager {
         val builder = JDAWebhookClient.from(webhook)
         val timestamp = System.currentTimeMillis() + time
 
+        val banner = Banner(guild).getBanner()
+        val random = (0..100000).random()
+        val file = File("temp-${random}.png")
+        ImageIO.write(banner, "png", file)
+
         val message = WebhookMessageBuilder()
             .addEmbeds(
                 WebhookEmbedBuilder.fromJDA(
@@ -93,12 +100,13 @@ object GiveawayManager {
                         .setTitle("Premio: $prize")
                         .setFooter("Acaba el")
                         .setTimestamp(Date(timestamp).toInstant())
+                        .setImage("attachment://banner.png")
                         .setDescription(
-                            "**Haz click en el botón para entrar al sorteo!**\n<:regalo:829082183460192256>  Premio: **${prize}**\n⚙️  Alojado por: <@!${host.id}>\n⏰  Acaba: ${
+                            "\n${Emojis.OWNER}  Alojado por: <@!${host.id}>\n${Emojis.time}  Acaba: ${
                                 TimeFormat.DEFAULT.format(
                                     timestamp
                                 )
-                            }  (${TimeFormat.RELATIVE.format(timestamp)})\n\n🏆  Ganador(es): `${winners}`"
+                            }  (${TimeFormat.RELATIVE.format(timestamp)})\n\n${Emojis.right}  Número de ganadores: `${winners}`"
                         )
                         .build()
                 )
@@ -106,19 +114,13 @@ object GiveawayManager {
             )
             .addComponents(
                 ActionRow.of(
-                    Button.primary("cmd::giveaway:enter:${guild.id}", "Entrar al sorteo").withEmoji(PartialEmoji.of("tadaa", "1037465732159656117", true))
+                    Button.primary("cmd::giveaway:enter", "Entrar al sorteo").withEmoji(PartialEmoji.of("tadaa", "1037465732159656117", true)),
                 )
-            )
+            ).addFile("banner.png", file)
 
         /*
         * TODO:
-        *  - Cambiar el estilo del embed y ponerle un banner grande como dyno
-        *  - Que los botones funcionen
         *  - Loop para comprobar si ya ha acabado algún sorteo
-        *  - Todos los comandos de sorteo
-        *    - Acabar
-        *    - Reroll
-        *    - Info
         * */
 
         builder.send(message.build()).whenComplete { msg, _ ->
@@ -137,6 +139,135 @@ object GiveawayManager {
             )
 
             sorteo.save()
+            Files.delete(file.toPath())
+            builder.close()
+        }
+    }
+
+    fun endGiveaway(
+        webhook: Webhook,
+        giveaway: Sorteo,
+        hook: InteractionHook?,
+        guild: Guild,
+    ) {
+
+        val winners = WinnerChooser(giveaway.winnerCount, giveaway.clickers, giveaway.winnerIds).result
+
+        if(winners.isEmpty()) {
+            hook?.editOriginal("${f(Emojis.error)}  No se ha podido acabar el sorteo: \n`No hay participantes suficientes`")?.queue()
+            return
+        }
+
+        giveaway.ended = true
+        giveaway.winnerIds = winners.toTypedArray()
+        giveaway.save()
+
+        val builder = JDAWebhookClient.from(webhook)
+
+        val channelMessage = WebhookMessageBuilder()
+            .setContent("${Emojis.giveaway}  Enhorabuena ${winners.joinToString { "<@!$it> " }} ${if(winners.size > 1) "habéis" else "has"} ganado **${giveaway.prize}**!! Gracias a <@!${giveaway.hostId}> por este sorteo!")
+            .addComponents(
+                ActionRow.of(
+                    Button.link("https://discord.com/channels/${giveaway.guildId}/${giveaway.channelId}/${giveaway.messageId}", "Ir al sorteo"),
+                    Button.secondary("cmd::giveaway:winnercount", "${giveaway.clickers.size} Participantes", true),
+                )
+            )
+
+        builder.send(channelMessage.build()).whenComplete { _, _ ->
+
+            val editMessage = WebhookMessageBuilder()
+                .reset()
+                .addEmbeds(
+                    WebhookEmbedBuilder.fromJDA(
+                        EmbedBuilder()
+                            .setAuthor(
+                                "Sorteo finalizado!",
+                                null,
+                                "https://cdn.discordapp.com/attachments/755000173922615336/1037465851122696293/emoji..gif"
+                            )
+                            .setColor(0x2f3136)
+                            .setThumbnail(guild.iconUrl ?: guild.jda.selfUser.avatarUrl)
+                            .setTitle("Premio: ${giveaway.prize}")
+                            .setFooter("Acabó el")
+                            .setTimestamp(Date(giveaway.startedAt + giveaway.endAfter).toInstant())
+                            .setDescription(
+                                "\n⭐  Alojado por: <@!${giveaway.hostId}>\n\n\uD83C\uDF89 ${if(winners.size > 1) "Ganadores" else "Ganador"}: ${winners.joinToString { "<@!$it> " }}"
+                            )
+                            .build()
+                    ).build()
+                ).addComponents(
+                    ActionRow.of(
+                        Button.primary("cmd::giveaway:enter", "Entrar al sorteo", true).withEmoji(PartialEmoji.of("tadaa", "1037465732159656117", true)),
+                    )
+                )
+
+            builder.edit(giveaway.messageId, editMessage.build()).whenComplete { _, _ ->
+                builder.close()
+                hook?.editOriginal("${Emojis.success}  Se ha finalizado el sorteo correctamente")?.queue()
+            }
+        }
+    }
+
+    fun redoGiveaway(
+        webhook: Webhook,
+        giveaway: Sorteo,
+        hook: InteractionHook,
+        guild: Guild,
+    ) {
+
+        val winners = WinnerChooser(giveaway.winnerCount, giveaway.clickers, giveaway.winnerIds).result
+
+        if(winners.isEmpty()) {
+            hook.editOriginal("${f(Emojis.error)}  No se ha podido acabar el sorteo: \n`No hay participantes suficientes`").queue()
+            return
+        }
+
+        giveaway.winnerIds = winners.toTypedArray()
+        giveaway.save()
+
+        val builder = JDAWebhookClient.from(webhook)
+
+        val channelMessage = WebhookMessageBuilder()
+            .setContent("${Emojis.giveaway}  Enhorabuena ${winners.joinToString { "<@!$it> " }} ${if(winners.size > 1) "habéis" else "has"} ganado el reroll de **${giveaway.prize}**!! Gracias a <@!${giveaway.hostId}> por este sorteo!")
+            .addComponents(
+                ActionRow.of(
+                    Button.link("https://discord.com/channels/${giveaway.guildId}/${giveaway.channelId}/${giveaway.messageId}", "Ir al sorteo"),
+                    Button.secondary("cmd::giveaway:winnercount", "${giveaway.clickers.size} Participantes", true),
+                )
+            )
+
+        builder.send(channelMessage.build()).whenComplete { _, _ ->
+
+            val editMessage = WebhookMessageBuilder()
+                .reset()
+                .addEmbeds(
+                    WebhookEmbedBuilder.fromJDA(
+                        EmbedBuilder()
+                            .setAuthor(
+                                "Sorteo finalizado!",
+                                null,
+                                "https://cdn.discordapp.com/attachments/755000173922615336/1037465851122696293/emoji..gif"
+                            )
+                            .setColor(0x2f3136)
+                            .setThumbnail(guild.iconUrl ?: guild.jda.selfUser.avatarUrl)
+                            .setTitle("Premio: ${giveaway.prize}")
+                            .setFooter("Acabó el")
+                            .setTimestamp(Date(giveaway.startedAt + giveaway.endAfter).toInstant())
+                            .setDescription(
+                                "\n⭐  Alojado por: <@!${giveaway.hostId}>\n\n\uD83C\uDF89 ${if(winners.size > 1) "Ganadores" else "Ganador"}: ${winners.joinToString { "<@!$it> " }}"
+                            )
+                            .build()
+                    ).build()
+                ).addComponents(
+                    ActionRow.of(
+                        Button.primary("cmd::giveaway:enter", "Entrar al sorteo", true).withEmoji(PartialEmoji.of("tadaa", "1037465732159656117", true)),
+                    )
+                )
+
+            builder.edit(giveaway.messageId, editMessage.build()).whenComplete { _, _ ->
+                builder.close()
+                hook.editOriginal("${Emojis.success}  Se ha rehecho el sorteo correctamente").queue()
+            }
         }
     }
 }

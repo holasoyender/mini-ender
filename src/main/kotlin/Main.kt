@@ -76,7 +76,7 @@ fun main() {
             jda = it
         }
 
-        services.ServiceManager.load()
+        services.ServiceManager.load(shardingManager)
 
         commandManager = CommandManager()
     } catch (e: LoginException) {

@@ -16,6 +16,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 import net.dv8tion.jda.internal.entities.emoji.CustomEmojiImpl
+import plugins.giveaway.GiveawayInteractions
 import utils.Constants.OWNER_IDS
 import java.awt.Color
 import java.time.Instant
@@ -96,6 +97,7 @@ class InteractionHandler: ListenerAdapter() {
 
                 val userId = event.componentId.split("::")[1].split(":")[1]
 
+                if(isUserId(userId))
                 if (userId != event.user.id) {
                     event.reply("No puedes usar este botón!").setEphemeral(true).queue()
                     return
@@ -144,7 +146,6 @@ class InteractionHandler: ListenerAdapter() {
                                 .build()
                         ).queue()
                     }
-
                     "error" -> {
 
                         val body: TextInput = TextInput.create("body", "Descripción del error", TextInputStyle.PARAGRAPH)
@@ -159,6 +160,16 @@ class InteractionHandler: ListenerAdapter() {
 
                         event.replyModal(modal).queue()
                     }
+                    "giveaway" -> {
+
+                        when(event.componentId.split("::")[1].split(":")[1]) {
+                            "enter" -> GiveawayInteractions.handleJoinButton(event)
+                            "redo" -> GiveawayInteractions.handleRedoButton(event)
+                            "end" -> GiveawayInteractions.handleEndButton(event)
+                            "reload" -> GiveawayInteractions.handleReloadButton(event)
+                        }
+
+                    }
                 }
 
             }
@@ -169,6 +180,15 @@ class InteractionHandler: ListenerAdapter() {
                     "delete" -> ErrorReporter.deleteError(event)
                 }
             }
+        }
+    }
+
+    private fun isUserId(id: String): Boolean {
+        return try {
+            val i = id.toLong()
+            i > 10000000
+        } catch (e: NumberFormatException) {
+            false
         }
     }
 }
