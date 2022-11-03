@@ -64,7 +64,7 @@ class GiveawayService(shardManager: ShardManager) {
                         }
                     }
                 }
-                Thread.sleep(1 * 60 * 1000)
+                Thread.sleep(3 * 60 * 1000)
             }
         }
         thread.isDaemon = true

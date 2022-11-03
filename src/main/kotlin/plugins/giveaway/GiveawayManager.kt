@@ -284,7 +284,7 @@ object GiveawayManager {
             .addComponents(
                 ActionRow.of(
                     Button.link("https://discord.com/channels/${giveaway.guildId}/${giveaway.channelId}/${giveaway.messageId}", "Ir al sorteo"),
-                    Button.secondary("cmd::giveaway:winnercount", "${giveaway.clickers.size} Participantes", true),
+                    Button.secondary("cmd::giveaway:count", "${giveaway.clickers.size} Participantes", true),
                 )
             )
 
