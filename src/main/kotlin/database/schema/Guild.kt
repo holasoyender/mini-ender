@@ -6,14 +6,16 @@ import org.json.JSONObject
 class Guild(
     id: String,
     prefix: String,
-    customCommands: Array<JSONObject>?,
-    logChannelId: String?,
+    customCommands: Array<JSONObject>,
+    logChannelId: String,
+    antiLinksEnabled: Boolean,
 ): Schema {
 
     var id: String
     var prefix: String
-    var customCommands: Array<JSONObject>?
-    var logChannelId: String?
+    var customCommands: Array<JSONObject>
+    var logChannelId: String
+    var antiLinksEnabled: Boolean
 
     private var isSaved = false
     private var isDeleted = false
@@ -24,6 +26,7 @@ class Guild(
         this.prefix = prefix
         this.customCommands = customCommands
         this.logChannelId = logChannelId
+        this.antiLinksEnabled = antiLinksEnabled
 
         if (exists()) {
             isSaved = true
@@ -44,21 +47,23 @@ class Guild(
 
         if (exists()) {
             database.Postgres.dataSource?.connection.use { connection ->
-                val statement = connection!!.prepareStatement("UPDATE guilds SET prefix = ?, custom_commands = ?, log_channel_id = ? WHERE id = ?")
+                val statement = connection!!.prepareStatement("UPDATE guilds SET prefix = ?, custom_commands = ?, log_channel_id = ?, anti_links_enabled = ? WHERE id = ?")
                 statement.setString(1, prefix)
-                statement.setArray(2, connection.createArrayOf("jsonb", customCommands))
+                statement.setArray(2, connection.createArrayOf("json", customCommands))
                 statement.setString(3, logChannelId)
-                statement.setString(4, id)
+                statement.setBoolean(4, antiLinksEnabled)
+                statement.setString(5, id)
                 statement.execute()
             }
         } else {
             database.Postgres.dataSource?.connection.use { connection ->
                 val statement =
-                    connection!!.prepareStatement("INSERT INTO guilds (id, prefix, custom_commands, log_channel_id) VALUES (?, ?, ?, ?)")
+                    connection!!.prepareStatement("INSERT INTO guilds (id, prefix, custom_commands, log_channel_id, anti_links_enabled) VALUES (?, ?, ?, ?, ?)")
                 statement.setString(1, id)
                 statement.setString(2, prefix)
                 statement.setArray(3, connection.createArrayOf("json", customCommands))
                 statement.setString(4, logChannelId)
+                statement.setBoolean(5, antiLinksEnabled)
                 statement.execute()
             }
         }
@@ -105,7 +110,8 @@ class Guild(
                 id TEXT PRIMARY KEY NOT NULL,
                 prefix TEXT NOT NULL,
                 custom_commands JSON[],
-                log_channel_id TEXT
+                log_channel_id TEXT,
+                anti_links_enabled BOOLEAN
             );"""
                 )
 
@@ -125,6 +131,7 @@ class Guild(
                         //esta linea ha causado un daño permanente en mi cerebro
                         (result.getArray("custom_commands")?.array as Array<String>?)?.map { JSONObject(it) }?.toTypedArray() ?: arrayOf(),
                         result.getString("log_channel_id"),
+                        result.getBoolean("anti_links_enabled")
                     )
                 }
             }
@@ -145,6 +152,7 @@ class Guild(
                             result.getString("prefix"),
                             (result.getArray("custom_commands")?.array as Array<String>?)?.map { JSONObject(it) }?.toTypedArray() ?: arrayOf(),
                             result.getString("log_channel_id"),
+                            result.getBoolean("anti_links_enabled")
                         )
                     )
                 }

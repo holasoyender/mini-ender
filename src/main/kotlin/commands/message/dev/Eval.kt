@@ -18,13 +18,14 @@ class Eval: Command {
 
         val script = ScriptEngineManager().getEngineByName("nashorn")
 
+        script.eval("var imports = new JavaImporter(java.io, java.lang, java.util, java.net);")
         script.put("client", event.jda)
         script.put("shard", event.jda.shardManager)
         script.put("channel", event.channel)
         script.put("message", event.message)
 
         try {
-            val res = script.eval(toEval)
+            val res = script.eval("with (imports) { $toEval }")
             val result = res?.toString() ?: "void"
             event.message.reply("```kt\n${result.replace(event.jda.token.toRegex(), "T0K3N")}```").queue()
         } catch (ex: ScriptException) {

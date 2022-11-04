@@ -16,6 +16,7 @@ import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
 import net.dv8tion.jda.internal.entities.emoji.CustomEmojiImpl
+import plugins.antilink.LinksInteractions
 import plugins.giveaway.GiveawayInteractions
 import utils.Constants.OWNER_IDS
 import java.awt.Color
@@ -39,7 +40,7 @@ class InteractionHandler: ListenerAdapter() {
                 when (command) {
                     "help" -> {
 
-                        val config = Guild.get(event.guild?.id ?: "") ?: Guild(event.guild?.id ?: "", PREFIX ?: "-", null, null)
+                        val config = Guild.get(event.guild?.id ?: "") ?: Guild(event.guild?.id ?: "", PREFIX ?: "-", arrayOf(), "", false)
 
                         val selected = event.selectedOptions[0].value
                         val category = selected.split(":")[1]
@@ -106,7 +107,7 @@ class InteractionHandler: ListenerAdapter() {
                 when (command) {
                     "help" -> {
 
-                        val config = Guild.get(event.guild?.id ?: "") ?: Guild(event.guild?.id ?: "", PREFIX ?: "-", null, null)
+                        val config = Guild.get(event.guild?.id ?: "") ?: Guild(event.guild?.id ?: "", PREFIX ?: "-", arrayOf(), "", false)
 
                         val embed: EmbedBuilder = EmbedBuilder()
                             .setAuthor(
@@ -167,8 +168,21 @@ class InteractionHandler: ListenerAdapter() {
                             "redo" -> GiveawayInteractions.handleRedoButton(event)
                             "end" -> GiveawayInteractions.handleEndButton(event)
                             "reload" -> GiveawayInteractions.handleReloadButton(event)
+                            "leave" -> GiveawayInteractions.handleLeaveButton(event)
                         }
+                    }
+                    "links" -> {
 
+                        when(event.componentId.split("::")[1].split(":")[1]) {
+                            "accept" -> LinksInteractions.handleAcceptButton(event)
+                            "ban" -> LinksInteractions.handleBanButton(event)
+                            "kick" -> LinksInteractions.handleKickButton(event)
+                            "mute" -> LinksInteractions.handleMuteButton(event)
+                            "warn" -> LinksInteractions.handleWarnButton(event)
+                            "tempban" -> LinksInteractions.handleTempBanButton(event)
+                            "tempmute" -> LinksInteractions.handleTempMuteButton(event)
+                            "delete" -> LinksInteractions.handleDeleteButton(event)
+                        }
                     }
                 }
 

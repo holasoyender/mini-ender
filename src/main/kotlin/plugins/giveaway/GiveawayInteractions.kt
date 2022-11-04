@@ -23,7 +23,9 @@ object GiveawayInteractions {
         if (giveaway != null) {
 
             if (giveaway.clickers.contains(userId)) {
-                event.reply("${Emojis.warning}  Ya estás participando en este sorteo!").setEphemeral(true).queue()
+                event.reply("${Emojis.warning}  Ya estás participando en este sorteo!").setEphemeral(true).addActionRow(
+                    Button.danger("cmd::giveaway:leave:$messageId", "Dejar de participar")
+                ).queue()
                 return
             }
 
@@ -141,6 +143,30 @@ object GiveawayInteractions {
                 Button.link("https://discord.com/channels/${event.guild!!.id}/${giveaway.channelId}/${giveaway.messageId}", "Ir al mensaje"),
                 Button.primary("cmd::giveaway:reload:${giveaway.messageId}", Emoji.fromCustom(CustomEmojiImpl("loop", 952242523521294456, false)))
             ).queue()
+
+        } else {
+            event.reply("${f(Emojis.error)}  Parece que este sorteo ya no existe!").setEphemeral(true).queue()
+        }
+    }
+
+    fun handleLeaveButton(event: ButtonInteractionEvent) {
+
+        val messageId = event.componentId.split("::")[1].split(":")[2]
+        val userId = event.user.id
+
+        val giveaway = Sorteo.get(messageId)
+
+        if (giveaway != null) {
+
+            if (!giveaway.clickers.contains(userId)) {
+                event.reply("${Emojis.warning}  No estás participando en este sorteo!").setEphemeral(true).queue()
+                return
+            }
+
+            giveaway.clickers = giveaway.clickers.filter { it != userId }.toTypedArray()
+            giveaway.save()
+
+            event.reply("${Emojis.success}  Has dejado el sorteo!").setEphemeral(true).queue()
 
         } else {
             event.reply("${f(Emojis.error)}  Parece que este sorteo ya no existe!").setEphemeral(true).queue()

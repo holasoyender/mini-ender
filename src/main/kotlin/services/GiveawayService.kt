@@ -1,9 +1,11 @@
 package services
 
 import database.schema.Sorteo
+import enums.Severity
 import net.dv8tion.jda.api.sharding.ShardManager
 import org.slf4j.LoggerFactory
 import plugins.giveaway.GiveawayManager
+import plugins.warnings.WarningsManager
 
 class GiveawayService(shardManager: ShardManager) {
 
@@ -51,14 +53,22 @@ class GiveawayService(shardManager: ShardManager) {
 
                                                 if (webhook != null)
                                                     GiveawayManager.endGiveaway(webhook, giveaway, null, guild)
-                                                else
+                                                else {
+                                                    WarningsManager.createWarning(guild, "No se ha encontrado el webhook del sorteo con ID ${giveaway.messageId}, el sorteo ha sido eliminado", Severity.MEDIUM)
                                                     giveaway.delete()
+                                                }
                                             }
 
-                                        } else giveaway.delete()
+                                        } else {
+                                            WarningsManager.createWarning(guild, "El mensaje del sorteo con ID ${giveaway.messageId} no existe, el sorteo ha sido eliminado", Severity.MEDIUM)
+                                            giveaway.delete()
+                                        }
                                     }
 
-                                } else giveaway.delete()
+                                } else {
+                                    WarningsManager.createWarning(guild, "El canal ${giveaway.channelId} no existe, el sorteo con ID ${giveaway.messageId} ha sido eliminado", Severity.MEDIUM)
+                                    giveaway.delete()
+                                }
 
                             } else giveaway.delete()
                         }

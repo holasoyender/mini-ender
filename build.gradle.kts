@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "miniender"
-version = "1.0"
+version = "0.1-PRIVATE_ALPHA"
 
 repositories {
     mavenCentral()

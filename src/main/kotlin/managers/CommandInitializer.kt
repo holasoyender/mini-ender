@@ -43,6 +43,7 @@ class CommandInitializer(manager: CommandManager) {
 
         //Dev
         manager.registerCommand(Eval())
+        manager.registerCommand(Config())
 
         //Config
         manager.registerCommand(Prefix())

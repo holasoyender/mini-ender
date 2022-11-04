@@ -129,7 +129,7 @@ class Sorteo: SlashCommand {
     override val guildOnly: Boolean
         get() = true
     override val permissions: List<Permission>
-        get() = listOf(Permission.MESSAGE_MANAGE)
+        get() = listOf(Permission.MESSAGE_MANAGE, Permission.MANAGE_SERVER)
     override val botPermissions: List<Permission>
         get() = listOf(Permission.MESSAGE_MANAGE, Permission.MANAGE_SERVER)
     override val metadata: SlashCommandData

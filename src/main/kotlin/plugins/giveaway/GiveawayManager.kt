@@ -1,11 +1,13 @@
 package plugins.giveaway
 
 import database.schema.Sorteo
+import enums.Severity
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.interactions.InteractionHook
 import net.dv8tion.jda.api.utils.TimeFormat
+import plugins.warnings.WarningsManager
 import utils.Emojis
 import utils.Emojis.f
 import webhook.external.JDAWebhookClient
@@ -117,11 +119,6 @@ object GiveawayManager {
                     Button.primary("cmd::giveaway:enter", "Entrar al sorteo").withEmoji(PartialEmoji.of("tadaa", "1037465732159656117", true)),
                 )
             ).addFile("banner.png", file)
-
-        /*
-        * TODO:
-        *  - Loop para comprobar si ya ha acabado algún sorteo
-        * */
 
         builder.send(message.build()).whenComplete { msg, _ ->
             val sorteo = Sorteo(
@@ -252,6 +249,30 @@ object GiveawayManager {
                         )
                     )
 
+                winners.forEach { winner ->
+                    try {
+                        guild.retrieveMemberById(winner).queue { member ->
+                            member.user.openPrivateChannel().queue { channel ->
+                                channel.sendMessageEmbeds(
+                                    EmbedBuilder()
+                                        .setAuthor(
+                                            "¡Enhorabuena!",
+                                            null,
+                                            "https://cdn.discordapp.com/attachments/755000173922615336/1037465851122696293/emoji..gif"
+                                        )
+                                        .setColor(0x2f3136)
+                                        .setThumbnail(guild.iconUrl ?: guild.jda.selfUser.avatarUrl)
+                                        .setTitle("Has ganado: ${giveaway.prize}")
+                                        .setDescription("Has ganado el sorteo de **${giveaway.prize}** en **${guild.name}**!!")
+                                        .build()
+                                ).queue()
+                            }
+                        }
+                    } catch (_: Exception) {
+                        WarningsManager.createWarning(guild, "No se ha podido enviar un mensaje privado al ganador del sorteo con ID ${giveaway.messageId}", Severity.VERY_LOW)
+                    }
+                }
+
                 builder.edit(giveaway.messageId, editMessage.build()).whenComplete { _, _ ->
                     builder.close()
                     hook?.editOriginal("${Emojis.success}  Se ha finalizado el sorteo correctamente")?.queue()
@@ -315,6 +336,30 @@ object GiveawayManager {
                         Button.primary("cmd::giveaway:enter", "Entrar al sorteo", true).withEmoji(PartialEmoji.of("tadaa", "1037465732159656117", true)),
                     )
                 )
+
+            winners.forEach { winner ->
+                try {
+                    guild.retrieveMemberById(winner).queue { member ->
+                        member.user.openPrivateChannel().queue { channel ->
+                            channel.sendMessageEmbeds(
+                                EmbedBuilder()
+                                    .setAuthor(
+                                        "¡Enhorabuena!",
+                                        null,
+                                        "https://cdn.discordapp.com/attachments/755000173922615336/1037465851122696293/emoji..gif"
+                                    )
+                                    .setColor(0x2f3136)
+                                    .setThumbnail(guild.iconUrl ?: guild.jda.selfUser.avatarUrl)
+                                    .setTitle("Has ganado: ${giveaway.prize}")
+                                    .setDescription("Has ganado el sorteo de **${giveaway.prize}** en **${guild.name}**!!")
+                                    .build()
+                            ).queue()
+                        }
+                    }
+                } catch (_: Exception) {
+                    WarningsManager.createWarning(guild, "No se ha podido enviar un mensaje privado al ganador del sorteo con ID ${giveaway.messageId}", Severity.VERY_LOW)
+                }
+            }
 
             builder.edit(giveaway.messageId, editMessage.build()).whenComplete { _, _ ->
                 builder.close()

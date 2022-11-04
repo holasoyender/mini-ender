@@ -29,7 +29,7 @@ class Help: Command {
         *  - holasoyender 29/09/2022
         * */
 
-        val config = Guild.get(event.guild.id) ?: Guild(event.guild.id, PREFIX ?: "-", null, null)
+        val config = Guild.get(event.guild.id) ?: Guild(event.guild.id, PREFIX ?: "-", arrayOf(), "", false)
 
         if(args.size > 1) {
             val _input = args[1]

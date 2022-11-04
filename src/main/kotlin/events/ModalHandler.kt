@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.components.buttons.Button
+import plugins.antilink.LinksInteractions
 import java.awt.Color
 import java.util.*
 
@@ -13,7 +14,7 @@ class ModalHandler: ListenerAdapter() {
 
     override fun onModalInteraction(event: ModalInteractionEvent) {
 
-        when (event.modalId) {
+        when (event.modalId.split("::")[0]) {
             "error" -> {
 
                 val error =
@@ -51,6 +52,8 @@ class ModalHandler: ListenerAdapter() {
 
                 event.reply("¡Gracias por reportar el error!\nTu error ha recibido la ID `${id}`").setEphemeral(true).queue()
             }
+            "links.tempban" -> LinksInteractions.handleTempBanModal(event)
+            "links.tempmute" -> LinksInteractions.handleTempMuteModal(event)
         }
 
     }
