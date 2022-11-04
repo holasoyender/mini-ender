@@ -16,6 +16,7 @@ interface Command {
     val enabled: Boolean
     val ownerOnly: Boolean
     val guildOnly: Boolean
+    val global: Boolean
     val permissions: List<Permission>
     val botPermissions: List<Permission>
 }

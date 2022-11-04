@@ -56,14 +56,14 @@ fun main() {
         GatewayIntent.GUILD_PRESENCES,
         GatewayIntent.DIRECT_MESSAGE_REACTIONS,
         GatewayIntent.DIRECT_MESSAGE_TYPING,
-        GatewayIntent.GUILD_MESSAGE_REACTIONS,
         GatewayIntent.GUILD_INVITES
     )
     builder.enableIntents(
         GatewayIntent.DIRECT_MESSAGES,
         GatewayIntent.GUILD_MESSAGES,
         GatewayIntent.MESSAGE_CONTENT,
-        GatewayIntent.GUILD_MEMBERS
+        GatewayIntent.GUILD_MEMBERS,
+        GatewayIntent.GUILD_MESSAGE_REACTIONS
     )
     builder.setLargeThreshold(50)
 

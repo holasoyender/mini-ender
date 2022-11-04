@@ -46,6 +46,8 @@ class JVM: Command {
         get() = true
     override val guildOnly: Boolean
         get() = false
+    override val global: Boolean
+        get() = false
     override val permissions: List<Permission>
         get() = listOf()
     override val botPermissions: List<Permission>

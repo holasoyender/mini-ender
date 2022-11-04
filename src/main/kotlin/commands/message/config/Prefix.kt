@@ -45,6 +45,8 @@ class Prefix: Command {
         get() = false
     override val guildOnly: Boolean
         get() = true
+    override val global: Boolean
+        get() = false
     override val permissions: List<Permission>
         get() = listOf(Permission.MANAGE_SERVER)
     override val botPermissions: List<Permission>

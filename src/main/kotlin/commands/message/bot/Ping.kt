@@ -30,6 +30,8 @@ class Ping: Command {
         get() = false
     override val guildOnly: Boolean
         get() = false
+    override val global: Boolean
+        get() = true
     override val permissions: List<Permission>
         get() = listOf()
     override val botPermissions: List<Permission>
