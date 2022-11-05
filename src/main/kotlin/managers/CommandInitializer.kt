@@ -19,10 +19,12 @@ class CommandInitializer(manager: CommandManager) {
         */
 
         //Bot
+        manager.registerCommand(Error())
         manager.registerCommand(Ping())
         manager.registerCommand(Uptime())
         manager.registerCommand(Help())
         manager.registerCommand(Say())
+        manager.registerCommand(Warnings())
 
         //Info
         manager.registerCommand(Info())
@@ -30,7 +32,6 @@ class CommandInitializer(manager: CommandManager) {
         manager.registerCommand(JVM())
         manager.registerCommand(Avatar())
         manager.registerCommand(Bot())
-        manager.registerCommand(Error())
 
         //Ocio
         manager.registerCommand(Perro())

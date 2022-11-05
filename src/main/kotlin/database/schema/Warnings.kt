@@ -8,16 +8,22 @@ class Warnings(
     id: String,
     message: String,
     resolved: Boolean,
+    ignored: Boolean,
     severity: Severity,
-    repeats: Int
+    repeats: Int,
+    lastSeen: Long,
+    firstSeen: Long
 ): Schema {
 
     var guildId: String
     var id: String
     var message: String
     var resolved: Boolean
+    var ignored: Boolean
     var severity: Severity
     var repeats: Int
+    var lastSeen: Long
+    var firstSeen: Long
 
     private var isSaved = false
     private var isDeleted = false
@@ -28,8 +34,11 @@ class Warnings(
         this.id = id
         this.message = message
         this.resolved = resolved
+        this.ignored = ignored
         this.severity = severity
         this.repeats = repeats
+        this.lastSeen = lastSeen
+        this.firstSeen = firstSeen
 
         if (exists()) {
             isSaved = true
@@ -50,28 +59,34 @@ class Warnings(
 
         if (exists()) {
             database.Postgres.dataSource?.connection.use { connection ->
-                val statement = connection!!.prepareStatement("UPDATE warnings SET guild_id = ?, id = ?, message = ?, resolved = ?, severity = ?, repeats = ? WHERE guild_id = ? AND id = ?")
+                val statement = connection!!.prepareStatement("UPDATE warnings SET guild_id = ?, id = ?, message = ?, resolved = ?, ignored = ?, severity = ?, repeats = ?, last_seen = ?, first_seen = ? WHERE guild_id = ? AND id = ?")
                 statement.setString(1, guildId)
                 statement.setString(2, id)
                 statement.setString(3, message)
                 statement.setBoolean(4, resolved)
-                statement.setString(5, severity.name)
-                statement.setInt(6, repeats)
-                statement.setString(7, guildId)
-                statement.setString(8, id)
+                statement.setBoolean(5, ignored)
+                statement.setString(6, severity.name)
+                statement.setInt(7, repeats)
+                statement.setLong(8, lastSeen)
+                statement.setLong(9, firstSeen)
+                statement.setString(10, guildId)
+                statement.setString(11, id)
 
                 statement.execute()
             }
         } else {
             database.Postgres.dataSource?.connection.use { connection ->
                 val statement =
-                    connection!!.prepareStatement("INSERT INTO warnings (guild_id, id, message, resolved, severity, repeats) VALUES (?, ?, ?, ?, ?, ?)")
+                    connection!!.prepareStatement("INSERT INTO warnings (guild_id, id, message, resolved, ignored, severity, repeats, last_seen, first_seen) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
                 statement.setString(1, guildId)
                 statement.setString(2, id)
                 statement.setString(3, message)
                 statement.setBoolean(4, resolved)
-                statement.setString(5, severity.name)
-                statement.setInt(6, repeats)
+                statement.setBoolean(5, ignored)
+                statement.setString(6, severity.name)
+                statement.setInt(7, repeats)
+                statement.setLong(8, lastSeen)
+                statement.setLong(9, firstSeen)
                 statement.execute()
             }
         }
@@ -120,7 +135,11 @@ class Warnings(
                 id TEXT NOT NULL,
                 message TEXT NOT NULL,
                 resolved BOOLEAN NOT NULL,
+                ignored BOOLEAN NOT NULL,
                 severity TEXT NOT NULL,
+                repeats INTEGER NOT NULL,
+                last_seen BIGINT NOT NULL,
+                first_seen BIGINT NOT NULL,
                 PRIMARY KEY (guild_id, id)
             );""".trimIndent())
                 statement.execute()
@@ -139,8 +158,11 @@ class Warnings(
                         result.getString("id"),
                         result.getString("message"),
                         result.getBoolean("resolved"),
+                        result.getBoolean("ignored"),
                         Severity.valueOf(result.getString("severity")),
-                        result.getInt("repeats")
+                        result.getInt("repeats"),
+                        result.getLong("last_seen"),
+                        result.getLong("first_seen")
                     )
                 }
             }
@@ -160,8 +182,11 @@ class Warnings(
                         result.getString("id"),
                         result.getString("message"),
                         result.getBoolean("resolved"),
+                        result.getBoolean("ignored"),
                         Severity.valueOf(result.getString("severity")),
-                        result.getInt("repeats")
+                        result.getInt("repeats"),
+                        result.getLong("last_seen"),
+                        result.getLong("first_seen")
                     )
                 }
             }
@@ -182,8 +207,11 @@ class Warnings(
                             result.getString("id"),
                             result.getString("message"),
                             result.getBoolean("resolved"),
+                            result.getBoolean("ignored"),
                             Severity.valueOf(result.getString("severity")),
-                            result.getInt("repeats")
+                            result.getInt("repeats"),
+                            result.getLong("last_seen"),
+                            result.getLong("first_seen")
                         )
                     )
                 }
@@ -206,8 +234,11 @@ class Warnings(
                             result.getString("id"),
                             result.getString("message"),
                             result.getBoolean("resolved"),
+                            result.getBoolean("ignored"),
                             Severity.valueOf(result.getString("severity")),
-                            result.getInt("repeats")
+                            result.getInt("repeats"),
+                            result.getLong("last_seen"),
+                            result.getLong("first_seen")
                         )
                     )
                 }

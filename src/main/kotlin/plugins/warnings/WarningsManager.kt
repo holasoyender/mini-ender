@@ -13,6 +13,8 @@ object WarningsManager {
         if (warn != null) {
 
             warn.repeats++
+            warn.lastSeen = System.currentTimeMillis()
+            warn.resolved = false
             warn.save()
             return warn.id
 
@@ -25,7 +27,10 @@ object WarningsManager {
                 severity = severity,
                 resolved = false,
                 id = id.toString(),
-                repeats = 1
+                repeats = 1,
+                lastSeen = System.currentTimeMillis(),
+                firstSeen = System.currentTimeMillis(),
+                ignored = false
             )
             newWarning.save()
 
