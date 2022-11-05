@@ -14,7 +14,7 @@ import utils.Emojis.f
 class Warnings: Command {
     override fun execute(event: MessageReceivedEvent, args: List<String>): CommandResponse {
 
-        val warnings = Warnings.getAll(event.guild.id).filter { !it.resolved || !it.ignored }
+        val warnings = Warnings.getAll(event.guild.id)
 
         if (warnings.isEmpty()) {
             event.message.reply("${f(Emojis.error)}  No hay ningún aviso activo en este servidor").queue()
@@ -24,7 +24,12 @@ class Warnings: Command {
         val action = args.getOrNull(1)
         if(action == null) {
 
-            val messages = formatMessages(warnings)
+            val messages = formatMessages(warnings.filter { !it.resolved }.filter { !it.ignored })
+
+            if (messages.isEmpty()) {
+                event.message.reply("${f(Emojis.error)}  No hay ningún aviso activo en este servidor").queue()
+                return CommandResponse.success()
+            }
 
             messages.chunked(10).forEach { chunk ->
                 if(chunk == messages.chunked(10).first())
@@ -48,7 +53,6 @@ class Warnings: Command {
                 Severity.LOW,
                 Severity.VERY_LOW,
             ).map { it.name.lowercase().replace(Regex("_"), " ") }
-
 
             if(filterInput.lowercase() == "ignored") {
 
@@ -214,7 +218,7 @@ class Warnings: Command {
     override val aliases: List<String>
         get() = listOf("avisos", "warning")
     override val usage: String
-        get() = "<resolver/listar> [ID Warning]"
+        get() = "<acción/filtro> [ID Warning]"
     override val category: String
         get() = "Bot"
     override val enabled: Boolean
