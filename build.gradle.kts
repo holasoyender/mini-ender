@@ -18,7 +18,7 @@ dependencies {
     implementation("net.dv8tion:JDA:5.0.0-alpha.22")
     implementation("ch.qos.logback:logback-classic:1.4.4")
     implementation("io.github.cdimascio:dotenv-kotlin:6.3.1")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.20")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.21")
     implementation("org.openjdk.nashorn:nashorn-core:15.4")
     implementation("org.json:json:20220924")
     implementation("com.zaxxer:HikariCP:5.0.1")
