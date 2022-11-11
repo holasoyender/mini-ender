@@ -13,6 +13,33 @@ object ActionRouter {
 
     fun ban(user: User, guild: Guild, link: Links): Boolean {
 
+        var success = true
+
+        user.openPrivateChannel().queue { channel ->
+            channel.sendMessage("**Hola ${user.asMention}! :wave:**\n\nHas sido baneado del servidor **${guild.name}** debido a que has enviado un link que ha sido considerado como spam.\n`Si crees que esto es un error, por favor, contacta con un el soporte del servidor.`\nDominio identificado como spam:```${link.domain}```")
+                .queue({
+                    guild.ban(user, 60, TimeUnit.SECONDS).reason("Sistema de anti-links").queue({ run {} },
+                        {
+                            success = false
+                            WarningsManager.createWarning(
+                                guild,
+                                "No se pudo banear a \"${user.asTag}\" por el sistema de anti-links",
+                                Severity.MEDIUM
+                            )
+                        })
+                }, {
+                    guild.ban(user, 60, TimeUnit.SECONDS).reason("Sistema de anti-links").queue({ run {} },
+                        {
+                            success = false
+                            WarningsManager.createWarning(
+                                guild,
+                                "No se pudo banear a \"${user.asTag}\" por el sistema de anti-links",
+                                Severity.MEDIUM
+                            )
+                        })
+                })
+        }
+
         val infraction = Infraction(
             user.id,
             user.asTag,
@@ -21,35 +48,43 @@ object ActionRouter {
             InfractionType.BAN,
             "Sistema de anti-links",
             0,
-            true
+            true,
+            success,
+            System.currentTimeMillis()
         )
+        infraction.save()
 
-        return try {
-            guild.ban(user, 60, TimeUnit.SECONDS).reason("Sistema de anti-links").queue()
-            infraction.save()
-
-            try {
-                user.openPrivateChannel().queue { channel ->
-                    channel.sendMessage("**Hola ${user.asMention}! :wave:**\n\nHas sido baneado del servidor **${guild.name}** debido a que has enviado un link que ha sido considerado como spam.\n`Si crees que esto es un error, por favor, contacta con un el soporte del servidor.`\nDominio identificado como spam:```${link.domain}```")
-                        .queue()
-                }
-            } catch (_: Exception) {
-                // ignore
-            }
-            true
-        } catch (e: Exception) {
-            infraction.succeeded = false
-            infraction.save()
-            WarningsManager.createWarning(
-                guild,
-                "No se pudo banear a ${user.asTag} por el sistema de anti-links",
-                Severity.MEDIUM
-            )
-            false
-        }
+        return success
     }
 
     fun kick(user: User, guild: Guild, link: Links): Boolean {
+
+        var success = true
+
+        user.openPrivateChannel().queue { channel ->
+            channel.sendMessage("**Hola ${user.asMention}! :wave:**\n\nHas sido expulsado del servidor **${guild.name}** debido a que has enviado un link que ha sido considerado como spam.\n`Si crees que esto es un error, por favor, contacta con un el soporte del servidor.`\nDominio identificado como spam:```${link.domain}```")
+                .queue({
+                    guild.kick(user).reason("Sistema de anti-links").queue({ run {} },
+                        {
+                            success = false
+                            WarningsManager.createWarning(
+                                guild,
+                                "No se pudo expulsar a \"${user.asTag}\" por el sistema de anti-links",
+                                Severity.MEDIUM
+                            )
+                        })
+                }, {
+                    guild.kick(user).reason("Sistema de anti-links").queue({ run {} },
+                        {
+                            success = false
+                            WarningsManager.createWarning(
+                                guild,
+                                "No se pudo expulsar a \"${user.asTag}\" por el sistema de anti-links",
+                                Severity.MEDIUM
+                            )
+                        })
+                })
+        }
 
         val infraction = Infraction(
             user.id,
@@ -59,35 +94,55 @@ object ActionRouter {
             InfractionType.KICK,
             "Sistema de anti-links",
             0,
-            true
+            true,
+            success,
+            System.currentTimeMillis()
         )
+        infraction.save()
 
-        return try {
-            guild.kick(user).reason("Sistema de anti-links").queue()
-            infraction.save()
-
-            try {
-                user.openPrivateChannel().queue { channel ->
-                    channel.sendMessage("**Hola ${user.asMention}! :wave:**\n\nHas sido expulsado del servidor **${guild.name}** debido a que has enviado un link que ha sido considerado como spam.\n`Si crees que esto es un error, por favor, contacta con un el soporte del servidor.`\nDominio identificado como spam:```${link.domain}```")
-                        .queue()
-                }
-            } catch (_: Exception) {
-                // ignore
-            }
-            true
-        } catch (e: Exception) {
-            infraction.succeeded = false
-            infraction.save()
-            WarningsManager.createWarning(
-                guild,
-                "No se pudo kickear a ${user.asTag} por el sistema de anti-links",
-                Severity.MEDIUM
-            )
-            false
-        }
+        return success
     }
 
     fun mute(user: User, guild: Guild, link: Links): Boolean {
+
+        var success = true
+
+        val config = database.schema.Guild.get(guild.id)
+
+        if (config == null) {
+            WarningsManager.createWarning(
+                guild,
+                "El servidor no tiene configurado el rol de mute o no es valido",
+                Severity.HIGH
+            )
+            success = false
+        } else {
+            try {
+                val muteRole =
+                    guild.getRoleById(config.muteRoleId) ?: throw Exception("El rol de mute no es valido")
+                guild.addRoleToMember(user, muteRole).reason("Sistema de anti-links").queue({ run {} },
+                    {
+                        success = false
+                        WarningsManager.createWarning(
+                            guild,
+                            "No se pudo silenciar a \"${user.asTag}\" por el sistema de anti-links",
+                            Severity.MEDIUM
+                        )
+                    })
+            } catch (e: Exception) {
+                WarningsManager.createWarning(
+                    guild,
+                    "El servidor no tiene configurado el rol de mute o no es valido",
+                    Severity.HIGH
+                )
+                success = false
+            }
+        }
+
+        user.openPrivateChannel().queue { channel ->
+            channel.sendMessage("**Hola ${user.asMention}! :wave:**\n\nHas sido silenciado en el servidor **${guild.name}** debido a que has enviado un link que ha sido considerado como spam.\n`Si crees que esto es un error, por favor, contacta con un el soporte del servidor.`\nDominio identificado como spam:```${link.domain}```")
+                .queue({}, {})
+        }
 
         val infraction = Infraction(
             user.id,
@@ -97,52 +152,13 @@ object ActionRouter {
             InfractionType.MUTE,
             "Sistema de anti-links",
             0,
-            true
+            true,
+            success,
+            System.currentTimeMillis()
         )
+        infraction.save()
 
-        return try {
-            val config = database.schema.Guild.get(guild.id)
-
-            if (config == null)
-                WarningsManager.createWarning(
-                    guild,
-                    "El servidor no tiene configurado el rol de mute o no es valido",
-                    Severity.HIGH
-                )
-            else {
-                try {
-                    val muteRole =
-                        guild.getRoleById(config.muteRoleId) ?: throw Exception("El rol de mute no es valido")
-                    guild.addRoleToMember(user, muteRole).reason("Sistema de anti-links").queue()
-                } catch (e: Exception) {
-                    WarningsManager.createWarning(
-                        guild,
-                        "El servidor no tiene configurado el rol de mute o no es valido",
-                        Severity.HIGH
-                    )
-                }
-            }
-            infraction.save()
-
-            try {
-                user.openPrivateChannel().queue { channel ->
-                    channel.sendMessage("**Hola ${user.asMention}! :wave:**\n\nHas sido silenciado en el servidor **${guild.name}** debido a que has enviado un link que ha sido considerado como spam.\n`Si crees que esto es un error, por favor, contacta con un el soporte del servidor.`\nDominio identificado como spam:```${link.domain}```")
-                        .queue()
-                }
-            } catch (_: Exception) {
-                // ignore
-            }
-            true
-        } catch (e: Exception) {
-            infraction.succeeded = false
-            infraction.save()
-            WarningsManager.createWarning(
-                guild,
-                "No se pudo silenciar a ${user.asTag} por el sistema de anti-links",
-                Severity.MEDIUM
-            )
-            false
-        }
+        return success
 
     }
 
@@ -156,18 +172,16 @@ object ActionRouter {
             InfractionType.WARN,
             "Sistema de anti-links",
             0,
-            true
+            ended = true,
+            succeeded = true,
+            System.currentTimeMillis()
         )
 
         infraction.save()
 
-        try {
-            user.openPrivateChannel().queue { channel ->
-                channel.sendMessage("**Hola ${user.asMention}! :wave:**\n\nHas sido advertido en el servidor **${guild.name}** debido a que has enviado un link que ha sido considerado como spam.\n`Si crees que esto es un error, por favor, contacta con un el soporte del servidor.`\nDominio identificado como spam:```${link.domain}```")
-                    .queue()
-            }
-        } catch (_: Exception) {
-            // ignore
+        user.openPrivateChannel().queue { channel ->
+            channel.sendMessage("**Hola ${user.asMention}! :wave:**\n\nHas sido advertido en el servidor **${guild.name}** debido a que has enviado un link que ha sido considerado como spam.\n`Si crees que esto es un error, por favor, contacta con un el soporte del servidor.`\nDominio identificado como spam:```${link.domain}```")
+                .queue({}, {})
         }
 
         return true
@@ -175,6 +189,34 @@ object ActionRouter {
     }
 
     fun tempBan(user: User, guild: Guild, link: Links): Boolean {
+
+        var success = true
+
+        user.openPrivateChannel().queue { channel ->
+            channel.sendMessage("**Hola ${user.asMention}! :wave:**\n\nHas sido baneado temporalmente del servidor **${guild.name}** durante `${link.durationRaw}` debido a que has enviado un link que ha sido considerado como spam.\n`Si crees que esto es un error, por favor, contacta con un el soporte del servidor.`\nDominio identificado como spam:```${link.domain}```")
+                .queue({
+                    guild.ban(user, 60, TimeUnit.SECONDS).reason("Sistema de anti-links").queue({ run {} },
+                        {
+                            success = false
+                            WarningsManager.createWarning(
+                                guild,
+                                "No se pudo banear temporalmente a \"${user.asTag}\" por el sistema de anti-links",
+                                Severity.MEDIUM
+                            )
+                        })
+                }, {
+                    guild.ban(user, 60, TimeUnit.SECONDS).reason("Sistema de anti-links").queue({ run {} },
+                        {
+                            success = false
+                            WarningsManager.createWarning(
+                                guild,
+                                "No se pudo banear temporalmente a \"${user.asTag}\" por el sistema de anti-links",
+                                Severity.MEDIUM
+                            )
+                        })
+                })
+        }
+
 
         val infraction = Infraction(
             user.id,
@@ -184,36 +226,83 @@ object ActionRouter {
             InfractionType.TEMP_BAN,
             "Sistema de anti-links",
             link.duration,
-            true
+            false,
+            success,
+            System.currentTimeMillis()
         )
+        infraction.save()
 
-        return try {
-            guild.ban(user, 60, TimeUnit.SECONDS).reason("Sistema de anti-links").queue()
-            infraction.save()
-
-            try {
-                user.openPrivateChannel().queue { channel ->
-                    channel.sendMessage("**Hola ${user.asMention}! :wave:**\n\nHas sido baneado temporalmente del servidor **${guild.name}** debido a que has enviado un link que ha sido considerado como spam.\n`Si crees que esto es un error, por favor, contacta con un el soporte del servidor.`\nDominio identificado como spam:```${link.domain}```")
-                        .queue()
-                }
-            } catch (_: Exception) {
-                // ignore
-            }
-            true
-        } catch (e: Exception) {
-            infraction.succeeded = false
-            infraction.save()
-            WarningsManager.createWarning(
-                guild,
-                "No se pudo banear a ${user.asTag} por el sistema de anti-links",
-                Severity.MEDIUM
-            )
-            false
-        }
+        return success
 
     }
 
     fun tempMute(user: User, guild: Guild, link: Links): Boolean {
+
+        var success = true
+
+        try {
+
+            if (link.duration >= 7 * 24 * 60 * 60 * 1000) {
+
+                val config = database.schema.Guild.get(guild.id)
+
+                if (config == null) {
+                    WarningsManager.createWarning(
+                        guild,
+                        "El servidor no tiene configurado el rol de mute o no es valido",
+                        Severity.HIGH
+                    )
+                    success = false
+                } else {
+                    val muteRole = guild.getRoleById(config.muteRoleId)
+                    if (muteRole == null) {
+                        WarningsManager.createWarning(
+                            guild,
+                            "El servidor no tiene configurado el rol de mute o no es valido",
+                            Severity.HIGH
+                        )
+                        success = false
+                    } else {
+                        guild.addRoleToMember(user, muteRole).reason("Sistema de anti-links").queue({ run {} },
+                            {
+                                success = false
+                                WarningsManager.createWarning(
+                                    guild,
+                                    "No se pudo silenciar a \"${user.asTag}\" por el sistema de anti-links",
+                                    Severity.MEDIUM
+                                )
+                            })
+                    }
+                }
+
+            } else {
+
+                guild.timeoutFor(user, link.duration, TimeUnit.MILLISECONDS).reason("Sistema de anti-links")
+                    .queue({ run {} },
+                        {
+                            success = false
+                            WarningsManager.createWarning(
+                                guild,
+                                "No se pudo silenciar temporalmente a \"${user.asTag}\" por el sistema de anti-links",
+                                Severity.MEDIUM
+                            )
+                        })
+
+            }
+
+            user.openPrivateChannel().queue { channel ->
+                channel.sendMessage("**Hola ${user.asMention}! :wave:**\n\nHas sido silenciado temporalmente en el servidor **${guild.name}** durante `${link.durationRaw}` debido a que has enviado un link que ha sido considerado como spam.\n`Si crees que esto es un error, por favor, contacta con un el soporte del servidor.`\nDominio identificado como spam:```${link.domain}```")
+                    .queue({}, {})
+            }
+
+        } catch (e: Exception) {
+            success = false
+            WarningsManager.createWarning(
+                guild,
+                "No se pudo silenciar temporalmente a \"${user.asTag}\" por el sistema de anti-links",
+                Severity.MEDIUM
+            )
+        }
 
         val infraction = Infraction(
             user.id,
@@ -223,60 +312,13 @@ object ActionRouter {
             InfractionType.TEMP_MUTE,
             "Sistema de anti-links",
             link.duration,
-            true
+            false,
+            success,
+            System.currentTimeMillis()
         )
+        infraction.save()
 
-        return try {
-
-            if (link.duration >= 7 * 24 * 60 * 60 * 1000) {
-
-                val config = database.schema.Guild.get(guild.id)
-
-                if (config == null)
-                    WarningsManager.createWarning(
-                        guild,
-                        "El servidor no tiene configurado el rol de mute o no es valido",
-                        Severity.HIGH
-                    )
-                else {
-                    try {
-                        val muteRole =
-                            guild.getRoleById(config.muteRoleId) ?: throw Exception("El rol de mute no es valido")
-                        guild.addRoleToMember(user, muteRole).reason("Sistema de anti-links").queue()
-                    } catch (e: Exception) {
-                        WarningsManager.createWarning(
-                            guild,
-                            "El servidor no tiene configurado el rol de mute o no es valido",
-                            Severity.HIGH
-                        )
-                    }
-                }
-
-            } else {
-                guild.timeoutFor(user, link.duration, TimeUnit.MILLISECONDS).reason("Sistema de anti-links").queue()
-            }
-
-            infraction.save()
-
-            try {
-                user.openPrivateChannel().queue { channel ->
-                    channel.sendMessage("**Hola ${user.asMention}! :wave:**\n\nHas sido silenciado temporalmente en el servidor **${guild.name}** debido a que has enviado un link que ha sido considerado como spam.\n`Si crees que esto es un error, por favor, contacta con un el soporte del servidor.`\nDominio identificado como spam:```${link.domain}```")
-                        .queue()
-                }
-            } catch (_: Exception) {
-                // ignore
-            }
-            true
-        } catch (e: Exception) {
-            infraction.succeeded = false
-            infraction.save()
-            WarningsManager.createWarning(
-                guild,
-                "No se pudo silenciar temporalmente a ${user.asTag} por el sistema de anti-links",
-                Severity.MEDIUM
-            )
-            false
-        }
+        return success
 
     }
 }

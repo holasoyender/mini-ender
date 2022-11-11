@@ -37,7 +37,11 @@ class Checker(message: String) {
             return try {
                 URL(link).host
             } catch (e: Exception) {
-                ""
+                if(isDiscordInvite) {
+                    "discord.gg"
+                } else {
+                    ""
+                }
             }
         }
 

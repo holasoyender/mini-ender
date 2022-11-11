@@ -84,8 +84,9 @@ object LinkManager {
                 Actions.TEMP_BAN -> ActionRouter.tempBan(message.author, guild, link)
                 Actions.TEMP_MUTE -> ActionRouter.tempMute(message.author, guild, link)
                 Actions.NONE -> false
-                Actions.DELETE -> false
+                Actions.DELETE -> deletedMessage
             }
+
 
             val logEmbed = EmbedBuilder()
                 .setAuthor("Link detectado", null, message.author.effectiveAvatarUrl)
@@ -127,7 +128,8 @@ object LinkManager {
                 return
             }
 
-            channel.sendMessageEmbeds(logEmbed.build()).queue()
+            if(link.action != Actions.NONE)
+                channel.sendMessageEmbeds(logEmbed.build()).queue()
 
         } else {
             val newLink = Links(

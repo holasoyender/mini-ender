@@ -149,6 +149,7 @@ object LinksInteractions {
             link.moderatorId = event.user.id
             link.reason = "Marcado como TEMPBAN por el moderador ${event.user.asTag}"
             link.duration = formattedTime
+            link.durationRaw = duration
             link.save()
 
             disableAllButtons(event, Actions.TEMP_BAN)
@@ -191,6 +192,7 @@ object LinksInteractions {
             link.moderatorId = event.user.id
             link.reason = "Marcado como TEMPMUTE por el moderador ${event.user.asTag}"
             link.duration = formattedTime
+            link.durationRaw = duration
             link.save()
 
             disableAllButtons(event, Actions.TEMP_MUTE)

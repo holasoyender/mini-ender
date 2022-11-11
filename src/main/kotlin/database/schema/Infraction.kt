@@ -11,7 +11,9 @@ class Infraction(
     type: InfractionType,
     reason: String,
     duration: Long = 0,
+    ended: Boolean,
     succeeded: Boolean,
+    date: Long,
     id: Int? = null
 ): Schema {
 
@@ -19,9 +21,10 @@ class Infraction(
     var userName: String
     var guildId: String
     var moderatorId: String
-    var type: String
+    var type: InfractionType
     var reason: String
     var duration: Long
+    var ended: Boolean
     var succeeded: Boolean
     var date: Long
     var id: Long
@@ -35,11 +38,12 @@ class Infraction(
         this.userName = userName
         this.guildId = guildId
         this.moderatorId = moderatorId
-        this.type = type.name
+        this.type = type
         this.reason = reason
         this.duration = duration
+        this.ended = ended
         this.succeeded = succeeded
-        this.date = System.currentTimeMillis()
+        this.date = date
         this.id = id?.toLong() ?: generateId(guildId)
 
         if (exists()) {
@@ -61,34 +65,36 @@ class Infraction(
 
         if (exists()) {
             database.Postgres.dataSource?.connection.use { connection ->
-                val statement = connection!!.prepareStatement("UPDATE infractions SET user_id = ?, user_name = ?, moderator_id = ?, type = ?, reason = ?, duration = ?, succeeded = ?, date = ? WHERE guild_id = ? AND id = ?")
+                val statement = connection!!.prepareStatement("UPDATE infractions SET user_id = ?, user_name = ?, moderator_id = ?, type = ?, reason = ?, duration = ?, ended = ?, succeeded = ?, date = ? WHERE guild_id = ? AND id = ?")
                 statement.setString(1, userId)
                 statement.setString(2, userName)
                 statement.setString(3, moderatorId)
-                statement.setString(4, type)
+                statement.setString(4, type.name)
                 statement.setString(5, reason)
                 statement.setLong(6, duration)
-                statement.setBoolean(7, succeeded)
-                statement.setLong(8, date)
-                statement.setString(9, guildId)
-                statement.setLong(10, id)
+                statement.setBoolean(7, ended)
+                statement.setBoolean(8, succeeded)
+                statement.setLong(9, date)
+                statement.setString(10, guildId)
+                statement.setLong(11, id)
 
                 statement.execute()
             }
         } else {
             database.Postgres.dataSource?.connection.use { connection ->
                 val statement =
-                    connection!!.prepareStatement("INSERT INTO infractions (user_id, user_name, guild_id, moderator_id, type, reason, duration, succeeded, date, id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+                    connection!!.prepareStatement("INSERT INTO infractions (user_id, user_name, guild_id, moderator_id, type, reason, duration, ended, succeeded, date, id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
                 statement.setString(1, userId)
                 statement.setString(2, userName)
                 statement.setString(3, guildId)
                 statement.setString(4, moderatorId)
-                statement.setString(5, type)
+                statement.setString(5, type.name)
                 statement.setString(6, reason)
                 statement.setLong(7, duration)
-                statement.setBoolean(8, succeeded)
-                statement.setLong(9, date)
-                statement.setLong(10, id)
+                statement.setBoolean(8, ended)
+                statement.setBoolean(9, succeeded)
+                statement.setLong(10, date)
+                statement.setLong(11, id)
 
                 statement.execute()
             }
@@ -141,6 +147,7 @@ class Infraction(
                 type TEXT NOT NULL,
                 reason TEXT NOT NULL,
                 duration BIGINT NOT NULL,
+                ended BOOLEAN NOT NULL,
                 succeeded BOOLEAN NOT NULL,
                 date BIGINT NOT NULL,
                 id BIGINT NOT NULL,
@@ -165,7 +172,9 @@ class Infraction(
                         InfractionType.valueOf(result.getString("type")),
                         result.getString("reason"),
                         result.getLong("duration"),
+                        result.getBoolean("ended"),
                         result.getBoolean("succeeded"),
+                        result.getLong("date"),
                         result.getInt("id")
                     )
                 }
@@ -190,7 +199,9 @@ class Infraction(
                             InfractionType.valueOf(result.getString("type")),
                             result.getString("reason"),
                             result.getLong("duration"),
+                            result.getBoolean("ended"),
                             result.getBoolean("succeeded"),
+                            result.getLong("date"),
                             result.getInt("id")
                         )
                     )
@@ -202,7 +213,7 @@ class Infraction(
         @Suppress("unused")
         fun getAll(guildId: String): List<Infraction> {
             database.Postgres.dataSource?.connection.use {connection ->
-                val statement = connection!!.prepareStatement("SELECT * FROM warnings WHERE guild_id = ?")
+                val statement = connection!!.prepareStatement("SELECT * FROM infractions WHERE guild_id = ?")
                 statement.setString(1, guildId)
                 val result = statement.executeQuery()
 
@@ -217,7 +228,38 @@ class Infraction(
                             InfractionType.valueOf(result.getString("type")),
                             result.getString("reason"),
                             result.getLong("duration"),
-                            result.getBoolean("succeeded")
+                            result.getBoolean("ended"),
+                            result.getBoolean("succeeded"),
+                            result.getLong("date"),
+                            result.getInt("id")
+                        )
+                    )
+                }
+                return infractions
+            }
+        }
+
+        fun getAll(ended: Boolean): List<Infraction> {
+            database.Postgres.dataSource?.connection.use {connection ->
+                val statement = connection!!.prepareStatement("SELECT * FROM infractions WHERE ended = ?")
+                statement.setBoolean(1, ended)
+                val result = statement.executeQuery()
+
+                val infractions = mutableListOf<Infraction>()
+                while (result.next()) {
+                    infractions.add(
+                        Infraction(
+                            result.getString("user_id"),
+                            result.getString("user_name"),
+                            result.getString("guild_id"),
+                            result.getString("moderator_id"),
+                            InfractionType.valueOf(result.getString("type")),
+                            result.getString("reason"),
+                            result.getLong("duration"),
+                            result.getBoolean("ended"),
+                            result.getBoolean("succeeded"),
+                            result.getLong("date"),
+                            result.getInt("id")
                         )
                     )
                 }

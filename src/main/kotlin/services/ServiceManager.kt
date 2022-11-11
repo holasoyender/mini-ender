@@ -9,6 +9,7 @@ object ServiceManager {
     fun load (shardManager: ShardManager) {
         database.Postgres.load()
         GiveawayService(shardManager)
+        InfractionsService(shardManager)
         //ws.WebSocket.load("mini-ender", Env.TOKEN!!)
     }
 }
