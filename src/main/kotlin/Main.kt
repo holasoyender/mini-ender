@@ -1,4 +1,5 @@
 
+import api.ApiLauncher
 import config.Env
 import events.*
 import managers.CommandManager
@@ -15,7 +16,7 @@ import javax.security.auth.login.LoginException
 
 var commandManager: CommandManager? = null
 var jda:JDA? = null
-fun main() {
+fun main(args: Array<String>) {
 
     val builder = DefaultShardManagerBuilder.createDefault(null)
 
@@ -70,6 +71,7 @@ fun main() {
     builder.setShardsTotal(-1)
 
     try {
+        ApiLauncher.load(args)
         val shardingManager = builder.build()
 
         shardingManager.getShardById(0)?.let {

@@ -1,5 +1,6 @@
 package commands.message.dev
 
+import config.DefaultConfig
 import database.schema.Guild
 import interfaces.Command
 import interfaces.CommandResponse
@@ -15,7 +16,7 @@ class Config: Command {
         if(config != null)
             return CommandResponse.error("Este servidor ya tiene una configuración!")
 
-        val newConfig = Guild(event.guild.id, "-", arrayOf(), "", false)
+        val newConfig = DefaultConfig.get(event.guild.id)
         newConfig.save()
 
         event.message.reply("${Emojis.success}  Se ha creado una configuración por defecto para este servidor").queue()

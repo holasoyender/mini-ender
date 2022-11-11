@@ -45,6 +45,7 @@ object Postgres {
         database.schema.Sorteo.createTable()
         database.schema.Links.createTable()
         database.schema.Warnings.createTable()
+        database.schema.Infraction.createTable()
         
     }
 }

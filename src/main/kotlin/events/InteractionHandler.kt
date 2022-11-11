@@ -1,7 +1,7 @@
 package events
 
 import commandManager
-import config.Env.PREFIX
+import config.DefaultConfig
 import database.schema.Guild
 import handlers.ErrorReporter
 import net.dv8tion.jda.api.EmbedBuilder
@@ -40,7 +40,7 @@ class InteractionHandler: ListenerAdapter() {
                 when (command) {
                     "help" -> {
 
-                        val config = Guild.get(event.guild?.id ?: "") ?: Guild(event.guild?.id ?: "", PREFIX ?: "-", arrayOf(), "", false)
+                        val config = Guild.get(event.guild?.id ?: "") ?: DefaultConfig.get()
 
                         val selected = event.selectedOptions[0].value
                         val category = selected.split(":")[1]
@@ -107,7 +107,7 @@ class InteractionHandler: ListenerAdapter() {
                 when (command) {
                     "help" -> {
 
-                        val config = Guild.get(event.guild?.id ?: "") ?: Guild(event.guild?.id ?: "", PREFIX ?: "-", arrayOf(), "", false)
+                        val config = Guild.get(event.guild?.id ?: "") ?: DefaultConfig.get()
 
                         val embed: EmbedBuilder = EmbedBuilder()
                             .setAuthor(

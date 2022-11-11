@@ -1,7 +1,7 @@
 package commands.message.bot
 
 import commandManager
-import config.Env.PREFIX
+import config.DefaultConfig
 import database.schema.Guild
 import interfaces.Command
 import interfaces.CommandResponse
@@ -29,7 +29,7 @@ class Help: Command {
         *  - holasoyender 29/09/2022
         * */
 
-        val config = Guild.get(event.guild.id) ?: Guild(event.guild.id, PREFIX ?: "-", arrayOf(), "", false)
+        val config = Guild.get(event.guild.id) ?: DefaultConfig.get()
 
         if(args.size > 1) {
             val _input = args[1]

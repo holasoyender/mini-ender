@@ -1,6 +1,6 @@
 package commands.message.config
 
-import config.Env.PREFIX
+import config.DefaultConfig
 import database.schema.Guild
 import interfaces.Command
 import interfaces.CommandResponse
@@ -11,7 +11,7 @@ import utils.Emojis
 class Prefix: Command {
     override fun execute(event: MessageReceivedEvent, args: List<String>): CommandResponse {
 
-        val config = Guild.get(event.guild.id) ?: Guild(event.guild.id, PREFIX ?: "-", arrayOf(), "", false)
+        val config = Guild.get(event.guild.id) ?: DefaultConfig.get()
 
         if(args.size == 1) {
             event.message.reply("${Emojis.slash}  El prefijo actual es `${config.prefix}`").queue()
