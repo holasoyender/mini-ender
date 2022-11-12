@@ -32,8 +32,6 @@ dependencies {
     implementation("com.zaxxer:HikariCP:5.0.1")
     implementation("org.postgresql:postgresql:42.5.0")
     implementation(kotlin("reflect"))
-    implementation("org.springframework.boot:spring-boot-configuration-processor:2.7.5")
-    implementation("org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure:2.6.8")
 }
 
 tasks.withType<KotlinCompile> {

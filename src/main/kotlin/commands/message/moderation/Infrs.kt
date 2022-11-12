@@ -52,6 +52,10 @@ class Infrs: Command {
                 "cmd::infrs:${event.author.id}:reload:0:${user.id}",
                 Emoji.fromCustom(CustomEmojiImpl("loop", 952242523521294456, false))
             ),
+            Button.secondary(
+                "cmd::infrs:page",
+                "Página 1/${chunks.size}"
+            ).asDisabled()
         ).queue()
 
         return CommandResponse.success()

@@ -51,6 +51,10 @@ object InfractionButtons {
                 "cmd::infrs:${event.user.id}:reload:${shouldGoTo}:${userId}",
                 Emoji.fromCustom(CustomEmojiImpl("loop", 952242523521294456, false))
             ),
+            Button.secondary(
+                "cmd::infrs:page",
+                "Página ${shouldGoTo+1}/${chunks.size}"
+            ).asDisabled()
         ).queue()
     }
 
@@ -97,6 +101,10 @@ object InfractionButtons {
                 "cmd::infrs:${event.user.id}:reload:${shouldGoTo}:${userId}",
                 Emoji.fromCustom(CustomEmojiImpl("loop", 952242523521294456, false))
             ),
+            Button.secondary(
+                "cmd::infrs:page",
+                "Página ${shouldGoTo+1}/${chunks.size}"
+            ).asDisabled()
         ).queue()
     }
 
@@ -133,11 +141,15 @@ object InfractionButtons {
             Button.primary(
                 "cmd::infrs:${event.user.id}:next:0:${userId}",
                 Emoji.fromCustom(CustomEmojiImpl("rigth", 940316141782458418, false))
-            ),
+            ).withDisabled(chunks.size == 1),
             Button.primary(
                 "cmd::infrs:${event.user.id}:reload:0:${userId}",
                 Emoji.fromCustom(CustomEmojiImpl("loop", 952242523521294456, false))
             ),
+            Button.secondary(
+                "cmd::infrs:page",
+                "Página 1/${chunks.size}"
+            ).asDisabled()
         ).queue()
     }
 
