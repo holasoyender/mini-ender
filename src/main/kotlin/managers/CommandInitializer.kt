@@ -45,6 +45,7 @@ class CommandInitializer(manager: CommandManager) {
 
         //Moderación
         manager.registerCommand(Infrs())
+        manager.registerCommand(Warn())
 
         //Dev
         manager.registerCommand(Eval())
