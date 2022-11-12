@@ -285,6 +285,35 @@ class Infraction(
             }
         }
 
+        fun getAllByUserId(guildId: String, userId: String): List<Infraction> {
+            database.Postgres.dataSource?.connection.use {connection ->
+                val statement = connection!!.prepareStatement("SELECT * FROM infractions WHERE guild_id = ? AND user_id = ?")
+                statement.setString(1, guildId)
+                statement.setString(2, userId)
+                val result = statement.executeQuery()
+
+                val infractions = mutableListOf<Infraction>()
+                while (result.next()) {
+                    infractions.add(
+                        Infraction(
+                            result.getString("user_id"),
+                            result.getString("user_name"),
+                            result.getString("guild_id"),
+                            result.getString("moderator_id"),
+                            InfractionType.valueOf(result.getString("type")),
+                            result.getString("reason"),
+                            result.getLong("duration"),
+                            result.getBoolean("ended"),
+                            result.getBoolean("succeeded"),
+                            result.getLong("date"),
+                            result.getInt("id")
+                        )
+                    )
+                }
+                return infractions
+            }
+        }
+
         fun generateId(guildId: String): Long {
             val id = (1..100000).random().toLong()
             while (idExists(id, guildId)) {

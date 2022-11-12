@@ -7,7 +7,6 @@ plugins {
     id("org.springframework.boot") version "2.7.5"
     id("io.spring.dependency-management") version "1.0.15.RELEASE"
     kotlin("plugin.spring") version "1.6.21"
-    id("org.jetbrains.kotlin.plugin.jpa") version "1.7.21"
 }
 
 group = "miniender"
@@ -23,7 +22,6 @@ dependencies {
     implementation("org.springframework.security:spring-security-oauth2-client:5.7.3")
     implementation("org.springframework.boot:spring-boot-starter-security:2.7.5")
     implementation("org.springframework.security.oauth:spring-security-oauth2:2.5.2.RELEASE")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa:2.7.5")
 
     implementation("net.dv8tion:JDA:5.0.0-alpha.22")
     //implementation("ch.qos.logback:logback-classic:1.4.4")

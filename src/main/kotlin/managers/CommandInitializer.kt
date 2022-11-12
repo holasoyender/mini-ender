@@ -3,6 +3,7 @@ package managers
 import commands.message.bot.*
 import commands.message.info.*
 import commands.message.ocio.*
+import commands.message.moderation.*
 import commands.message.dev.*
 import commands.message.config.*
 import interfaces.SimpleCommand
@@ -41,6 +42,9 @@ class CommandInitializer(manager: CommandManager) {
         manager.registerCommand(Koala())
         manager.registerCommand(Duck())
         manager.registerCommand(Bird())
+
+        //Moderación
+        manager.registerCommand(Infrs())
 
         //Dev
         manager.registerCommand(Eval())

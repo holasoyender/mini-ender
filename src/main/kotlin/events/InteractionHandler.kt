@@ -4,6 +4,7 @@ import commandManager
 import config.DefaultConfig
 import database.schema.Guild
 import handlers.ErrorReporter
+import handlers.InfractionButtons
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
@@ -182,6 +183,13 @@ class InteractionHandler: ListenerAdapter() {
                             "tempban" -> LinksInteractions.handleTempBanButton(event)
                             "tempmute" -> LinksInteractions.handleTempMuteButton(event)
                             "delete" -> LinksInteractions.handleDeleteButton(event)
+                        }
+                    }
+                    "infrs" -> {
+                        when(event.componentId.split("::")[1].split(":")[2]) {
+                            "prev" -> InfractionButtons.prevPage(event)
+                            "next" -> InfractionButtons.nextPage(event)
+                            "reload" -> InfractionButtons.reload(event)
                         }
                     }
                 }
