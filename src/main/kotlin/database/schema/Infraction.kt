@@ -104,6 +104,24 @@ class Infraction(
         return this
     }
 
+    fun get(key: String): Any? {
+
+        return when (key) {
+            "userId" -> userId
+            "userName" -> userName
+            "guildId" -> guildId
+            "moderatorId" -> moderatorId
+            "type" -> type
+            "reason" -> reason
+            "duration" -> duration
+            "ended" -> ended
+            "succeeded" -> succeeded
+            "date" -> date
+            "id" -> id
+            else -> null
+        }
+    }
+
     override fun delete(): Infraction {
 
         if (isDeleted)
