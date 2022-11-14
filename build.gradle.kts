@@ -19,7 +19,7 @@ repositories {
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web:2.7.5")
-    implementation("org.springframework.security:spring-security-oauth2-client:5.7.3")
+    implementation("org.springframework.security:spring-security-oauth2-client:5.7.5")
     implementation("org.springframework.boot:spring-boot-starter-security:2.7.5")
     implementation("org.springframework.security.oauth:spring-security-oauth2:2.5.2.RELEASE")
 
