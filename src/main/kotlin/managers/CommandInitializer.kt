@@ -48,7 +48,8 @@ class CommandInitializer(manager: CommandManager) {
         manager.registerCommand(Warn())
         manager.registerCommand(Clear())
         manager.registerCommand(Kick())
-
+        manager.registerCommand(Infraction())
+        manager.registerCommand(Ban())
         //Dev
         manager.registerCommand(Eval())
         manager.registerCommand(Config())

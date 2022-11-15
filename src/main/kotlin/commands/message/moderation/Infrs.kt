@@ -66,7 +66,7 @@ class Infrs: Command {
     override val description: String
         get() = "Muestra las infracciones de un usuario"
     override val aliases: List<String>
-        get() = listOf("infractions", "infr", "infracciones")
+        get() = listOf("infractions", "infracciones")
     override val usage: String
         get() = "<usuario>"
     override val category: String

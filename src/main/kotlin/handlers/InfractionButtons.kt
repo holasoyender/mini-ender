@@ -150,7 +150,8 @@ object InfractionButtons {
                 "cmd::infrs:page",
                 "Página 1/${chunks.size}"
             ).asDisabled()
-        ).queue()
+        ).setEmbeds()
+            .queue()
     }
 
 
