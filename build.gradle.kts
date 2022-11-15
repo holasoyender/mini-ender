@@ -5,8 +5,8 @@ plugins {
     application
     id("com.github.johnrengelman.shadow") version "7.1.2"
     id("org.springframework.boot") version "2.7.5"
-    id("io.spring.dependency-management") version "1.0.15.RELEASE"
-    kotlin("plugin.spring") version "1.6.21"
+    id("io.spring.dependency-management") version "1.1.0"
+    kotlin("plugin.spring") version "1.7.21"
 }
 
 group = "miniender"
@@ -19,7 +19,7 @@ repositories {
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web:2.7.5")
-    implementation("org.springframework.security:spring-security-oauth2-client:5.7.3")
+    implementation("org.springframework.security:spring-security-oauth2-client:5.7.5")
     implementation("org.springframework.boot:spring-boot-starter-security:2.7.5")
     implementation("org.springframework.security.oauth:spring-security-oauth2:2.5.2.RELEASE")
 

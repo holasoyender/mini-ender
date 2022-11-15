@@ -18,5 +18,30 @@ Agradecimientos especiales a todos los que han ayudado al desarrollo tanto de es
  - Markox36 https://github.com/Markox36
  - Nik Ammerlaan https://github.com/nikammerlaan
  - Tosh Hammond https://github.com/toshr1
+ - Florian Spieß https://github.com/MinnDevelopment2
 
-Este proyecto está bajo la licencia Apache 2.0
+Proyecto inspirado en otros proyectos como:
+ - LA CABRA https://lacabra.app
+ - Libra https://github.com/holasoyender/Libra
+ - KenaMaster https://discord.gg/ibai
+
+Agradecimientos a los inversores y patrocinadores de este proyecto y de otros del grupo KenaBot:
+ - Ibai Llanos https://twitch.tv/ibai
+ - Amazon AWS https://aws.amazon.com
+ - Spotify https://spotify.com
+ - Oracle https://oracle.com
+ - JetBrains https://jetbrains.com
+ - Docker https://docker.com
+ - CloudFlare (parcialmente) https://cloudflare.com
+
+Este proyecto está bajo la licencia Apache 2.0 (https://github.com/holasoyender/mini-ender/blob/main/LICENSE)
+
+Licencias de las librerías open source usadas en este proyecto:
+ - JDA: Licencia Apache-2.0 (https://github.com/DV8FromTheWorld/JDA/blob/master/LICENSE)
+ - shadow: Licencia Apache-2.0 (https://github.com/johnrengelman/shadow/blob/master/LICENSE)
+ - Springboot Project: Licencia Apache-2.0 (https://github.com/spring-projects/spring-boot/blob/main/LICENSE.txt)
+ - DotEnv: Licencia Apache-2.0 (https://github.com/cdimascio/dotenv-kotlin/blob/master/LICENSE)
+ - Kotlin STDLib: Licencia Apache-2.0 (https://github.com/JetBrains/kotlin/blob/master/license/README.md)
+ - Nashorn: Licencia GPL-2.0 (https://github.com/openjdk/nashorn/blob/main/LICENSE)
+ - HikariCP: Licencia Apache-2.0 (https://github.com/brettwooldridge/HikariCP/blob/dev/LICENSE)
+ - postgresql: Licencia BSD-2-Clause (https://github.com/pgjdbc/pgjdbc/blob/master/LICENSE)

@@ -47,6 +47,7 @@ class CommandInitializer(manager: CommandManager) {
         manager.registerCommand(Infrs())
         manager.registerCommand(Warn())
         manager.registerCommand(Clear())
+        manager.registerCommand(Kick())
 
         //Dev
         manager.registerCommand(Eval())
