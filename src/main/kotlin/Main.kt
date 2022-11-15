@@ -1,5 +1,5 @@
 
-import api.ApiLauncher
+//import api.ApiLauncher
 import config.Env
 import events.*
 import managers.CommandManager
@@ -64,14 +64,15 @@ fun main(args: Array<String>) {
         GatewayIntent.GUILD_MESSAGES,
         GatewayIntent.MESSAGE_CONTENT,
         GatewayIntent.GUILD_MEMBERS,
-        GatewayIntent.GUILD_MESSAGE_REACTIONS
+        GatewayIntent.GUILD_MESSAGE_REACTIONS,
+        GatewayIntent.GUILD_EMOJIS_AND_STICKERS,
     )
     builder.setLargeThreshold(50)
 
     builder.setShardsTotal(-1)
 
     try {
-        ApiLauncher.load(args)
+        //ApiLauncher.load(args)
         val shardingManager = builder.build()
 
         shardingManager.getShardById(0)?.let {

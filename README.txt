@@ -19,6 +19,7 @@ Agradecimientos especiales a todos los que han ayudado al desarrollo tanto de es
  - Nik Ammerlaan https://github.com/nikammerlaan
  - Tosh Hammond https://github.com/toshr1
  - Florian Spieß https://github.com/MinnDevelopment2
+ - Vincent Durmont https://github.com/vdurmont
 
 Proyecto inspirado en otros proyectos como:
  - LA CABRA https://lacabra.app

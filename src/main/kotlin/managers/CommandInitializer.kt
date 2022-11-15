@@ -33,6 +33,7 @@ class CommandInitializer(manager: CommandManager) {
         manager.registerCommand(JVM())
         manager.registerCommand(Avatar())
         manager.registerCommand(Bot())
+        manager.registerCommand(Emojis())
 
         //Ocio
         manager.registerCommand(Perro())
@@ -50,6 +51,8 @@ class CommandInitializer(manager: CommandManager) {
         manager.registerCommand(Kick())
         manager.registerCommand(Infraction())
         manager.registerCommand(Ban())
+        manager.registerCommand(Tempban())
+        manager.registerCommand(Unban())
         //Dev
         manager.registerCommand(Eval())
         manager.registerCommand(Config())
