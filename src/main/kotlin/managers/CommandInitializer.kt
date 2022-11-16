@@ -54,6 +54,8 @@ class CommandInitializer(manager: CommandManager) {
         manager.registerCommand(Ban())
         manager.registerCommand(Tempban())
         manager.registerCommand(Unban())
+        manager.registerCommand(Delinfr())
+
         //Dev
         manager.registerCommand(Eval())
         manager.registerCommand(Config())

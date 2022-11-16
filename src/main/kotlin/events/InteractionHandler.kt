@@ -3,6 +3,7 @@ package events
 import commandManager
 import config.DefaultConfig
 import database.schema.Guild
+import database.schema.Infraction
 import handlers.ErrorReporter
 import handlers.InfractionButtons
 import net.dv8tion.jda.api.EmbedBuilder
@@ -21,6 +22,7 @@ import plugins.antilink.LinksInteractions
 import plugins.giveaway.GiveawayInteractions
 import slashCommandManager
 import utils.Constants.OWNER_IDS
+import utils.Emojis
 import java.awt.Color
 import java.time.Instant
 
@@ -221,6 +223,30 @@ class InteractionHandler: ListenerAdapter() {
                             "next" -> InfractionButtons.nextPage(event)
                             "reload" -> InfractionButtons.reload(event)
                         }
+                    }
+                    "delinfr-confirm" -> {
+
+                        val infID = event.componentId.split("::")[1].split(":")[2]
+                        val id = infID.toLongOrNull()
+
+                        if(id == null) {
+                            event.editMessage("El ID de la infracción no es válido").setComponents().queue()
+                            return
+                        }
+
+                        val infraction = Infraction.get(id, event.guild!!.id)
+
+                        if(infraction == null) {
+                            event.editMessage("No se ha encontrado ninguna infracción con ese ID").setComponents().queue()
+                            return
+                        }
+
+                        infraction.delete()
+                        event.editMessage("${Emojis.success}  La infracción `${infraction.id}` ha sido eliminada").setComponents().queue()
+
+                    }
+                    "cancel" -> {
+                        event.editMessage("${Emojis.warning}  Operación cancelada").setEmbeds().setComponents().queue()
                     }
                 }
 
