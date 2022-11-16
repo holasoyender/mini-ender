@@ -1,5 +1,7 @@
 package commands.message.moderation
 
+import config.DefaultConfig
+import database.schema.Guild
 import database.schema.Infraction
 import enums.InfractionType
 import interfaces.Command
@@ -7,9 +9,8 @@ import interfaces.CommandResponse
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import utils.Emojis
-import java.util.concurrent.TimeUnit
 
-class Ban: Command {
+class Mute: Command {
     override fun execute(event: MessageReceivedEvent, args: List<String>): CommandResponse {
 
         val user = try {
@@ -33,6 +34,11 @@ class Ban: Command {
                 .trim()
         }
 
+        val guild = Guild.get(event.guild.id) ?: DefaultConfig.get()
+        if (guild.muteRoleId.isEmpty()) return CommandResponse.error("No se ha podido encontrar el rol de mute, comprueba que lo tienes configurado correctamente")
+        val muteRole = event.guild.getRoleById(guild.muteRoleId)
+            ?: return CommandResponse.error("No se ha podido encontrar el rol de mute, comprueba que lo tienes configurado correctamente")
+
         val member = try {
             event.guild.retrieveMember(user).complete()
         } catch (e: Exception) {
@@ -40,23 +46,26 @@ class Ban: Command {
         }
 
         if (event.member?.canInteract(member) == false)
-            return CommandResponse.error("No puedes banear a un miembro con un rol superior o igual al tuyo")
+            return CommandResponse.error("No puedes silenciar a un miembro con un rol superior o igual al tuyo")
 
         if (event.author.id == user.id)
-            return CommandResponse.error("No puedes banearte a ti mismo")
+            return CommandResponse.error("No puedes silenciarte a ti mismo")
 
         if (!event.guild.selfMember.canInteract(member))
-            return CommandResponse.error("No puedo banear a un miembro con un rol superior al mio")
+            return CommandResponse.error("No puedo silenciar a un miembro con un rol superior al mio")
 
         if (event.jda.selfUser.id == user.id)
-            return CommandResponse.error("No puedo banearme a mi mismo")
+            return CommandResponse.error("No puedo silenciarme a mi mismo")
+
+        if (member.roles.contains(muteRole))
+            return CommandResponse.error("El usuario ya esta silenciado")
 
         val infraction = Infraction(
             userId = user.id,
             userName = user.asTag,
             guildId = event.guild.id,
             moderatorId = event.author.id,
-            type = InfractionType.BAN,
+            type = InfractionType.MUTE,
             reason = reason,
             duration = 0,
             ended = true,
@@ -65,10 +74,10 @@ class Ban: Command {
         )
 
         if (isNoMd) {
-            event.message.reply("${Emojis.success}  Has baneado permanentemente al usuario ${user.asMention} con la razón: `$reason`")
+            event.message.reply("${Emojis.success}  Has silenciado permanentemente al usuario ${user.asMention} con la razón: `$reason`")
                 .queue()
 
-            member.ban(0, TimeUnit.SECONDS).reason(reason).queue({
+            event.guild.addRoleToMember(member, muteRole).queue({
                 infraction.save()
             }, {
                 infraction.succeeded = false
@@ -77,40 +86,40 @@ class Ban: Command {
 
         } else {
             user.openPrivateChannel().queue({ channel ->
-                channel.sendMessage("${Emojis.warning}  Has sido baneado permanentemente del servidor **${event.guild.name}** con la razón: `$reason`")
+                channel.sendMessage("${Emojis.warning}  Has sido silenciado permanentemente del servidor **${event.guild.name}** con la razón: `$reason`")
                     .queue(
                         {
-                            member.ban(0, TimeUnit.SECONDS).reason(reason).queue({
+                            event.guild.addRoleToMember(member, muteRole).queue({
                                 infraction.save()
-                                event.message.reply("${Emojis.success}  Has baneado permanentemente al usuario ${user.asMention} con la razón: `$reason`")
+                                event.message.reply("${Emojis.success}  Has silenciado permanentemente al usuario ${user.asMention} con la razón: `$reason`")
                                     .queue()
                             }, {
                                 infraction.succeeded = false
                                 infraction.save()
-                                event.message.reply("${Emojis.warning}  No se ha podido banear permanentemente al usuario ${user.asMention}, comprueba que tenga los permisos necesarios necesarios y que no tenga un rol superior al mio")
+                                event.message.reply("${Emojis.warning}  No se ha podido silenciar permanentemente al usuario ${user.asMention}, comprueba que tenga los permisos necesarios necesarios y que no tenga un rol superior al mio")
                                     .queue()
                             })
                         }, {
-                            member.ban(0, TimeUnit.SECONDS).reason(reason).queue({
+                            event.guild.addRoleToMember(member, muteRole).queue({
                                 infraction.save()
-                                event.message.reply("${Emojis.success}  Has baneado permanentemente al usuario ${user.asMention} con la razón: `$reason` pero no ha podido ser notificado")
+                                event.message.reply("${Emojis.success}  Has silenciado permanentemente al usuario ${user.asMention} con la razón: `$reason` pero no ha podido ser notificado")
                                     .queue()
                             }, {
                                 infraction.succeeded = false
                                 infraction.save()
-                                event.message.reply("${Emojis.warning}  No se ha podido banear permanentemente al usuario ${user.asMention}, comprueba que tenga los permisos necesarios necesarios y que no tenga un rol superior al mio")
+                                event.message.reply("${Emojis.warning}  No se ha podido silenciar permanentemente al usuario ${user.asMention}, comprueba que tenga los permisos necesarios necesarios y que no tenga un rol superior al mio")
                                     .queue()
                             })
                         })
             }, {
-                member.ban(0, TimeUnit.SECONDS).reason(reason).queue({
+                event.guild.addRoleToMember(member, muteRole).queue({
                     infraction.save()
-                    event.message.reply("${Emojis.success}  Has baneado permanentemente al usuario ${user.asMention} con la razón: `$reason` pero no ha podido ser notificado")
+                    event.message.reply("${Emojis.success}  Has silenciado permanentemente al usuario ${user.asMention} con la razón: `$reason` pero no ha podido ser notificado")
                         .queue()
                 }, {
                     infraction.succeeded = false
                     infraction.save()
-                    event.message.reply("${Emojis.warning}  No se ha podido banear permanentemente al usuario ${user.asMention}, comprueba que tenga los permisos necesarios necesarios y que no tenga un rol superior al mio")
+                    event.message.reply("${Emojis.warning}  No se ha podido silenciar permanentemente al usuario ${user.asMention}, comprueba que tenga los permisos necesarios necesarios y que no tenga un rol superior al mio")
                         .queue()
                 })
             })
@@ -119,25 +128,25 @@ class Ban: Command {
     }
 
     override val name: String
-        get() = "ban"
+        get() = "mute"
     override val description: String
-        get() = "Expulsar permanentemente a un usuario del servidor con una razón"
+        get() = "Silencia a un usuario permanentemente"
     override val aliases: List<String>
-        get() = listOf("ban", "ipban", "permaban", "banear")
+        get() = listOf("silenciar", "silencio", "silenciarusuario")
     override val usage: String
-        get() = "<usuario> [razón]"
+        get() = "<usuario>"
     override val category: String
         get() = "Moderación"
     override val enabled: Boolean
         get() = true
     override val ownerOnly: Boolean
-        get() = false
+        get() = true
     override val guildOnly: Boolean
         get() = true
     override val global: Boolean
         get() = false
     override val permissions: List<Permission>
-        get() = listOf(Permission.BAN_MEMBERS)
+        get() = listOf(Permission.MANAGE_SERVER, Permission.VOICE_MUTE_OTHERS, Permission.MODERATE_MEMBERS)
     override val botPermissions: List<Permission>
-        get() = listOf(Permission.BAN_MEMBERS)
+        get() = listOf(Permission.MANAGE_SERVER, Permission.VOICE_MUTE_OTHERS, Permission.MODERATE_MEMBERS)
 }

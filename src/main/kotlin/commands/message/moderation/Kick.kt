@@ -75,7 +75,7 @@ class Kick: Command {
             })
 
         } else {
-            user.openPrivateChannel().queue { channel ->
+            user.openPrivateChannel().queue({ channel ->
                 channel.sendMessage("${Emojis.warning}  Has sido expulsado del servidor **${event.guild.name}** con la razón: `$reason`")
                     .queue(
                         {
@@ -101,7 +101,18 @@ class Kick: Command {
                                     .queue()
                             })
                         })
-            }
+            }, {
+                member.kick().reason(reason).queue({
+                    infraction.save()
+                    event.message.reply("${Emojis.success}  Has expulsado al usuario ${user.asMention} con la razón: `$reason` pero no ha podido ser notificado")
+                        .queue()
+                }, {
+                    infraction.succeeded = false
+                    infraction.save()
+                    event.message.reply("${Emojis.warning}  No se ha podido expulsar al usuario ${user.asMention}, comprueba que tenga los permisos necesarios necesarios y que no tenga un rol superior al mio")
+                        .queue()
+                })
+            })
         }
         return CommandResponse.success()
     }

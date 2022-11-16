@@ -68,7 +68,7 @@ class Warn: Command {
             event.message.reply("${Emojis.success}  Has avisado al usuario ${user.asMention} con la razón: `$reason`")
                 .queue()
         } else {
-            user.openPrivateChannel().queue { channel ->
+            user.openPrivateChannel().queue({ channel ->
                 channel.sendMessage("${Emojis.warning}  Has sido avisado en el servidor **${event.guild.name}** con la razón: `$reason`")
                     .queue(
                         {
@@ -78,7 +78,10 @@ class Warn: Command {
                             event.message.reply("${Emojis.success}  Has avisado al usuario ${user.asMention} con la razón: `$reason` pero no ha podido ser notificado")
                                 .queue()
                         })
-            }
+            }, {
+                event.message.reply("${Emojis.success}  Has avisado al usuario ${user.asMention} con la razón: `$reason` pero no ha podido ser notificado")
+                    .queue()
+            })
         }
         return CommandResponse.success()
     }

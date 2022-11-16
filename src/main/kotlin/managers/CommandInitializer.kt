@@ -56,6 +56,7 @@ class CommandInitializer(manager: CommandManager) {
         manager.registerCommand(Unban())
         manager.registerCommand(Delinfr())
         manager.registerCommand(Delinfrs())
+        manager.registerCommand(Mute())
 
         //Dev
         manager.registerCommand(Eval())
