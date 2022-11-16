@@ -12,6 +12,8 @@ object Emojis {
     var right = "<:rigth:940316141782458418>"
     var giveaway = "<a:tadaa:1037465732159656117>"
     var warning = "<:idle:983837896287092796>"
+    var online = "<:online:983837897536987146>"
+    var offline = "<:dnd:983837895083323452>"
     var loading = "<a:kload:1037765493668466838>"
 
     var STAFF = "<:Staff:913504958912024626>"

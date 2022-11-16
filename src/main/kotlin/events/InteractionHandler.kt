@@ -19,6 +19,7 @@ import net.dv8tion.jda.api.interactions.modals.Modal
 import net.dv8tion.jda.internal.entities.emoji.CustomEmojiImpl
 import plugins.antilink.LinksInteractions
 import plugins.giveaway.GiveawayInteractions
+import slashCommandManager
 import utils.Constants.OWNER_IDS
 import java.awt.Color
 import java.time.Instant
@@ -51,38 +52,65 @@ class InteractionHandler: ListenerAdapter() {
                             return
                         }
 
-                        if (category != "simple") {
+                        when (category) {
+                            "simple" -> {
+                                val commands = commandManager?.getSimpleCommands()
 
-                            val allCategories = commandManager?.getCommands()?.groupBy { it.category }
-                            val commands = allCategories?.get(category)
+                                if (commands == null) {
+                                    event.reply("No hay comandos en esta categoría!").setEphemeral(true).queue()
+                                    return
+                                }
 
-                            if (commands == null) {
-                                event.reply("No hay comandos en esta categoría!").setEphemeral(true).queue()
-                                return
+                                val embed: EmbedBuilder = EmbedBuilder()
+                                    .setAuthor("Categoría de comandos simples", null, event.jda.selfUser.avatarUrl)
+                                    .setThumbnail(event.jda.selfUser.avatarUrl)
+                                    .setColor(Color.decode("#2f3136"))
+                                    .setTimestamp(Instant.now())
+                                    .setDescription("Aquí están todos los comandos simples: ```${commands.joinToString(", ") { it.name }}```")
+
+                                event.editMessageEmbeds(embed.build()).queue()
                             }
+                            "slash" -> {
+                                val commands = slashCommandManager?.getCommands()
 
-                            val embed: EmbedBuilder = EmbedBuilder()
-                                .setAuthor("Categoría de $category", null, event.jda.selfUser.avatarUrl)
-                                .setThumbnail(event.jda.selfUser.avatarUrl)
-                                .setColor(Color.decode("#2f3136"))
-                                .setTimestamp(Instant.now())
-                                .setDescription("Usa `${config.prefix}help <Comando>` para más información sobre un comando específico")
+                                if (commands == null) {
+                                    event.reply("No hay comandos en esta categoría!").setEphemeral(true).queue()
+                                    return
+                                }
 
-                            for (cmd in commands) {
-                                embed.addField("`${config.prefix}${cmd.name}`", cmd.description, true)
+                                val embed: EmbedBuilder = EmbedBuilder()
+                                    .setAuthor("Categoría de comandos slash", null, event.jda.selfUser.avatarUrl)
+                                    .setThumbnail(event.jda.selfUser.avatarUrl)
+                                    .setColor(Color.decode("#2f3136"))
+                                    .setTimestamp(Instant.now())
+
+                                for (cmd in commands) {
+                                    embed.addField("`/${cmd.name}`", cmd.description, true)
+                                }
+
+                                event.editMessageEmbeds(embed.build()).queue()
                             }
-                            event.editMessageEmbeds(embed.build()).queue()
-                        } else {
-                            val commands = commandManager?.getSimpleCommands()
+                            else -> {
+                                val allCategories = commandManager?.getCommands()?.groupBy { it.category }
+                                val commands = allCategories?.get(category)
 
-                            val embed: EmbedBuilder = EmbedBuilder()
-                                .setAuthor("Categoría de comandos simples", null, event.jda.selfUser.avatarUrl)
-                                .setThumbnail(event.jda.selfUser.avatarUrl)
-                                .setColor(Color.decode("#2f3136"))
-                                .setTimestamp(Instant.now())
-                                .setDescription("Aquí están todos los comandos simples: ```${commands?.joinToString(", ") { it.name }}```")
+                                if (commands == null) {
+                                    event.reply("No hay comandos en esta categoría!").setEphemeral(true).queue()
+                                    return
+                                }
 
-                            event.editMessageEmbeds(embed.build()).queue()
+                                val embed: EmbedBuilder = EmbedBuilder()
+                                    .setAuthor("Categoría de $category", null, event.jda.selfUser.avatarUrl)
+                                    .setThumbnail(event.jda.selfUser.avatarUrl)
+                                    .setColor(Color.decode("#2f3136"))
+                                    .setTimestamp(Instant.now())
+                                    .setDescription("Usa `${config.prefix}help <Comando>` para más información sobre un comando específico")
+
+                                for (cmd in commands) {
+                                    embed.addField("`${config.prefix}${cmd.name}`", cmd.description, true)
+                                }
+                                event.editMessageEmbeds(embed.build()).queue()
+                            }
                         }
                     }
                 }
@@ -145,6 +173,8 @@ class InteractionHandler: ListenerAdapter() {
                                         CustomEmojiImpl("slash", 941024012270710874, false)
                                     )
                                 )
+                                .addOption("Slash commands", "help:slash", "Lista de comandos de barra diagonal", Emoji.fromCustom(CustomEmojiImpl("slash", 941024012270710874, false)))
+
                                 .build()
                         ).queue()
                     }

@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import net.dv8tion.jda.internal.entities.emoji.CustomEmojiImpl
+import slashCommandManager
 import java.awt.Color
 import java.time.Instant
 
@@ -29,23 +30,23 @@ class Help: Command {
         *  - holasoyender 29/09/2022
         * */
 
-        val config = Guild.get(event.guild.id) ?: DefaultConfig.get()
+        val config = if(event.isFromGuild) Guild.get(event.guild.id) ?: DefaultConfig.get() else DefaultConfig.get()
 
         if(args.size > 1) {
             val _input = args[1]
             val input = _input.lowercase()
 
             val command = commandManager?.getCommands()?.find { it.name == input || it.aliases.contains(input) }
-                ?: return CommandResponse.error("No se ha encontrado el comando $_input")
+            if(command != null) {
 
-            val embed = EmbedBuilder()
-                .setAuthor("Comando: " + command.name, null, event.jda.selfUser.avatarUrl)
-                .setFooter("> " + event.author.asTag, event.author.avatarUrl ?: "")
-                .setThumbnail("https://cdn.discordapp.com/attachments/934142973418016838/1025062210013249556/emoji.png")
-                .setColor(Color.decode("#2f3136"))
-                .setTimestamp(Instant.now())
-                .setDescription(
-                    """
+                val embed = EmbedBuilder()
+                    .setAuthor("Comando: " + command.name, null, event.jda.selfUser.avatarUrl)
+                    .setFooter("> " + event.author.asTag, event.author.avatarUrl ?: "")
+                    .setThumbnail("https://cdn.discordapp.com/attachments/934142973418016838/1025062210013249556/emoji.png")
+                    .setColor(Color.decode("#2f3136"))
+                    .setTimestamp(Instant.now())
+                    .setDescription(
+                        """
 
     Para listar todos los comandos puedes usar `${config.prefix}help`
     
@@ -53,15 +54,89 @@ class Help: Command {
     **Descripción:** ${command.description}
     **Forma de uso:** `${config.prefix}${command.name} ${command.usage}`
     **Aliases:** ${command.aliases.joinToString(", ")}
-    **Permisos:** ```${ if(command.permissions.isEmpty()) "Ninguno!" else command.permissions.joinToString(", ") { it.getName() } }```
+    **Permisos:** ```${if (command.permissions.isEmpty()) "Ninguno!" else command.permissions.joinToString(", ") { it.getName() }}```
         """.trimIndent()
-                )
+                    )
 
-            event.channel.sendMessageEmbeds(embed.build()).setActionRow(
-                Button.primary("cmd::help:${event.author.id}", "Todos los comandos")
-            ).queue()
-            return CommandResponse.success()
+                event.channel.sendMessageEmbeds(embed.build()).setActionRow(
+                    Button.primary("cmd::help:${event.author.id}", "Todos los comandos")
+                ).queue()
+                return CommandResponse.success()
+            } else {
 
+                val slashCommand = slashCommandManager?.getCommands()?.find { it.name == input }
+                    ?: return CommandResponse.error("No se ha encontrado el comando $_input")
+
+                event.jda.retrieveCommands().queue({
+                    val cmd = it.find { c -> c.name == slashCommand.name }
+                    if(cmd == null) {
+                        val embed = EmbedBuilder()
+                            .setAuthor("Comando: " + slashCommand.name, null, event.jda.selfUser.avatarUrl)
+                            .setFooter("> " + event.author.asTag, event.author.avatarUrl ?: "")
+                            .setThumbnail("https://cdn.discordapp.com/attachments/934142973418016838/1025062210013249556/emoji.png")
+                            .setColor(Color.decode("#2f3136"))
+                            .setTimestamp(Instant.now())
+                            .setDescription(
+                                """
+
+    Para listar todos los comandos puedes usar `${config.prefix}help`
+    
+    **Nombre del comando:** `${slashCommand.name}`
+    **Descripción:** ${slashCommand.description}
+    **Forma de uso:** `/${slashCommand.name}`
+    **Permisos:** ```${if (slashCommand.permissions.isEmpty()) "Ninguno!" else slashCommand.permissions.joinToString(", ") { it.getName() }}```
+        """.trimIndent()
+                            )
+                        event.channel.sendMessageEmbeds(embed.build()).setActionRow(
+                            Button.primary("cmd::help:${event.author.id}", "Todos los comandos")
+                        ).queue()
+                    } else {
+                        val embed = EmbedBuilder()
+                            .setAuthor("Comando: " + slashCommand.name, null, event.jda.selfUser.avatarUrl)
+                            .setFooter("> " + event.author.asTag, event.author.avatarUrl ?: "")
+                            .setThumbnail("https://cdn.discordapp.com/attachments/934142973418016838/1025062210013249556/emoji.png")
+                            .setColor(Color.decode("#2f3136"))
+                            .setTimestamp(Instant.now())
+                            .setDescription(
+                                """
+
+    Para listar todos los comandos puedes usar `${config.prefix}help`
+    
+    **Nombre del comando:** `${slashCommand.name}`
+    **Descripción:** ${slashCommand.description}
+    **Forma de uso:** </${cmd.name}:${cmd.id}>
+    **Permisos:** ```${if (slashCommand.permissions.isEmpty()) "Ninguno!" else slashCommand.permissions.joinToString(", ") { it.getName() }}```
+        """.trimIndent()
+                            )
+                        event.channel.sendMessageEmbeds(embed.build()).setActionRow(
+                            Button.primary("cmd::help:${event.author.id}", "Todos los comandos")
+                        ).queue()
+                    }
+
+                },{
+                    val embed = EmbedBuilder()
+                        .setAuthor("Comando: " + slashCommand.name, null, event.jda.selfUser.avatarUrl)
+                        .setFooter("> " + event.author.asTag, event.author.avatarUrl ?: "")
+                        .setThumbnail("https://cdn.discordapp.com/attachments/934142973418016838/1025062210013249556/emoji.png")
+                        .setColor(Color.decode("#2f3136"))
+                        .setTimestamp(Instant.now())
+                        .setDescription(
+                            """
+
+    Para listar todos los comandos puedes usar `${config.prefix}help`
+    
+    **Nombre del comando:** `${slashCommand.name}`
+    **Descripción:** ${slashCommand.description}
+    **Forma de uso:** `/${slashCommand.name}`
+    **Permisos:** ```${if (slashCommand.permissions.isEmpty()) "Ninguno!" else slashCommand.permissions.joinToString(", ") { it.getName() }}```
+        """.trimIndent()
+                        )
+                    event.channel.sendMessageEmbeds(embed.build()).setActionRow(
+                        Button.primary("cmd::help:${event.author.id}", "Todos los comandos")
+                    ).queue()
+                })
+                return CommandResponse.success()
+            }
         }
 
         val embed: EmbedBuilder = EmbedBuilder()
@@ -86,7 +161,9 @@ class Help: Command {
                     .addOptions(
                         categories?.map { SelectOption.of(it.key, "help:${it.key}").withDescription("Comandos de la categoría ${it.key}").withEmoji(
                             Emoji.fromCustom(CustomEmojiImpl("rigth", 940316141782458418, false))) } ?: listOf()
-                    ).addOption("Comandos simples", "help:simple", "Lista de comandos simples", Emoji.fromCustom(CustomEmojiImpl("slash", 941024012270710874, false)))
+                    )
+                    .addOption("Comandos simples", "help:simple", "Lista de comandos simples", Emoji.fromCustom(CustomEmojiImpl("slash", 941024012270710874, false)))
+                    .addOption("Slash commands", "help:slash", "Lista de comandos de barra diagonal", Emoji.fromCustom(CustomEmojiImpl("slash", 941024012270710874, false)))
                     .build()
         ).queue()
 

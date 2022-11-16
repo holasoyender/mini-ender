@@ -39,7 +39,7 @@ class JVM: Command {
     override val usage: String
         get() = ""
     override val category: String
-        get() = "Info"
+        get() = "Información"
     override val enabled: Boolean
         get() = true
     override val ownerOnly: Boolean

@@ -3,6 +3,7 @@
 import config.Env
 import events.*
 import managers.CommandManager
+import managers.SlashCommandManager
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.requests.GatewayIntent
@@ -15,6 +16,7 @@ import net.dv8tion.jda.api.utils.messages.MessageRequest
 import javax.security.auth.login.LoginException
 
 var commandManager: CommandManager? = null
+var slashCommandManager: SlashCommandManager? = null
 var jda:JDA? = null
 fun main(args: Array<String>) {
 
@@ -82,6 +84,7 @@ fun main(args: Array<String>) {
         services.ServiceManager.load(shardingManager)
 
         commandManager = CommandManager()
+        slashCommandManager = SlashCommandManager()
     } catch (e: LoginException) {
         e.printStackTrace()
     }

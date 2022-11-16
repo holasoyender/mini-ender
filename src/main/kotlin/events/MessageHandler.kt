@@ -4,12 +4,15 @@ import commandManager
 import config.Env.PREFIX
 import database.schema.Guild
 import managers.GlobalCommandManager
+import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.internal.entities.emoji.CustomEmojiImpl
 import plugins.antilink.LinkManager
+import java.awt.Color
 
 class MessageHandler: ListenerAdapter() {
 
@@ -30,7 +33,32 @@ class MessageHandler: ListenerAdapter() {
         if(message.mentions.getMentions().isNotEmpty()) {
             val mentioned = message.mentions.getMentions().first()
             if(mentioned.id == event.jda.selfUser.id) {
-                message.reply("**¡Hola :wave:!**\nMi prefijo es `$prefix`").queue()
+                val embed = EmbedBuilder()
+                    .setColor(Color.decode("#2f3136"))
+                    .setAuthor("¡Hola, soy ${event.jda.selfUser.name}!", null, event.jda.selfUser.avatarUrl)
+                    .setDescription("Mi prefijo en este servidor es `$prefix`, usa `${prefix}help` para ver la lista de comandos disponibles")
+                message.replyEmbeds(embed.build()).setActionRow(
+                    Button.link("https://discord.com/api/oauth2/authorize?client_id=${event.jda.selfUser.id}&permissions=8&scope=bot%20applications.commands", "Invítame"),
+                    Button.link("https://discord.gg/WgRBDFk63s", "Soporte"),
+                    Button.link("https://kenabot.xyz", "Sitio web"),
+                    Button.link("https://github.com/holsoyender/mini-ender", "Repositorio"),
+                    Button.primary("cmd::help:${event.author.id}", "Comandos")
+                ).queue()
+                return
+            }
+        } else {
+            if(!event.isFromGuild && !content.startsWith(prefix)) {
+                val embed = EmbedBuilder()
+                    .setColor(Color.decode("#2f3136"))
+                    .setAuthor("¡Hola, soy ${event.jda.selfUser.name}!", null, event.jda.selfUser.avatarUrl)
+                    .setDescription("Mi prefijo en este servidor es `$prefix`, usa `${prefix}help` para ver la lista de comandos disponibles")
+                message.replyEmbeds(embed.build()).setActionRow(
+                    Button.link("https://discord.com/api/oauth2/authorize?client_id=${event.jda.selfUser.id}&permissions=8&scope=bot%20applications.commands", "Invítame"),
+                    Button.link("https://discord.gg/WgRBDFk63s", "Soporte"),
+                    Button.link("https://kenabot.xyz", "Sitio web"),
+                    Button.link("https://github.com/holsoyender/mini-ender", "Repositorio"),
+                    Button.primary("cmd::help:${event.author.id}", "Comandos")
+                ).queue()
                 return
             }
         }

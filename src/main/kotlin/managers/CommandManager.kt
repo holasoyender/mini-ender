@@ -73,7 +73,7 @@ class CommandManager {
     fun run(event: MessageReceivedEvent) {
 
         val content = event.message.contentRaw
-        val prefix = Guild.get(event.guild.id)?.prefix ?: PREFIX ?: "-"
+        val prefix = if(event.isFromGuild) Guild.get(event.guild.id)?.prefix ?: PREFIX ?: "-" else PREFIX ?: "-"
         val args = content.slice(prefix.length until content.length).split(" ")
         val invoker = args[0]
 

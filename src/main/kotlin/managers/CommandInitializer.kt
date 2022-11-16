@@ -26,6 +26,7 @@ class CommandInitializer(manager: CommandManager) {
         manager.registerCommand(Help())
         manager.registerCommand(Say())
         manager.registerCommand(Warnings())
+        manager.registerCommand(Shards())
 
         //Info
         manager.registerCommand(Info())
