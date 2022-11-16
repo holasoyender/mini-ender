@@ -245,6 +245,21 @@ class InteractionHandler: ListenerAdapter() {
                         event.editMessage("${Emojis.success}  La infracción `${infraction.id}` ha sido eliminada").setComponents().queue()
 
                     }
+                    "delinfrs-confirm" -> {
+
+                        val userID = event.componentId.split("::")[1].split(":")[2]
+
+                        val infraction = Infraction.getAllByUserId(event.guild!!.id, userID)
+
+                        if(infraction.isEmpty()) {
+                            event.editMessage("Ese usuario no tiene infracciones").setComponents().queue()
+                            return
+                        }
+
+                        infraction.forEach { it.delete() }
+                        event.editMessage("${Emojis.success}  Las infracciones del usuario con ID `${userID}` han sido eliminadas").setComponents().queue()
+
+                    }
                     "cancel" -> {
                         event.editMessage("${Emojis.warning}  Operación cancelada").setEmbeds().setComponents().queue()
                     }
