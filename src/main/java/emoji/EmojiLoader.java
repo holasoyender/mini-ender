@@ -32,7 +32,7 @@ public class EmojiLoader {
 
     @NotNull
     public static Map<String, Emoji> loadEmojiBundle() throws IOException {
-        try (Reader reader = new InputStreamReader(EmojiLoader.class.getResourceAsStream("/emoji-definitions.json"), StandardCharsets.UTF_8)) {
+        try (Reader reader = new InputStreamReader(Objects.requireNonNull(EmojiLoader.class.getResourceAsStream("/emoji-definitions.json")), StandardCharsets.UTF_8)) {
             JSONObject file = new JSONObject(new JSONTokener(reader));
             JSONArray definitions = file.getJSONArray("emojiDefinitions");
             Map<String, Emoji> map = new HashMap<>(definitions.length()+1);

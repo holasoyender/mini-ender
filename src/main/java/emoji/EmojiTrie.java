@@ -86,10 +86,6 @@ public class EmojiTrie {
                     "start " + start + ", end " + end + ", length " + sequence.length);
         }
 
-        if (sequence == null) {
-            return Matches.POSSIBLY;
-        }
-
         Node tree = root;
         for (int i = start; i < end; i++) {
             if (!tree.hasChild(sequence[i])) {
@@ -114,7 +110,6 @@ public class EmojiTrie {
         return getEmoji(unicode.toCharArray(), 0, unicode.length());
     }
 
-    @NotNull
     protected Emoji getEmoji(@NotNull char[] sequence, int start, int end) {
         if (start < 0 || start > end || end > sequence.length) {
             throw new ArrayIndexOutOfBoundsException(
@@ -143,8 +138,8 @@ public class EmojiTrie {
         }
     }
 
-    private class Node {
-        private Map<Character, Node> children = new HashMap<>();
+    private static class Node {
+        private final Map<Character, Node> children = new HashMap<>();
         private Emoji emoji;
 
         private Emoji getEmoji() {

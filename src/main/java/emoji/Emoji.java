@@ -16,6 +16,7 @@ import java.util.Locale;
  *
  * @author Vincent DURMONT [vdurmont@gmail.com]
  */
+@SuppressWarnings("unused")
 public class Emoji {
     protected final String description;
     protected final boolean supportsFitzpatrick;

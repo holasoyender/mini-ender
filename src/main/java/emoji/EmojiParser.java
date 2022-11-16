@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class EmojiParser {
 
     @NotNull
@@ -118,11 +119,8 @@ public class EmojiParser {
             } catch (IllegalArgumentException e) {
                 break;
             }
-            Emoji foundEmoji = EmojiManager.EMOJI_TRIE.getEmoji(chars, 0, charsIndex);
-            if (foundEmoji != null) {
-                longestEmoji = foundEmoji;
-                longestCodePointEnd = codePointEnd;
-            }
+            longestEmoji = EmojiManager.EMOJI_TRIE.getEmoji(chars, 0, charsIndex);
+            longestCodePointEnd = codePointEnd;
             codePointStart = codePointEnd + 1;
         } while (input.length() > codePointStart + 4 &&
                 input.charAt(codePointStart) == '&' &&
@@ -144,16 +142,10 @@ public class EmojiParser {
             String input,
             final FitzpatrickAction fitzpatrickAction
     ) {
-        EmojiTransformer emojiTransformer = unicodeCandidate -> {
-            switch (fitzpatrickAction) {
-                default:
-                case PARSE:
-                case REMOVE:
-                    return unicodeCandidate.getEmoji().getHtmlDecimal();
-                case IGNORE:
-                    return unicodeCandidate.getEmoji().getHtmlDecimal() +
-                            unicodeCandidate.getFitzpatrickUnicode();
-            }
+        EmojiTransformer emojiTransformer = unicodeCandidate -> switch (fitzpatrickAction) {
+            case PARSE, REMOVE -> unicodeCandidate.getEmoji().getHtmlDecimal();
+            case IGNORE -> unicodeCandidate.getEmoji().getHtmlDecimal() +
+                    unicodeCandidate.getFitzpatrickUnicode();
         };
 
         return parseFromUnicode(input, emojiTransformer);
@@ -169,16 +161,10 @@ public class EmojiParser {
         @NotNull String input,
         @NotNull FitzpatrickAction fitzpatrickAction
     ) {
-        EmojiTransformer emojiTransformer = unicodeCandidate -> {
-            switch (fitzpatrickAction) {
-                default:
-                case PARSE:
-                case REMOVE:
-                    return unicodeCandidate.getEmoji().getHtmlHexadecimal();
-                case IGNORE:
-                    return unicodeCandidate.getEmoji().getHtmlHexadecimal() +
-                            unicodeCandidate.getFitzpatrickUnicode();
-            }
+        EmojiTransformer emojiTransformer = unicodeCandidate -> switch (fitzpatrickAction) {
+            case PARSE, REMOVE -> unicodeCandidate.getEmoji().getHtmlHexadecimal();
+            case IGNORE -> unicodeCandidate.getEmoji().getHtmlHexadecimal() +
+                    unicodeCandidate.getFitzpatrickUnicode();
         };
 
         return parseFromUnicode(input, emojiTransformer);

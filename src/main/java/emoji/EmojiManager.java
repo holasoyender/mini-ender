@@ -13,6 +13,7 @@ import java.util.*;
  *
  * @author Vincent DURMONT [vdurmont@gmail.com]
  */
+@SuppressWarnings("unused")
 public class EmojiManager {
     static final EmojiTrie EMOJI_TRIE;
     private static final String PATH = "/emoji-list.json";
@@ -23,6 +24,7 @@ public class EmojiManager {
 
     static {
         try (InputStream stream = EmojiLoader.class.getResourceAsStream(PATH)) {
+            assert stream != null;
             List<Emoji> emojis = EmojiLoader.loadEmojis(stream);
             Map<String, Emoji> definitions = EmojiLoader.loadEmojiBundle();
 
@@ -79,27 +81,19 @@ public class EmojiManager {
 
     @NotNull
     public static Set<Emoji> getForTag(@NotNull String tag) {
-        if (tag == null) {
-            return Collections.emptySet();
-        }
-
         Set<Emoji> emojis = EMOJIS_BY_TAG.get(tag.toLowerCase(Locale.ROOT));
         return emojis == null ? Collections.emptySet() : emojis;
     }
 
     @NotNull
     public static Set<Emoji> getForCategory(@NotNull EmojiCategory category) {
-        if (category == null) {
-            return Collections.emptySet();
-        }
-
         Set<Emoji> emojis = EMOJIS_BY_CATEGORY.get(category);
         return emojis == null ? Collections.emptySet() : emojis;
     }
 
     @Nullable
     public static Emoji getForAlias(@NotNull String alias) {
-        if (alias == null || alias.isEmpty()) {
+        if (alias.isEmpty()) {
             return null;
         }
 
@@ -115,10 +109,6 @@ public class EmojiManager {
 
     @Nullable
     public static Emoji getByUnicode(@NotNull String unicode) {
-        if (unicode == null) {
-            return null;
-        }
-
         return EMOJI_TRIE.getEmoji(unicode);
     }
 
@@ -136,8 +126,6 @@ public class EmojiManager {
      * @return true, if the string is an emoji's unicode, false otherwise
      */
     public static boolean isEmoji(@NotNull String string) {
-        if (string == null) return false;
-
         EmojiParser.UnicodeCandidate unicodeCandidate = EmojiParser.getNextUnicodeCandidate(string.toCharArray(), 0);
         return unicodeCandidate != null &&
                 unicodeCandidate.getEmojiStartIndex() == 0 &&
@@ -153,8 +141,6 @@ public class EmojiManager {
      * @return true, if the string contains an emoji's unicode, false otherwise
      */
     public static boolean containsEmoji(@NotNull String string) {
-        if (string == null) return false;
-
         return EmojiParser.getNextUnicodeCandidate(string.toCharArray(), 0) != null;
     }
 
@@ -167,7 +153,7 @@ public class EmojiManager {
      * @return true, if the string only contains emojis, false otherwise
      */
     public static boolean isOnlyEmojis(@NotNull String string) {
-        return string != null && EmojiParser.removeAllEmojis(string).isEmpty();
+        return EmojiParser.removeAllEmojis(string).isEmpty();
     }
 
     /**
