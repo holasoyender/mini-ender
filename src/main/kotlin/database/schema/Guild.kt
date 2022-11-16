@@ -9,6 +9,7 @@ class Guild(
     customCommands: Array<JSONObject>,
     logChannelId: String,
     antiLinksEnabled: Boolean,
+    antiPhishingEnabled: Boolean,
     muteRoleId: String,
 ): Schema {
 
@@ -17,6 +18,7 @@ class Guild(
     var customCommands: Array<JSONObject>
     var logChannelId: String
     var antiLinksEnabled: Boolean
+    var antiPhishingEnabled: Boolean
     var muteRoleId: String
 
     private var isSaved = false
@@ -29,6 +31,7 @@ class Guild(
         this.customCommands = customCommands
         this.logChannelId = logChannelId
         this.antiLinksEnabled = antiLinksEnabled
+        this.antiPhishingEnabled = antiPhishingEnabled
         this.muteRoleId = muteRoleId
 
         if (exists()) {
@@ -50,25 +53,28 @@ class Guild(
 
         if (exists()) {
             database.Postgres.dataSource?.connection.use { connection ->
-                val statement = connection!!.prepareStatement("UPDATE guilds SET prefix = ?, custom_commands = ?, log_channel_id = ?, anti_links_enabled = ?, mute_role_id = ? WHERE id = ?")
+                val statement = connection!!.prepareStatement("UPDATE guilds SET prefix = ?, custom_commands = ?, log_channel_id = ?, anti_links_enabled = ?, anti_phishing_enabled = ?, mute_role_id = ? WHERE id = ?")
                 statement.setString(1, prefix)
                 statement.setArray(2, connection.createArrayOf("json", customCommands))
                 statement.setString(3, logChannelId)
                 statement.setBoolean(4, antiLinksEnabled)
-                statement.setString(5, muteRoleId)
-                statement.setString(6, id)
+                statement.setBoolean(5, antiPhishingEnabled)
+                statement.setString(6, muteRoleId)
+                statement.setString(7, id)
                 statement.execute()
             }
         } else {
             database.Postgres.dataSource?.connection.use { connection ->
                 val statement =
-                    connection!!.prepareStatement("INSERT INTO guilds (id, prefix, custom_commands, log_channel_id, anti_links_enabled, mute_role_id) VALUES (?, ?, ?, ?, ?, ?)")
+                    connection!!.prepareStatement("INSERT INTO guilds (id, prefix, custom_commands, log_channel_id, anti_links_enabled, anti_phishing_enabled, mute_role_id) VALUES (?, ?, ?, ?, ?, ?, ?)")
                 statement.setString(1, id)
                 statement.setString(2, prefix)
                 statement.setArray(3, connection.createArrayOf("json", customCommands))
                 statement.setString(4, logChannelId)
                 statement.setBoolean(5, antiLinksEnabled)
-                statement.setString(6, muteRoleId)
+                statement.setBoolean(6, antiPhishingEnabled)
+                statement.setString(7, muteRoleId)
+
                 statement.execute()
             }
         }
@@ -117,6 +123,7 @@ class Guild(
                 custom_commands JSON[],
                 log_channel_id TEXT,
                 anti_links_enabled BOOLEAN,
+                anti_phishing_enabled BOOLEAN,
                 mute_role_id TEXT
             );"""
                 )
@@ -138,6 +145,7 @@ class Guild(
                         (result.getArray("custom_commands")?.array as Array<String>?)?.map { JSONObject(it) }?.toTypedArray() ?: arrayOf(),
                         result.getString("log_channel_id"),
                         result.getBoolean("anti_links_enabled"),
+                        result.getBoolean("anti_phishing_enabled"),
                         result.getString("mute_role_id")
                     )
                 }
@@ -160,6 +168,7 @@ class Guild(
                             (result.getArray("custom_commands")?.array as Array<String>?)?.map { JSONObject(it) }?.toTypedArray() ?: arrayOf(),
                             result.getString("log_channel_id"),
                             result.getBoolean("anti_links_enabled"),
+                            result.getBoolean("anti_phishing_enabled"),
                             result.getString("mute_role_id")
                         )
                     )

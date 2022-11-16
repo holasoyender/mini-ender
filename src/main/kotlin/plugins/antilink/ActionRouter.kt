@@ -57,6 +57,52 @@ object ActionRouter {
         return success
     }
 
+    fun ban(user: User, guild: Guild, checker: Checker): Boolean {
+
+        var success = true
+
+        user.openPrivateChannel().queue { channel ->
+            channel.sendMessage("**Hola ${user.asMention}! :wave:**\n\nHas sido baneado del servidor **${guild.name}** debido a que has enviado un link que ha sido considerado como phishing.\n`Si crees que esto es un error, por favor, contacta con un el soporte del servidor.`\nDominio identificado como phishing:```${checker.domain}```")
+                .queue({
+                    guild.ban(user, 60, TimeUnit.SECONDS).reason("Sistema de anti-phishing").queue({ run {} },
+                        {
+                            success = false
+                            WarningsManager.createWarning(
+                                guild,
+                                "No se pudo banear a \"${user.asTag}\" por el sistema de anti-phishing",
+                                Severity.MEDIUM
+                            )
+                        })
+                }, {
+                    guild.ban(user, 60, TimeUnit.SECONDS).reason("Sistema de anti-phishing").queue({ run {} },
+                        {
+                            success = false
+                            WarningsManager.createWarning(
+                                guild,
+                                "No se pudo banear a \"${user.asTag}\" por el sistema de anti-phishing",
+                                Severity.MEDIUM
+                            )
+                        })
+                })
+        }
+
+        val infraction = Infraction(
+            user.id,
+            user.asTag,
+            guild.id,
+            guild.selfMember.user.id,
+            InfractionType.BAN,
+            "Sistema de anti-phishing",
+            0,
+            true,
+            success,
+            System.currentTimeMillis()
+        )
+        infraction.save()
+
+        return success
+    }
+
     fun kick(user: User, guild: Guild, link: Links): Boolean {
 
         var success = true

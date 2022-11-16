@@ -1,6 +1,7 @@
 package events
 
 import commandManager
+import config.DefaultConfig
 import config.Env.PREFIX
 import database.schema.Guild
 import managers.GlobalCommandManager
@@ -12,6 +13,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.internal.entities.emoji.CustomEmojiImpl
 import plugins.antilink.LinkManager
+import plugins.antilink.Phishing
 import java.awt.Color
 
 class MessageHandler: ListenerAdapter() {
@@ -25,8 +27,20 @@ class MessageHandler: ListenerAdapter() {
         if(author.isBot) return
         if(message.isWebhookMessage) return
 
-        if(event.isFromGuild && Guild.get(event.guild.id)?.antiLinksEnabled == true)
-            LinkManager.check(message)
+        if(event.isFromGuild) {
+            val guild = Guild.get(event.guild.id) ?: DefaultConfig.get()
+
+            if (guild.antiLinksEnabled && !guild.antiPhishingEnabled) {
+                LinkManager.check(message)
+            }
+
+            if (guild.antiLinksEnabled) {
+                if (Phishing.isPhishing(message))
+                    Phishing.checkPhishing(message)
+                else
+                    LinkManager.check(message)
+            }
+        }
 
         val prefix = if(event.isFromGuild) Guild.get(event.guild.id)?.prefix ?: PREFIX ?: "-" else PREFIX ?: "-"
 

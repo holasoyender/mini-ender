@@ -15,8 +15,8 @@ object LinkManager {
 
     fun check(message: Message): Boolean {
 
-        val content = message.contentRaw
-        val checker = Checker(content)
+        val content = if(message.contentRaw.length > 1024) message.contentRaw.substring(0, 1020) + "..." else message.contentRaw
+        val checker = Checker(message.contentRaw)
 
         return if (checker.isLink || checker.isDiscordInvite) {
             handleFoundLink(content, message.guild, message.channel.id, message, checker)
