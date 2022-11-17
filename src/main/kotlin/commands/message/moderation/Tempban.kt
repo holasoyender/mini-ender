@@ -93,7 +93,7 @@ class Tempban: Command {
         } else {
             user.openPrivateChannel().queue({ channel ->
                 channel.sendMessage(
-                    "${Emojis.warning}  Has sido baneado durante **${rawTime}** del servidor **${event.guild.name}** con la razón: `$reason`. El baneo finalizara el ${
+                    "${Emojis.warning}  Has sido baneado durante **${rawTime}** del servidor **${event.guild.name}** con la razón: `$reason` hasta el ${
                         TimeFormat.DEFAULT.format(
                             time + System.currentTimeMillis()
                         )

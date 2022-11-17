@@ -57,6 +57,7 @@ class CommandInitializer(manager: CommandManager) {
         manager.registerCommand(Delinfr())
         manager.registerCommand(Delinfrs())
         manager.registerCommand(Mute())
+        manager.registerCommand(Tempmute())
 
         //Dev
         manager.registerCommand(Eval())
