@@ -1,3 +1,5 @@
 # Table of contents
 
-* [Page 1](README.md)
+## 📖 docs
+
+* [Mini ender](README.md)
