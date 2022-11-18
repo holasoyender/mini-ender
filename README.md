@@ -1,5 +1,6 @@
 ---
 description: Un bot de Discord open source de uso general
+cover: .gitbook/assets/main banner.png
 coverY: 0
 layout: landing
 ---
