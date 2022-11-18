@@ -1,5 +1,7 @@
 ---
 description: Un bot de Discord open source de uso general
+coverY: 0
+layout: landing
 ---
 
 # Mini ender
