@@ -25,6 +25,7 @@ Proyecto inspirado en otros proyectos como:
  - LA CABRA https://lacabra.app
  - Libra https://github.com/holasoyender/Libra
  - KenaMaster https://discord.gg/ibai
+ - Trihammer https://github.com/k2helix/trihammer
 
 Agradecimientos a los inversores y patrocinadores de este proyecto y de otros del grupo KenaBot:
  - Ibai Llanos https://twitch.tv/ibai

@@ -59,6 +59,8 @@ class CommandInitializer(manager: CommandManager) {
         manager.registerCommand(Mute())
         manager.registerCommand(Tempmute())
         manager.registerCommand(Unmute())
+        manager.registerCommand(Lock())
+        manager.registerCommand(Unlock())
 
         //Dev
         manager.registerCommand(Eval())
@@ -66,7 +68,6 @@ class CommandInitializer(manager: CommandManager) {
 
         //Config
         manager.registerCommand(Prefix())
-
 
         /*
         * Comandos simples de una sola respuesta
