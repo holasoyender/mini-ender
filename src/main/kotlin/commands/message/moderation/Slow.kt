@@ -52,7 +52,7 @@ class Slow: Command {
     override val description: String
         get() = "Establece un intervalo de tiempo entre mensajes"
     override val aliases: List<String>
-        get() = listOf("slowmode", "intervalo", "intervaloentre", "intervaloentremsgs", "intervaloentremensajes")
+        get() = listOf("slowmode", "slowmo", "limit", "limitar", "limitarmensajes")
     override val usage: String
         get() = "<tiempo>"
     override val category: String

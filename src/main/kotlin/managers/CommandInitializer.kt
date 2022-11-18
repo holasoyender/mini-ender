@@ -62,6 +62,7 @@ class CommandInitializer(manager: CommandManager) {
         manager.registerCommand(Lock())
         manager.registerCommand(Unlock())
         manager.registerCommand(Slow())
+        manager.registerCommand(Modinf())
 
         //Dev
         manager.registerCommand(Eval())

@@ -45,7 +45,7 @@ class Tempmute: Command {
         }
 
         val guild = Guild.get(event.guild.id) ?: DefaultConfig.get()
-        if (guild.muteRoleId.isEmpty()) return CommandResponse.error("No se ha podido encontrar el rol de mute, comprueba que lo tienes configurado correctamente")
+        if (guild.muteRoleId.isEmpty() || guild.muteRoleId == " ") return CommandResponse.error("No se ha podido encontrar el rol de mute, comprueba que lo tienes configurado correctamente")
         val muteRole = event.guild.getRoleById(guild.muteRoleId)
             ?: return CommandResponse.error("No se ha podido encontrar el rol de mute, comprueba que lo tienes configurado correctamente")
 
