@@ -61,6 +61,7 @@ class CommandInitializer(manager: CommandManager) {
         manager.registerCommand(Unmute())
         manager.registerCommand(Lock())
         manager.registerCommand(Unlock())
+        manager.registerCommand(Slow())
 
         //Dev
         manager.registerCommand(Eval())
