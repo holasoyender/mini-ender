@@ -5,9 +5,9 @@
 ## 📖 Introducción
 
 * [Introducción](introduccion/introduccion.md)
-* [Self hosting](introduccion/self-hosting.md)
+* [💾 Self hosting](introduccion/self-hosting.md)
 
-## 🛡 sentinel
+## 🛡 Sentinel
 
 * [Información básica](sentinel/informacion-basica.md)
 * [Page 2](sentinel/page-2.md)
