@@ -1,9 +1,12 @@
 package commands.message.moderation
 
+import config.DefaultConfig
+import database.schema.Guild
 import database.schema.Infraction
 import enums.InfractionType
 import interfaces.Command
 import interfaces.CommandResponse
+import logger.InfractionLogger
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import utils.Emojis
@@ -83,6 +86,8 @@ class Warn: Command {
                     .queue()
             })
         }
+
+        InfractionLogger(event.guild, Guild.get(event.guild.id) ?: DefaultConfig.get()).log(infraction)
         return CommandResponse.success()
     }
 

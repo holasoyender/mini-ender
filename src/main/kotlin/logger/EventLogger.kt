@@ -1,0 +1,4 @@
+package logger
+
+class EventLogger {
+}
