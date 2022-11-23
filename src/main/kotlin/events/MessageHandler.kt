@@ -1,13 +1,17 @@
 package events
 
+import cache.MessageCache
 import commandManager
 import config.DefaultConfig
 import config.Env.PREFIX
 import database.schema.Guild
+import logger.EventLogger
 import managers.GlobalCommandManager
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.emoji.Emoji
+import net.dv8tion.jda.api.events.message.MessageDeleteEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import net.dv8tion.jda.api.events.message.MessageUpdateEvent
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.components.buttons.Button
@@ -28,6 +32,9 @@ class MessageHandler: ListenerAdapter() {
         if(message.isWebhookMessage) return
 
         if(event.isFromGuild) {
+
+            MessageCache.addMessage(message)
+
             val guild = Guild.get(event.guild.id) ?: DefaultConfig.get()
 
             if (guild.antiLinksEnabled && !guild.antiPhishingEnabled) {
@@ -145,5 +152,17 @@ class MessageHandler: ListenerAdapter() {
                 }
             }
         }
+    }
+
+    override fun onMessageDelete(event: MessageDeleteEvent) {
+        if(event.isFromGuild)
+            EventLogger(event.guild, Guild.get(event.guild.id) ?: DefaultConfig.get()).log(event)
+        super.onMessageDelete(event)
+    }
+
+    override fun onMessageUpdate(event: MessageUpdateEvent) {
+        if(event.isFromGuild)
+            EventLogger(event.guild, Guild.get(event.guild.id) ?: DefaultConfig.get()).log(event)
+        super.onMessageUpdate(event)
     }
 }

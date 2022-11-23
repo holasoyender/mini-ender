@@ -48,7 +48,8 @@ fun main(args: Array<String>) {
         ShardHandler(),
         InteractionHandler(),
         ModalHandler(),
-        SlashHandler()
+        SlashHandler(),
+        GuildHandler()
     )
 
     builder.setMemberCachePolicy(MemberCachePolicy.NONE)

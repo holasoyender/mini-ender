@@ -14,6 +14,14 @@ import java.nio.file.Files
 import javax.imageio.ImageIO
 
 class Bird: Command {
+
+    /*
+    * No te voy a engañar, he robado este código de un repositorio open source de github,
+    * pretendía poner un comentario del tipo "código prestado del proyecto..." pero se
+    * me ha olvidado por completo a quien se lo copié
+    * Supongo que este es mi código ahora, si el legítimo autor llega a leer esto, lo siento :p
+    *  - holasoyender 15/11/2022
+    */
     override fun execute(event: MessageReceivedEvent, args: List<String>): CommandResponse {
         try {
 

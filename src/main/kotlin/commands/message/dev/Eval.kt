@@ -23,6 +23,9 @@ class Eval: Command {
         script.put("shard", event.jda.shardManager)
         script.put("channel", event.channel)
         script.put("message", event.message)
+        script.put("guild", event.guild)
+        script.put("member", event.member)
+        script.put("msgcache", cache.MessageCache)
 
         try {
             val res = script.eval("with (imports) { $toEval }")

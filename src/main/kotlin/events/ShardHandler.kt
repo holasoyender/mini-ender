@@ -1,6 +1,8 @@
 package events
 
 import managers.SlashCommandManager
+import net.dv8tion.jda.api.events.guild.GuildAvailableEvent
+import net.dv8tion.jda.api.events.guild.GuildUnavailableEvent
 import net.dv8tion.jda.api.events.session.ReadyEvent
 import net.dv8tion.jda.api.events.session.ShutdownEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
@@ -27,4 +29,13 @@ class ShardHandler: ListenerAdapter() {
     override fun onShutdown(event: ShutdownEvent) {
         logger.info("Shard ${event.jda.shardInfo.shardId} apagada!")
     }
+
+    override fun onGuildAvailable(event: GuildAvailableEvent) {
+        logger.info("Servidor ${event.guild.name} disponible")
+    }
+
+    override fun onGuildUnavailable(event: GuildUnavailableEvent) {
+        logger.info("Servidor ${event.guild.name} no disponible")
+    }
 }
+
