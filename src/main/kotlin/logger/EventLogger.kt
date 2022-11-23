@@ -97,7 +97,7 @@ class EventLogger(
                 .setThumbnail("https://cdn.discordapp.com/attachments/839400943517827092/1045076638532108419/emoji.png")
 
             log(embed)
-            MessageCache.addMessage(event.message)
+            MessageCache.editMessage(event.channel.id, event.messageId, event.message)
         }
     }
 

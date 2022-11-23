@@ -30,4 +30,9 @@ object MessageCache {
         val currentCache = cache[channelId] ?: return
         cache[channelId] = currentCache.filter { it.id != messageId }
     }
+
+    fun editMessage(channelId: String, messageId: String, newMessage: Message) {
+        val currentCache = cache[channelId] ?: return
+        cache[channelId] = currentCache.map { if(it.id == messageId) newMessage else it }
+    }
 }
