@@ -22,12 +22,12 @@ dependencies {
 
     implementation("net.dv8tion:JDA:5.0.0-alpha.22")
     //implementation("ch.qos.logback:logback-classic:1.4.4")
-    implementation("io.github.cdimascio:dotenv-kotlin:6.3.1")
+    implementation("io.github.cdimascio:dotenv-kotlin:6.4.0")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.21")
     implementation("org.openjdk.nashorn:nashorn-core:15.4")
     implementation("org.json:json:20220924")
     implementation("com.zaxxer:HikariCP:5.0.1")
-    implementation("org.postgresql:postgresql:42.5.0")
+    implementation("org.postgresql:postgresql:42.5.1")
     implementation(kotlin("reflect"))
     implementation("commons-codec:commons-codec:1.15")
 }
