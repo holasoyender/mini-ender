@@ -30,7 +30,7 @@ dependencies {
     implementation("org.openjdk.nashorn:nashorn-core:15.4")
     implementation("org.json:json:20220924")
     implementation("com.zaxxer:HikariCP:5.0.1")
-    implementation("org.postgresql:postgresql:42.5.0")
+    implementation("org.postgresql:postgresql:42.5.1")
     implementation(kotlin("reflect"))
 }
 
