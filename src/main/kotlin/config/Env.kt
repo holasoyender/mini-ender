@@ -18,6 +18,9 @@ object Env {
 
     var ERROR_CHANNEL_ID: String? = null
 
+    var TWITCH_CLIENT_ID: String? = null
+    var TWITCH_CLIENT_SECRET: String? = null
+
     init {
         val dotenv: Dotenv
         try {
@@ -38,6 +41,8 @@ object Env {
         ERROR_CHANNEL_ID = getEnv("ERROR_CHANNEL_ID", dotenv)
         OAUTH2_CLIENT_ID = getEnv("OAUTH2_CLIENT_ID", dotenv)
         OAUTH2_CLIENT_SECRET = getEnv("OAUTH2_CLIENT_SECRET", dotenv)
+        TWITCH_CLIENT_ID = getEnv("TWITCH_CLIENT_ID", dotenv)
+        TWITCH_CLIENT_SECRET = getEnv("TWITCH_CLIENT_SECRET", dotenv)
 
         System.setProperty("SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_DISCORD_CLIENT_ID", OAUTH2_CLIENT_ID ?: "Invalid")
         System.setProperty("SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_DISCORD_CLIENT_SECRET", OAUTH2_CLIENT_SECRET ?: "Invalid")
