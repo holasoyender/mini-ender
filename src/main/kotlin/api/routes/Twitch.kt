@@ -40,9 +40,9 @@ class Twitch {
                     .body(body["challenge"] as String? ?: "No se ha podido obtener el challenge")
             else
                 if (request.getHeader("Twitch-Eventsub-Message-Type".lowercase()) == "notification")
-                    return TwitchManager.handleEvent(body)
+                    return TwitchManager.handleEvent(body, request.getHeader("Twitch-Eventsub-Message-Id".lowercase()), request.getHeader("Twitch-Eventsub-Message-Timestamp".lowercase()))
 
-            return ResponseEntity.ok().body("OK")
+            return ResponseEntity.ok("OK")
 
         } else
             return ResponseEntity.badRequest().body("Invalid signature")
