@@ -18,7 +18,7 @@ repositories {
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-web:2.7.5")
+    implementation("org.springframework.boot:spring-boot-starter-web:3.0.0")
 
     implementation("net.dv8tion:JDA:5.0.0-alpha.22")
     //implementation("ch.qos.logback:logback-classic:1.4.4")
