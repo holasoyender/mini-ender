@@ -51,7 +51,7 @@ class MessageHandler: ListenerAdapter() {
 
         val prefix = if(event.isFromGuild) Guild.get(event.guild.id)?.prefix ?: PREFIX ?: "-" else PREFIX ?: "-"
 
-        if(message.mentions.getMentions().isNotEmpty()) {
+        if(content == "<@!${event.jda.selfUser.id}>" || content == "<@${event.jda.selfUser.id}>") {
             val mentioned = message.mentions.getMentions().first()
             if(mentioned.id == event.jda.selfUser.id) {
                 val embed = EmbedBuilder()

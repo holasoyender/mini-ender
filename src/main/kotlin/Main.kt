@@ -39,7 +39,7 @@ fun main(args: Array<String>) {
     builder.setCompression(Compression.NONE)
     builder.setActivity(Activity.watching("kenabot.xyz"))
 
-    builder.setToken(Env.TOKEN!!)
+    builder.setToken(Env.TOKEN ?: throw LoginException("No token provided"))
 
     builder.setEventPassthrough(true)
 

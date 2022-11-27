@@ -48,4 +48,6 @@ class Twitch {
             return ResponseEntity.badRequest().body("Invalid signature")
 
     }
+
+    //https://dev.twitch.tv/docs/eventsub/manage-subscriptions
 }

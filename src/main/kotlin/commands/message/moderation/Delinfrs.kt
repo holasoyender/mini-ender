@@ -49,7 +49,7 @@ class Delinfrs: Command {
     override val enabled: Boolean
         get() = true
     override val ownerOnly: Boolean
-        get() = true
+        get() = false
     override val guildOnly: Boolean
         get() = true
     override val global: Boolean

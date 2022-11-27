@@ -4,25 +4,43 @@ import database.schema.Infraction
 import interfaces.Command
 import interfaces.CommandResponse
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.internal.entities.emoji.CustomEmojiImpl
+import utils.Emojis
+import utils.Emojis.f
 import java.time.Instant
 
 class Infrs: Command {
     override fun execute(event: MessageReceivedEvent, args: List<String>): CommandResponse {
 
-        val user = try {
-            event.message.mentions.users.firstOrNull() ?: args.getOrNull(1)
+        try {
+            val user = event.message.mentions.users.firstOrNull() ?: args.getOrNull(1)
                 ?.let { event.jda.retrieveUserById(it).complete() }
             ?: return CommandResponse.error("Debes de especificar un usuario valido")
-        } catch (e: Exception) {
-            return CommandResponse.error("No se ha podido encontrar al usuario con ID ${args.getOrNull(1) ?: "null"}")
-        }
 
+            action(event, user)
+        } catch (e: Exception) {
+            args.getOrNull(1)?.let {
+                event.jda.retrieveUserById(it).queue(
+                    { user -> action(event, user) },
+                    {
+                        event.message.reply("${f(Emojis.error)}  No se ha encontrado el usuario con ID ${args[1]}").queue()
+                    }
+                )
+            } ?: return CommandResponse.error("No se ha podido encontrar al usuario con ID ${args.getOrNull(1) ?: "null"}")
+        }
+        return CommandResponse.success()
+    }
+
+    private fun action(event: MessageReceivedEvent, user: User) {
         val infractions = Infraction.getAllByUserId(event.guild.id, user.id)
-        if (infractions.isEmpty()) return CommandResponse.error("El usuario ${user.asTag} no tiene ninguna infracción")
+        if (infractions.isEmpty()) {
+            event.message.reply("${Emojis.warning}  El usuario ${user.asTag} no tiene ninguna infracción").queue()
+            return
+        }
 
         val chunks = infractions.chunked(10)
 
@@ -57,8 +75,6 @@ class Infrs: Command {
                 "Página 1/${chunks.size}"
             ).asDisabled()
         ).queue()
-
-        return CommandResponse.success()
     }
 
     override val name: String
@@ -78,7 +94,7 @@ class Infrs: Command {
     override val guildOnly: Boolean
         get() = true
     override val global: Boolean
-        get() = false
+        get() = true
     override val permissions: List<Permission>
         get() = listOf(Permission.MANAGE_SERVER)
     override val botPermissions: List<Permission>

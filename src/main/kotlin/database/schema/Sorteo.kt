@@ -137,6 +137,23 @@ class Sorteo(
         }
     }
 
+    fun get(key: String): Any? {
+        return when (key) {
+            "guildId" -> guildId
+            "channelId" -> channelId
+            "messageId" -> messageId
+            "hostId" -> hostId
+            "endAfter" -> endAfter
+            "startedAt" -> startedAt
+            "prize" -> prize
+            "winnerCount" -> winnerCount
+            "ended" -> ended
+            "winnerIds" -> winnerIds
+            "clickers" -> clickers
+            else -> null
+        }
+    }
+
     @Suppress("UNCHECKED_CAST")
     companion object {
         fun createTable() {

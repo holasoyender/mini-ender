@@ -44,12 +44,12 @@ object GiveawayManager {
 
                 if (webhook == null) {
                     try {
-                        val url = URL(guild.iconUrl!!)
-                        val img: BufferedImage = ImageIO.read(url)
+                        //val url = URL(guild.iconUrl!!)
+                        val img: BufferedImage = ImageIO.read(URL("https://cdn.discordapp.com/attachments/855118494005198939/1045436479729582121/unknown.png"))
                         val random = (0..100000).random()
                         val file = File("temp-${random}.png")
                         ImageIO.write(img, "png", file)
-                        channel.createWebhook("Sorteos").setAvatar(Icon.from(file)).queue { wh ->
+                        channel.createWebhook("Sorteo").setAvatar(Icon.from(file)).queue { wh ->
                             Files.delete(file.toPath())
 
                             sendWithWebhook(wh, guild, channel, time, winners, prize, host)
@@ -83,7 +83,7 @@ object GiveawayManager {
         val builder = JDAWebhookClient.from(webhook)
         val timestamp = System.currentTimeMillis() + time
 
-        val banner = Banner(guild).getBanner()
+        val banner = Banner(guild).processedBanner//.getBanner()
         val random = (0..100000).random()
         val file = File("temp-${random}.png")
         ImageIO.write(banner, "png", file)
@@ -92,24 +92,26 @@ object GiveawayManager {
             .addEmbeds(
                 WebhookEmbedBuilder.fromJDA(
                     EmbedBuilder()
-                        .setAuthor(
+                        /*.setAuthor(
                             "Ha comenzado un sorteo!",
                             null,
                             "https://cdn.discordapp.com/attachments/755000173922615336/1037465851122696293/emoji..gif"
-                        )
+                        )*/
                         .setColor(0x2f3136)
-                        .setThumbnail(guild.iconUrl ?: guild.jda.selfUser.avatarUrl)
+                        //.setThumbnail(guild.iconUrl ?: guild.jda.selfUser.avatarUrl)
                         .setTitle("Premio: $prize")
-                        .setFooter("Acaba el")
+                        .setFooter("$winners ${if(winners == 1L) "Ganador" else "Ganadores"} | Acaba el")
                         .setTimestamp(Date(timestamp).toInstant())
                         .setImage("attachment://banner.png")
-                        .setDescription(
+                        /*.setDescription(
                             "\n${Emojis.OWNER}  Alojado por: <@!${host.id}>\n${Emojis.time}  Acaba: ${
                                 TimeFormat.DEFAULT.format(
                                     timestamp
                                 )
                             }  (${TimeFormat.RELATIVE.format(timestamp)})\n\n${Emojis.right}  Número de ganadores: `${winners}`"
-                        )
+                        )*/
+                        .addField("Tiempo restante", TimeFormat.RELATIVE.format(timestamp), true)
+                        .addField("Alojado por", "<@!${host.id}>", true)
                         .build()
                 )
                     .build()
@@ -175,19 +177,22 @@ object GiveawayManager {
                     .addEmbeds(
                         WebhookEmbedBuilder.fromJDA(
                             EmbedBuilder()
-                                .setAuthor(
+                                /*.setAuthor(
                                     "Sorteo finalizado!",
                                     null,
                                     "https://cdn.discordapp.com/attachments/755000173922615336/1037465851122696293/emoji..gif"
-                                )
+                                )*/
                                 .setColor(0x2f3136)
-                                .setThumbnail(guild.iconUrl ?: guild.jda.selfUser.avatarUrl)
+                                //.setThumbnail(guild.iconUrl ?: guild.jda.selfUser.avatarUrl)
                                 .setTitle("Premio: ${giveaway.prize}")
                                 .setFooter("Acabó el")
                                 .setTimestamp(Date(giveaway.startedAt + giveaway.endAfter).toInstant())
-                                .setDescription(
+                                .setImage("attachment://banner.png")
+                                /*.setDescription(
                                     "\n⭐  Alojado por: <@!${giveaway.hostId}>\n\n\uD83C\uDF89 Ganador: Nadie ha participado"
-                                )
+                                )*/
+                                .addField("Alojado por", "<@!${giveaway.hostId}>", true)
+                                .addField("Ganador", "Nadie ha participado", true)
                                 .build()
                         ).build()
                     ).addComponents(
@@ -227,19 +232,26 @@ object GiveawayManager {
                     .addEmbeds(
                         WebhookEmbedBuilder.fromJDA(
                             EmbedBuilder()
-                                .setAuthor(
+                                /*.setAuthor(
                                     "Sorteo finalizado!",
                                     null,
                                     "https://cdn.discordapp.com/attachments/755000173922615336/1037465851122696293/emoji..gif"
-                                )
+                                )*/
                                 .setColor(0x2f3136)
-                                .setThumbnail(guild.iconUrl ?: guild.jda.selfUser.avatarUrl)
+                                //.setThumbnail(guild.iconUrl ?: guild.jda.selfUser.avatarUrl)
                                 .setTitle("Premio: ${giveaway.prize}")
                                 .setFooter("Acabó el")
                                 .setTimestamp(Date(giveaway.startedAt + giveaway.endAfter).toInstant())
-                                .setDescription(
+                                /*.setDescription(
                                     "\n⭐  Alojado por: <@!${giveaway.hostId}>\n\n\uD83C\uDF89 ${if (winners.size > 1) "Ganadores" else "Ganador"}: ${winners.joinToString { "<@!$it> " }}"
+                                )*/
+                                .addField("Alojado por", "<@!${giveaway.hostId}>", true)
+                                .addField(
+                                    if (winners.size > 1) "Ganadores" else "Ganador",
+                                    winners.joinToString { "<@!$it> " },
+                                    true
                                 )
+                                .setImage("attachment://banner.png")
                                 .build()
                         ).build()
                     ).addComponents(
@@ -316,18 +328,25 @@ object GiveawayManager {
                 .addEmbeds(
                     WebhookEmbedBuilder.fromJDA(
                         EmbedBuilder()
-                            .setAuthor(
+                            /*.setAuthor(
                                 "Sorteo finalizado!",
                                 null,
                                 "https://cdn.discordapp.com/attachments/755000173922615336/1037465851122696293/emoji..gif"
-                            )
+                            )*/
                             .setColor(0x2f3136)
-                            .setThumbnail(guild.iconUrl ?: guild.jda.selfUser.avatarUrl)
+                            //.setThumbnail(guild.iconUrl ?: guild.jda.selfUser.avatarUrl)
                             .setTitle("Premio: ${giveaway.prize}")
                             .setFooter("Acabó el")
                             .setTimestamp(Date(giveaway.startedAt + giveaway.endAfter).toInstant())
-                            .setDescription(
+                            /*.setDescription(
                                 "\n⭐  Alojado por: <@!${giveaway.hostId}>\n\n\uD83C\uDF89 ${if(winners.size > 1) "Ganadores" else "Ganador"}: ${winners.joinToString { "<@!$it> " }}"
+                            )*/
+                            .setImage("attachment://banner.png")
+                            .addField("Alojado por", "<@!${giveaway.hostId}>", true)
+                            .addField(
+                                if (winners.size > 1) "Ganadores" else "Ganador",
+                                winners.joinToString { "<@!$it> " },
+                                true
                             )
                             .build()
                     ).build()

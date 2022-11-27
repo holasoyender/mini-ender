@@ -126,6 +126,8 @@ class EventLogger(
             .setColor(Color.decode("#57F287"))
             .setAuthor(event.user.asTag, null, event.user.effectiveAvatarUrl)
             .setDescription("**${event.user.asTag}** (`${event.user.id}`) se ha unido al servidor ${TimeFormat.RELATIVE.format(event.member.timeJoined)}")
+            .addField("Cuenta creada", "${TimeFormat.DEFAULT.format(event.user.timeCreated)} (${TimeFormat.RELATIVE.format(event.user.timeCreated)})", true)
+            .addField("Miembro desde", "${TimeFormat.DEFAULT.format(event.member.timeJoined)} (${TimeFormat.RELATIVE.format(event.member.timeJoined)})", true)
             .setThumbnail("https://cdn.discordapp.com/attachments/839400943517827092/1045066052427591690/up.png")
 
         log(embed)
