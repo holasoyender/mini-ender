@@ -19,6 +19,7 @@ repositories {
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web:3.0.0")
+    implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
 
     implementation("net.dv8tion:JDA:5.0.0-alpha.22")
     //implementation("ch.qos.logback:logback-classic:1.4.4")

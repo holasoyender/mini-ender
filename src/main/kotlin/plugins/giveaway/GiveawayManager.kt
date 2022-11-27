@@ -40,7 +40,7 @@ object GiveawayManager {
 
             channel.retrieveWebhooks().queue {
 
-                val webhook = it.firstOrNull { w -> w.name == "Sorteos" }
+                val webhook = it.firstOrNull { w -> w.name == "Sorteo" }
 
                 if (webhook == null) {
                     try {

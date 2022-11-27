@@ -30,6 +30,5 @@ class Giveaway {
             response["message"] = "Giveaway not found"
             response
         }
-
     }
 }

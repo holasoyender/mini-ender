@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${title}"></title>
+  <link rel="icon" href="https://cdn.discordapp.com/attachments/855118494005198939/1045436479729582121/unknown.png" />
+  <link rel="stylesheet" href="https://cdn.discordapp.com/attachments/755000173922615336/1046523417421172797/giveaways.css">
+</head>
+<body>
+<div class="page-wrapper">
+  <div class="page-giveaway">
+    <div class="account-content">
+      <div id="giveaway-mount">
+        <div class="react-notification-root ">
+          <div class="notification-container-top-left">
+          </div>
+          <div class="notification-container-top-right">
+          </div>
+          <div class="notification-container-bottom-left">
+          </div>
+          <div class="notification-container-bottom-right">
+          </div>
+          <div class="notification-container-top-center">
+          </div>
+          <div class="notification-container-center">
+            <div class="center-inner">
+            </div>
+          </div>
+          <div class="notification-container-bottom-center">
+          </div>
+        </div>
+        <div class="full-container">
+          <div class="content-container" style="width: 800px;">
+            <div class="gw-container is-flex">
+              <div class="gw-content">
+                <div class="container user">
+                  <div class="guild-icon">
+                    <img alt="Server Icon" class="image is-100x100" th:src="${serverIcon}">
+                  </div>
+                  <div class="user-details">
+                    <h3 class="user-name title is-3" th:text="${serverName}"></h3>
+                  </div>
+                </div>
+                <div class="giveaway">
+                  <h1 class="title giveaway-title" th:text="${price}"></h1>
+                  <div class="content is-flex">
+                    <div class="info">
+                      <div class="container is-flex">
+                        <div class="mini-container entries">
+                          <h2 class="title" th:text="${clickers}"></h2>
+                          <p class="has-text-grey container-label">Usuarios</p>
+                        </div>
+                        <div class="mini-container time-left">
+                          <h2 class="title highlight" th:text="${time}"></h2>
+                          <p class="has-text-grey container-label">Tiempo restante</p>
+                        </div>
+                      </div>
+                      <div class="container is-flex">
+                        <div class="mini-container">
+                          <h2 class="title" th:text="${winnerCount}"></h2>
+                          <p class="has-text-grey container-label">Nº Ganadores</p>
+                        </div>
+                        <div class="mini-container">
+                          <h2 class="title highlight is-flex partial winners-list has-winners large">
+                              <a class="winner" th:each="winner : *{winners}" th:text="${winner}"></a>
+                          </h2>
+                          <p class="has-text-grey container-label">Ganador(es)</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
