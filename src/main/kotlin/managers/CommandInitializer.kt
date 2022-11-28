@@ -70,6 +70,7 @@ class CommandInitializer(manager: CommandManager) {
 
         //Config
         manager.registerCommand(Prefix())
+        manager.registerCommand(Importar())
 
         /*
         * Comandos simples de una sola respuesta

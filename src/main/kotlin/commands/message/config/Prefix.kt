@@ -38,7 +38,7 @@ class Prefix: Command {
     override val usage: String
         get() = "<nuevo prefijo>"
     override val category: String
-        get() = "Config"
+        get() = "Configuración"
     override val enabled: Boolean
         get() = true
     override val ownerOnly: Boolean

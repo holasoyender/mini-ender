@@ -1,0 +1,29 @@
+
+# Este es el archivo de configuración del servidor "{}". Puedes aprender a configurarlo en https://miniender.kenabot.xyz
+# Si tienes alguna duda, puedes unirte al servidor de soporte de KenaBot en https://discord.gg/WgRBDFk63s
+
+prefix: "-"
+
+welcomes:
+  role_id: ""  # El rol que se dará a los usuarios al entrar al servidor, dejar en blanco para desactivar
+  channel_id: ""  # El canal donde se enviará el banner de bienvenida, dejar en blanco para desactivar
+  message: ""  # El mensaje de bienvenida que se enviará por MD al usuario, puedes ver las variables en https://miniender.kenabot.xyz
+
+roles:
+  rol_mute: ""  # El rol que se le dará a los usuarios silenciados, dejar en blanco para desactivar
+
+logs:
+  channel_id: "" # El canal donde se enviarán todos los logs, dejar en blanco para desactivar
+
+anti_links:
+    enabled: false # Si está activado o no el sistema de anti-links
+    channel_id: "" # El canal donde se enviarán los logs del sistema anti-links, si se activa el sistema, pero no se pone el canal, se enviarán los logs al canal de logs
+    ignore_roles: [] # Los roles que no serán afectados por el sistema anti-links
+    ignore_channels: [] # Los canales donde no se aplicará el sistema anti-links
+    anti_phishing: false # Si está activado o no el sistema de anti-phishing, más información en https://miniender.kenabot.xyz
+
+custom_commands:
+  # buenas: "Hola, ¿cómo estás?" -> Ejemplo de comando personalizado de tipo mensaje, cuando alguien escriba el comando "buenas" el bot responderá "Hola, ¿cómo estás?"
+  # usuario: "info" -> Ejemplo de comando personalizado de tipo alias, cuando alguien escriba el comando "usuario" el bot ejecutará el comando "info"
+
+
