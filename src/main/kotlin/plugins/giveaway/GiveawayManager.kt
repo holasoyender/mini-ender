@@ -1,5 +1,6 @@
 package plugins.giveaway
 
+import config.Env
 import database.schema.Sorteo
 import enums.Severity
 import net.dv8tion.jda.api.EmbedBuilder
@@ -199,6 +200,7 @@ object GiveawayManager {
                         ActionRow.of(
                             Button.primary("cmd::giveaway:enter", "Entrar al sorteo", true)
                                 .withEmoji(PartialEmoji.of("tadaa", "1037465732159656117", true)),
+                            Button.link("${Env.API_URL}/sorteo/${giveaway.messageId}", "Ver sorteo")
                         )
                     )
 
@@ -222,6 +224,7 @@ object GiveawayManager {
                             "Ir al sorteo"
                         ),
                         Button.secondary("cmd::giveaway:count", "${giveaway.clickers.size} Participantes", true),
+                        Button.link("${Env.API_URL}/sorteo/${giveaway.messageId}", "Ver sorteo")
                     )
                 )
 
@@ -258,6 +261,8 @@ object GiveawayManager {
                         ActionRow.of(
                             Button.primary("cmd::giveaway:enter", "Entrar al sorteo", true)
                                 .withEmoji(PartialEmoji.of("tadaa", "1037465732159656117", true)),
+                            Button.link("${Env.API_URL}/sorteo/${giveaway.messageId}", "Ver sorteo")
+
                         )
                     )
 
@@ -318,6 +323,7 @@ object GiveawayManager {
                 ActionRow.of(
                     Button.link("https://discord.com/channels/${giveaway.guildId}/${giveaway.channelId}/${giveaway.messageId}", "Ir al sorteo"),
                     Button.secondary("cmd::giveaway:count", "${giveaway.clickers.size} Participantes", true),
+                    Button.link("${Env.API_URL}/sorteo/${giveaway.messageId}", "Ver sorteo")
                 )
             )
 
@@ -353,6 +359,7 @@ object GiveawayManager {
                 ).addComponents(
                     ActionRow.of(
                         Button.primary("cmd::giveaway:enter", "Entrar al sorteo", true).withEmoji(PartialEmoji.of("tadaa", "1037465732159656117", true)),
+                        Button.link("${Env.API_URL}/sorteo/${giveaway.messageId}", "Ver sorteo")
                     )
                 )
 
