@@ -19,8 +19,44 @@ class Sorteo {
                 try {
                     jda!!.shardManager!!.retrieveUserById(it).complete().asTag
                 } catch (e: Exception) {
-                    null
+                    "Unknown"
                 }
+            }.toMutableList()
+
+            if (winners.isEmpty())
+                if (giveaway.ended)
+                    winners.add("Sin ganadores")
+                else
+                    winners.add("Aún no ha terminado el sorteo")
+
+            val timeLeft = if (giveaway.ended) "Terminado" else {
+                val time = giveaway.startedAt + giveaway.endAfter - System.currentTimeMillis()
+                val hours = (time % 86400000) / 3600000
+                val minutes = (time % 3600000) / 60000
+                val seconds = (time % 60000) / 1000
+
+                val timeString = StringBuilder()
+                if (hours > 10)
+                    timeString.append("$hours")
+                else if (hours in 1..9)
+                    timeString.append("0$hours")
+                else if (hours <= 0)
+                    timeString.append("00")
+                timeString.append(":")
+                if (minutes > 10)
+                    timeString.append("$minutes")
+                else if (minutes in 1..9)
+                    timeString.append("0$minutes")
+                else if (minutes <= 0)
+                    timeString.append("00")
+                timeString.append(":")
+                if (seconds > 10)
+                    timeString.append("$seconds")
+                else if (seconds in 1..9)
+                    timeString.append("0$seconds")
+                else if (seconds <= 0)
+                    timeString.append("00")
+                timeString.toString()
             }
 
             val server = jda!!.shardManager!!.getGuildById(giveaway.guildId)
@@ -28,12 +64,11 @@ class Sorteo {
             model.addAttribute("price", "Sorteo de ${giveaway.prize}")
             model.addAttribute("clickers", giveaway.clickers.size)
             model.addAttribute("winnerCount", giveaway.winnerCount)
-            model.addAttribute("time", "00:00:00")
+            model.addAttribute("time", timeLeft)
             model.addAttribute("serverIcon", server?.iconUrl ?: "https://cdn.discordapp.com/embed/avatars/0.png")
             model.addAttribute("title", "Sorteo en ${server?.name ?: "Unknown"}")
             model.addAttribute("winners", winners)
 
-            //TODO: EL TIEMPO
             "giveaway"
         } else {
             "404"

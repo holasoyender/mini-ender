@@ -49,7 +49,7 @@ class GiveawayService(shardManager: ShardManager) {
                                         if (message != null) {
 
                                             channel.retrieveWebhooks().queue { webhooks ->
-                                                val webhook = webhooks.firstOrNull { w -> w.name == "Sorteos" }
+                                                val webhook = webhooks.firstOrNull { w -> w.name == "Sorteo" }
 
                                                 if (webhook != null)
                                                     GiveawayManager.endGiveaway(webhook, giveaway, null, guild)

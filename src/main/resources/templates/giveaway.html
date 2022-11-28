@@ -53,7 +53,7 @@
                           <p class="has-text-grey container-label">Usuarios</p>
                         </div>
                         <div class="mini-container time-left">
-                          <h2 class="title highlight" th:text="${time}"></h2>
+                          <h2 class="title highlight" th:text="${time}" id="time_left"></h2>
                           <p class="has-text-grey container-label">Tiempo restante</p>
                         </div>
                       </div>
@@ -81,4 +81,45 @@
   </div>
 </div>
 </body>
+<script>
+
+    setInterval(() => {
+        const countdown = document.getElementById('time_left');
+        const time = countdown.textContent;
+        const timeArray = time.split(':');
+        const rawHours = timeArray[0]
+        const hours = parseInt(rawHours);
+        const rawMinutes = timeArray[1]
+        const minutes = parseInt(rawMinutes);
+        const rawSeconds = timeArray[2]
+        const seconds = parseInt(rawSeconds);
+
+        if (seconds > 0) {
+          const newSeconds = seconds - 1;
+          if(newSeconds < 10) {
+            countdown.textContent = `${rawHours}:${rawMinutes}:0${newSeconds}`;
+          } else {
+            countdown.textContent = `${rawHours}:${rawMinutes}:${newSeconds}`;
+          }
+        } else if (minutes > 0) {
+            const newMinutes = minutes - 1;
+            if(newMinutes < 10) {
+              countdown.textContent = `${rawHours}:0${newMinutes}:59`;
+            } else {
+              countdown.textContent = `${rawHours}:${newMinutes}:59`;
+            }
+        } else if (hours > 0) {
+            const newHours = hours - 1;
+            if(newHours < 10) {
+              countdown.textContent = `0${newHours}:59:59`;
+            } else {
+              countdown.textContent = `${newHours}:59:59`;
+            }
+        } else {
+            countdown.textContent = '00:00:00';
+        }
+    }, 1000)
+
+
+</script>
 </html>
