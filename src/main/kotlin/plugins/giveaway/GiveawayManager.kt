@@ -17,10 +17,10 @@ import webhook.send.WebhookMessageBuilder
 import webhook.send.component.ActionRow
 import webhook.send.component.Button
 import webhook.send.component.PartialEmoji
-import java.awt.image.BufferedImage
-import java.io.File
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import java.io.InputStream
 import java.net.URL
-import java.nio.file.Files
 import java.util.*
 import javax.imageio.ImageIO
 
@@ -45,16 +45,15 @@ object GiveawayManager {
 
                 if (webhook == null) {
                     try {
-                        //val url = URL(guild.iconUrl!!)
-                        val img: BufferedImage = ImageIO.read(URL("https://cdn.discordapp.com/attachments/855118494005198939/1045436479729582121/unknown.png"))
-                        val random = (0..100000).random()
-                        val file = File("temp-${random}.png")
-                        ImageIO.write(img, "png", file)
-                        channel.createWebhook("Sorteo").setAvatar(Icon.from(file)).queue { wh ->
-                            Files.delete(file.toPath())
+                        val img = ImageIO.read(URL("https://cdn.discordapp.com/attachments/855118494005198939/1045436479729582121/unknown.png"))
+                        val os = ByteArrayOutputStream()
 
+                        ImageIO.write(img, "png", os)
+
+                        val inputStream: InputStream = ByteArrayInputStream(os.toByteArray())
+
+                        channel.createWebhook("Sorteo").setAvatar(Icon.from(inputStream)).queue { wh ->
                             sendWithWebhook(wh, guild, channel, time, winners, prize, host)
-
                         }
                     } catch (e: java.lang.Exception) {
                         e.printStackTrace()
@@ -85,9 +84,10 @@ object GiveawayManager {
         val timestamp = System.currentTimeMillis() + time
 
         val banner = Banner(guild).processedBanner//.getBanner()
-        val random = (0..100000).random()
-        val file = File("temp-${random}.png")
-        ImageIO.write(banner, "png", file)
+
+        val os = ByteArrayOutputStream()
+        ImageIO.write(banner, "png", os)
+        val inputStream: InputStream = ByteArrayInputStream(os.toByteArray())
 
         val message = WebhookMessageBuilder()
             .addEmbeds(
@@ -121,7 +121,7 @@ object GiveawayManager {
                 ActionRow.of(
                     Button.primary("cmd::giveaway:enter", "Entrar al sorteo").withEmoji(PartialEmoji.of("tadaa", "1037465732159656117", true)),
                 )
-            ).addFile("banner.png", file)
+            ).addFile("banner.png", inputStream)
 
         builder.send(message.build()).whenComplete { msg, _ ->
             val sorteo = Sorteo(
@@ -139,7 +139,6 @@ object GiveawayManager {
             )
 
             sorteo.save()
-            Files.delete(file.toPath())
             builder.close()
         }
     }

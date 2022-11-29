@@ -8,9 +8,10 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.utils.FileUpload
 import org.json.JSONObject
 import java.awt.image.BufferedImage
-import java.io.File
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import java.io.InputStream
 import java.net.URL
-import java.nio.file.Files
 import javax.imageio.ImageIO
 
 class Koala: Command {
@@ -23,15 +24,17 @@ class Koala: Command {
             val parse = JSONObject(text)
 
             val image = parse.getString("link")
+            val format = image.substring(image.lastIndexOf(".") + 1)
 
             val imageURL = URL(image)
             val img: BufferedImage = ImageIO.read(imageURL)
-            val random = (0..100000).random()
-            val file = File("temp-${random}.${imageURL.file.substring(imageURL.file.lastIndexOf(".") + 1)}")
-            ImageIO.write(img, imageURL.file.substring(imageURL.file.lastIndexOf(".") + 1), file)
-            event.message.replyFiles(FileUpload.fromData(file)).queue {
-                Files.delete(file.toPath())
-            }
+
+            val os = ByteArrayOutputStream()
+
+            ImageIO.write(img, format, os)
+
+            val inputStream: InputStream = ByteArrayInputStream(os.toByteArray())
+            event.message.replyFiles(FileUpload.fromData(inputStream, "koala.$format")).queue()
             return CommandResponse.success()
 
         } catch (e: Exception) {

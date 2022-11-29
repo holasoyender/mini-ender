@@ -9,12 +9,18 @@ import net.dv8tion.jda.api.interactions.commands.OptionType
 import net.dv8tion.jda.api.interactions.commands.build.Commands
 import net.dv8tion.jda.api.interactions.commands.build.OptionData
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData
+import utils.Emojis
 
 class Importar: SlashCommand {
     override fun execute(event: SlashCommandInteractionEvent): CommandResponse {
 
         val file = event.getOption("archivo")?.asAttachment ?: return CommandResponse.error("No se ha adjuntado ningún archivo")
-        return GuildConfigImporter.import(file, event.guild!!)
+        val response = GuildConfigImporter.import(file, event.guild!!)
+
+        return if (response.exitStatus != 0) response else {
+            event.reply("${Emojis.success}  La nueva configuración ha sido importada correctamente").queue()
+            CommandResponse.success()
+        }
 
     }
 

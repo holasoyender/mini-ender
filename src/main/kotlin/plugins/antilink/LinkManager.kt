@@ -108,8 +108,8 @@ object LinkManager {
 
             val config = database.schema.Guild.get(guild.id) ?: return
             val channel =
-                if (config.logChannelId.isNotBlank()) {
-                    guild.getTextChannelById(config.logChannelId)
+                if (config.logsChannelId.isNotBlank()) {
+                    guild.getTextChannelById(config.logsChannelId)
                 } else {
                     WarningsManager.createWarning(
                         guild,
@@ -175,8 +175,8 @@ object LinkManager {
 
             val config = database.schema.Guild.get(guild.id) ?: return
             val channel =
-                if (config.logChannelId.isNotBlank()) {
-                    guild.getTextChannelById(config.logChannelId)
+                if (config.logsChannelId.isNotBlank()) {
+                    guild.getTextChannelById(config.logsChannelId)
                 } else {
                     WarningsManager.createWarning(
                         guild,

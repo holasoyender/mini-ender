@@ -5,13 +5,18 @@ import interfaces.Command
 import interfaces.CommandResponse
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
+import utils.Emojis
 
 class Importar: Command {
     override fun execute(event: MessageReceivedEvent, args: List<String>): CommandResponse {
 
         val file = event.message.attachments.firstOrNull() ?: return CommandResponse.error("No se ha adjuntado ningún archivo")
-        return GuildConfigImporter.import(file, event.guild)
+        val response = GuildConfigImporter.import(file, event.guild)
 
+        return if (response.exitStatus != 0) response else {
+            event.message.reply("${Emojis.success}  La nueva configuración ha sido importada correctamente").queue()
+            CommandResponse.success()
+        }
     }
 
     override val name: String

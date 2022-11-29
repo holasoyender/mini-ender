@@ -26,11 +26,11 @@ class InfractionLogger(
         this.guild = guild
         this.config = config
 
-        if (config.logChannelId.isEmpty() || config.logChannelId.trim().isEmpty()) {
+        if (config.logsChannelId.isEmpty() || config.logsChannelId.trim().isEmpty()) {
             channelId = null
             channel = null
         } else {
-            channelId = config.logChannelId
+            channelId = config.logsChannelId
             channel = try {
                 guild.getTextChannelById(channelId)
             } catch (e: Exception) {
