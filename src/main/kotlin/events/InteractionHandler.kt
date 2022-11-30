@@ -7,6 +7,7 @@ import database.schema.Infraction
 import handlers.ErrorReporter
 import handlers.InfractionButtons
 import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
@@ -17,6 +18,7 @@ import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.interactions.components.text.TextInput
 import net.dv8tion.jda.api.interactions.components.text.TextInputStyle
 import net.dv8tion.jda.api.interactions.modals.Modal
+import net.dv8tion.jda.api.utils.FileUpload
 import net.dv8tion.jda.internal.entities.emoji.CustomEmojiImpl
 import plugins.antilink.LinksInteractions
 import plugins.giveaway.GiveawayInteractions
@@ -258,6 +260,25 @@ class InteractionHandler: ListenerAdapter() {
 
                         infraction.forEach { it.delete() }
                         event.editMessage("${Emojis.success}  Las infracciones del usuario con ID `${userID}` han sido eliminadas").setComponents().queue()
+
+                    }
+                    "reiniciar" -> {
+
+                        val config = Guild.get(event.guild!!.id) ?: return event.editMessage("No se ha encontrado la configuración del servidor").setComponents().queue()
+
+                        //additional check
+                        if(event.member?.hasPermission(Permission.ADMINISTRATOR) == false) {
+                            event.reply("No tienes permisos para reiniciar el servidor").setEphemeral(true).queue()
+                            return
+                        }
+
+                        val oldConfig = config.raw
+                        config.delete()
+
+                        event.editMessage("${Emojis.success}  La configuración del servidor ha sido reiniciada, aquí tienes el archivo de configuración antiguo:")
+                            .setComponents()
+                            .setFiles(FileUpload.fromData(oldConfig.byteInputStream(), "${event.guild!!.id}.yaml"))
+                            .queue()
 
                     }
                     "cancel" -> {

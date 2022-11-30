@@ -8,6 +8,8 @@ class SlashCommandInitializer(manager: SlashCommandManager) {
 
         manager.registerCommand(Sorteo())
         manager.registerCommand(Importar())
+        manager.registerCommand(Exportar())
+        manager.registerCommand(Reiniciar())
 
     }
 }

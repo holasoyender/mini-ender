@@ -72,6 +72,7 @@ class CommandInitializer(manager: CommandManager) {
         manager.registerCommand(Prefix())
         manager.registerCommand(Importar())
         manager.registerCommand(Exportar())
+        manager.registerCommand(Reiniciar())
 
         /*
         * Comandos simples de una sola respuesta

@@ -25,11 +25,9 @@ object GuildConfigImporter {
             val (isValid, error) = GuildConfigValidator(config).validate()
             if(!isValid) return CommandResponse.error("El archivo no es válido: `\n```$error\nPuedes consultar la documentación en https://miniender.kenabot.xyz``")
 
-            /*
-            * Todo:
-            *  - Comprobación extra de IDs, comandos y demás
-            *  - Comando de reinicio de configuración
-            * */
+            val (isOk, validationError) = GuildConfigChecker(config).verify()
+            if(!isOk) return CommandResponse.error("El archivo no es válido: `\n```$validationError\nPuedes consultar la documentación en https://miniender.kenabot.xyz``")
+
             val guildConfig = database.schema.Guild.get(guild.id)
             if(guildConfig == null) {
 
