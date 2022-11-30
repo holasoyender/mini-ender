@@ -1,13 +1,19 @@
 package config.manager
 
+import commandManager
+import net.dv8tion.jda.api.entities.Guild
+
 class GuildConfigValidator(
-    config: Map<String, Any>
+    config: Map<String, Any>,
+    guild: Guild
 ) {
 
     private val config: Map<String, Any>
+    private val guild: Guild
 
     init {
         this.config = config
+        this.guild = guild
     }
 
     fun validate(): Pair<Boolean, String> {
@@ -49,8 +55,10 @@ class GuildConfigValidator(
         if(welcomes !is Map<*, *>) return Pair(false, "El modulo de bienvenidas no está bien definido")
         if(welcomes["role_id"] !is String) return Pair(false, "El rol de bienvenida no está bien definido")
         if(!isIdOrEmpty(welcomes["role_id"] as String)) return Pair(false, "El rol de bienvenida no es un ID válido")
+        if((welcomes["role_id"] as String).isNotEmpty() && !isValidRole(welcomes["role_id"] as String)) return Pair(false, "El rol de bienvenida no existe en el servidor")
         if(welcomes["channel_id"] !is String) return Pair(false, "El canal de bienvenida no está bien definido")
         if(!isIdOrEmpty(welcomes["channel_id"] as String)) return Pair(false, "El canal de bienvenida no es un ID válido")
+        if((welcomes["channel_id"] as String).isNotEmpty() && !isValidChannel(welcomes["channel_id"] as String)) return Pair(false, "El canal de bienvenida no existe en el servidor")
         if(welcomes["message"] !is String) return Pair(false, "El mensaje de bienvenida no está bien definido")
         return Pair(true, "")
     }
@@ -60,6 +68,7 @@ class GuildConfigValidator(
         if(roles !is Map<*, *>) return Pair(false, "El modulo de roles no está bien definido")
         if(roles["mute_role_id"] !is String) return Pair(false, "El rol de mute no está bien definido")
         if(!isIdOrEmpty(roles["mute_role_id"] as String)) return Pair(false, "El rol de mute no es un ID válido")
+        if((roles["mute_role_id"] as String).isNotEmpty() && !isValidRole(roles["mute_role_id"] as String)) return Pair(false, "El rol de mute no existe en el servidor")
         return Pair(true, "")
     }
 
@@ -68,6 +77,7 @@ class GuildConfigValidator(
         if(logs !is Map<*, *>) return Pair(false, "El modulo de logs no está bien definido")
         if(logs["channel_id"] !is String) return Pair(false, "El canal de logs no está bien definido")
         if(!isIdOrEmpty(logs["channel_id"] as String)) return Pair(false, "El canal de logs no es un ID válido")
+        if((logs["channel_id"] as String).isNotEmpty() && !isValidChannel(logs["channel_id"] as String)) return Pair(false, "El canal de logs no existe en el servidor")
         return Pair(true, "")
     }
 
@@ -77,12 +87,14 @@ class GuildConfigValidator(
         if(antiLinks["enabled"] !is Boolean) return Pair(false, "El estado de anti-links no está bien definido")
         if(antiLinks["channel_id"] !is String) return Pair(false, "El canal de anti-links no está bien definido")
         if(!isIdOrEmpty(antiLinks["channel_id"] as String)) return Pair(false, "El canal de anti-links no es un ID válido")
+        if((antiLinks["channel_id"] as String).isNotEmpty() && !isValidChannel(antiLinks["channel_id"] as String)) return Pair(false, "El canal de anti-links no existe en el servidor")
 
         if(antiLinks["ignore_roles"] !is List<*>) return Pair(false, "La lista de roles ignorados no está bien definida")
         val ignoreRoles = antiLinks["ignore_roles"] as List<*>
         for(role in ignoreRoles) {
             if(role !is String) return Pair(false, "La lista de roles ignorados no está bien definida (ID en la posición ${ignoreRoles.indexOf(role)} no es válida)")
             if(!isId(role)) return Pair(false, "La lista de roles ignorados no está bien definida (ID en la posición ${ignoreRoles.indexOf(role)} no es válida)")
+            if(role.isNotEmpty() && !isValidRole(role)) return Pair(false, "La lista de roles ignorados no está bien definida (ID en la posición ${ignoreRoles.indexOf(role)} no existe en el servidor)")
         }
 
         if(antiLinks["ignore_channels"] !is List<*>) return Pair(false, "La lista de canales ignorados no está bien definida")
@@ -90,6 +102,7 @@ class GuildConfigValidator(
         for(channel in ignoreChannels) {
             if(channel !is String) return Pair(false, "La lista de canales ignorados no está bien definida (ID en la posición ${ignoreChannels.indexOf(channel)} no es válida)")
             if(!isId(channel)) return Pair(false, "La lista de canales ignorados no está bien definida (ID en la posición ${ignoreChannels.indexOf(channel)} no es válida)")
+            if(channel.isNotEmpty() && !isValidChannel(channel)) return Pair(false, "La lista de canales ignorados no está bien definida (ID en la posición ${ignoreChannels.indexOf(channel)} no existe en el servidor)")
         }
 
         if(antiLinks["anti_phishing"] !is Boolean) return Pair(false, "El estado de anti-phishing no está bien definido")
@@ -103,9 +116,11 @@ class GuildConfigValidator(
         if(twitch["channel"] !is String) return Pair(false, "El canal de twitch del streamer no está bien definido")
         if(twitch["announce_channel_id"] !is String) return Pair(false, "El canal de anuncios de twitch no está bien definido")
         if(!isIdOrEmpty(twitch["announce_channel_id"] as String)) return Pair(false, "El canal de anuncios de twitch no es un ID válido")
+        if((twitch["announce_channel_id"] as String).isNotEmpty() && !isValidChannel(twitch["announce_channel_id"] as String)) return Pair(false, "El canal de anuncios de twitch no existe en el servidor")
         if(twitch["message"] !is String) return Pair(false, "El mensaje de anuncios de twitch no está bien definido")
         if(twitch["live_channel_id"] !is String) return Pair(false, "El canal de live de twitch no está bien definido")
         if(!isIdOrEmpty(twitch["live_channel_id"] as String)) return Pair(false, "El canal de live de twitch no es un ID válido")
+        if((twitch["live_channel_id"] as String).isNotEmpty() && !isValidChannel(twitch["live_channel_id"] as String)) return Pair(false, "El canal de live de twitch no existe en el servidor")
         if(twitch["live_message"] !is String) return Pair(false, "El mensaje de live de twitch no está bien definido")
 
         return Pair(true, "")
@@ -123,9 +138,11 @@ class GuildConfigValidator(
             if (commandValue["response"] !is String) return Pair(false, "El comando personalizado \"${command.key}\" no está bien definido")
             if (commandValue["description"] !is String) return Pair(false, "El comando personalizado \"${command.key}\" no está bien definido")
             if (commandValue["aliases"] !is List<*>) return Pair(false, "El comando personalizado \"${command.key}\" no está bien definido")
+            if(!isValidCommand(command.key as String)) return Pair(false, "El comando personalizado \"${command.key}\" ya existe como comando del bot")
             val aliases = commandValue["aliases"] as List<*>
             for (alias in aliases) {
                 if (alias !is String) return Pair(false, "El comando personalizado \"${command.key}\" no está bien definido")
+                if(!isValidCommand(alias)) return Pair(false, "El comando personalizado \"${command.key}\" ya existe como comando del bot")
             }
         }
 
@@ -135,8 +152,11 @@ class GuildConfigValidator(
     private fun isId(input: String): Boolean {
         return input.matches(Regex("[0-9]{18}")) || input.matches(Regex("[0-9]{17}")) || input.matches(Regex("[0-9]{19}"))
     }
-
     private fun isIdOrEmpty(input: String): Boolean {
         return input.isEmpty() || isId(input)
     }
+
+    private fun isValidRole(roleId: String): Boolean = try { guild.getRoleById(roleId) != null } catch (e: Exception) { false }
+    private fun isValidChannel(channelId: String): Boolean = try { guild.getTextChannelById(channelId) != null } catch (e: Exception) { false }
+    private fun isValidCommand(command: String): Boolean = commandManager!!.getCommands().find { it.name == command || it.aliases.contains(command) } != null
 }

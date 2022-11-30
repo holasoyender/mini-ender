@@ -22,12 +22,13 @@ object GuildConfigImporter {
             if(content.length < 100) return CommandResponse.error("El archivo está vacío o no es válido")
 
             val config = Yaml().load(content) as Map<String, Any>
-            val (isValid, error) = GuildConfigValidator(config).validate()
+            val (isValid, error) = GuildConfigValidator(config, guild).validate()
             if(!isValid) return CommandResponse.error("El archivo no es válido: `\n```$error\nPuedes consultar la documentación en https://miniender.kenabot.xyz``")
 
-            val (isOk, validationError) = GuildConfigChecker(config).verify()
-            if(!isOk) return CommandResponse.error("El archivo no es válido: `\n```$validationError\nPuedes consultar la documentación en https://miniender.kenabot.xyz``")
-
+            /*
+            * A partir de este punto sabemos que la configuración es válida
+            * y que no va a causar ningún error al importarla, excepto los mapeos de arrays
+            */
             val guildConfig = database.schema.Guild.get(guild.id)
             if(guildConfig == null) {
 
