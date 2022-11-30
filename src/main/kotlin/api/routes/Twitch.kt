@@ -1,6 +1,7 @@
 package api.routes
 
 import config.Env
+import jakarta.servlet.http.HttpServletRequest
 import org.apache.commons.codec.binary.Hex
 import org.json.JSONObject
 import org.springframework.http.ResponseEntity
@@ -8,7 +9,6 @@ import org.springframework.web.bind.annotation.*
 import plugins.twitch.TwitchManager
 import java.security.Key
 import javax.crypto.Mac
-import javax.servlet.http.HttpServletRequest
 
 @RestController
 class Twitch {
