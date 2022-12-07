@@ -368,5 +368,49 @@ class Guild(
                 return guilds
             }
         }
+
+        fun getGuildsWithTwitchSubscription(channel: String): List<Guild> {
+            database.Postgres.dataSource?.connection.use {connection ->
+                val statement = connection!!.prepareStatement("SELECT * FROM guilds WHERE twitch_channel = ?")
+                statement.setString(1, channel)
+                val result = statement.executeQuery()
+
+                val guilds = mutableListOf<Guild>()
+                while (result.next()) {
+                    guilds.add(
+                        Guild(
+                            result.getString("id"),
+                            result.getString("prefix"),
+
+                            result.getString("welcome_role_id"),
+                            result.getString("welcome_channel_id"),
+                            result.getString("welcome_message"),
+
+                            result.getString("mute_role_id"),
+
+                            result.getString("logs_channel_id"),
+
+                            result.getBoolean("anti_links_enabled"),
+                            result.getString("anti_links_channel_id"),
+                            result.getArray("anti_links_ignored_roles").array as Array<String>,
+                            result.getArray("anti_links_ignored_channels").array as Array<String>,
+                            result.getBoolean("anti_phishing_enabled"),
+
+                            //esta linea ha causado un daño permanente en mi cerebro
+                            (result.getArray("custom_commands")?.array as Array<String>?)?.map { JSONObject(it) }?.toTypedArray() ?: arrayOf(),
+
+                            result.getString("twitch_channel"),
+                            result.getString("twitch_announce_channel_id"),
+                            result.getString("twitch_announce_message"),
+                            result.getString("twitch_live_channel_id"),
+                            result.getString("twitch_live_message"),
+
+                            result.getString("raw")
+                        )
+                    )
+                }
+                return guilds
+            }
+        }
     }
 }

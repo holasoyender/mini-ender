@@ -62,7 +62,7 @@ object TwitchSubscriptionManager {
         }
     }
 
-    private fun getStreamer(channel: String): Streamer? {
+    fun getStreamer(channel: String): Streamer? {
 
         val isId = try {
             channel.toLong()
@@ -153,6 +153,51 @@ object TwitchSubscriptionManager {
             listOf()
         }
 
+    }
+
+    fun getStream(streamerId: String): Stream? {
+
+        val request: Request = Request.Builder()
+            .url("https://api.twitch.tv/helix/streams?user_id=$streamerId")
+            .addHeader("Authorization", "Bearer ${this.accessToken}")
+            .addHeader("Client-Id", Env.TWITCH_CLIENT_ID!!)
+            .addHeader("Content-Type", "application/json")
+            .get()
+            .build()
+
+        return try {
+            val response = httpClient.newCall(request).execute()
+
+            if(!response.isSuccessful)
+                return null
+
+            val body = response.body!!.string()
+            val json = JSONObject(body)
+            val data = json["data"] as JSONArray
+
+            if(data.isEmpty)
+                return null
+
+            val stream = data[0] as JSONObject
+
+            Stream(
+                stream["id"] as String,
+                stream["user_id"] as String,
+                stream["user_login"] as String,
+                stream["user_name"] as String,
+                stream["game_id"] as String,
+                stream["game_name"] as String,
+                stream["type"] as String,
+                stream["title"] as String,
+                stream["viewer_count"] as Int,
+                stream["started_at"] as String,
+                stream["language"] as String,
+                stream["thumbnail_url"] as String
+            )
+
+        } catch (e: Exception) {
+            null
+        }
     }
 
     @Suppress("UNCHECKED_CAST")
