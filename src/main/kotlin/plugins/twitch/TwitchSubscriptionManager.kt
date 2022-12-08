@@ -52,6 +52,7 @@ object TwitchSubscriptionManager {
                 return Pair("", -1)
 
             val body = response.body!!.string()
+            response.close()
             val json = JSONObject(body)
             val accessToken = json["access_token"] as String
             val expiresIn = json["expires_in"] as Int
@@ -86,6 +87,7 @@ object TwitchSubscriptionManager {
                 return null
 
             val body = response.body!!.string()
+            response.close()
             val json = JSONObject(body)
             val data = json["data"] as JSONArray
 
@@ -129,6 +131,7 @@ object TwitchSubscriptionManager {
                 return emptyList()
 
             val body = response.body!!.string()
+            response.close()
             val json = JSONObject(body)
             val data = json["data"] as JSONArray
 
@@ -172,6 +175,7 @@ object TwitchSubscriptionManager {
                 return null
 
             val body = response.body!!.string()
+            response.close()
             val json = JSONObject(body)
             val data = json["data"] as JSONArray
 
@@ -216,6 +220,8 @@ object TwitchSubscriptionManager {
                 return emptyList()
 
             val body = response.body!!.string()
+
+            response.close()
             val json = JSONObject(body)
             val data = json["data"] as JSONArray
 
@@ -245,7 +251,7 @@ object TwitchSubscriptionManager {
             (getStreamer(channel) ?: return Pair(false, "Streamer not found")).id
         else channel
 
-        val body = JSONObject()
+        val requestBody = JSONObject()
             .put("type", "stream.online")
             .put("version", "1")
             .put("condition", JSONObject().put("broadcaster_user_id", streamerId))
@@ -256,13 +262,16 @@ object TwitchSubscriptionManager {
             .addHeader("Authorization", "Bearer ${this.accessToken}")
             .addHeader("Client-Id", Env.TWITCH_CLIENT_ID!!)
             .addHeader("content-type", "application/json")
-            .post(body.toString().toRequestBody("application/json".toMediaTypeOrNull()))
+            .post(requestBody.toString().toRequestBody("application/json".toMediaTypeOrNull()))
             .build()
 
         return try {
             val response = httpClient.newCall(request).execute()
+            val isSuccessful = response.isSuccessful
+            val body = response.body!!.string()
+            response.close()
 
-            Pair(response.isSuccessful, response.body!!.string())
+            Pair(isSuccessful, body)
         } catch (e: Exception) {
             Pair(false, e.message!!)
         }
@@ -280,8 +289,11 @@ object TwitchSubscriptionManager {
 
         return try {
             val response = httpClient.newCall(request).execute()
+            val isSuccessful = response.isSuccessful
+            val body = response.body!!.string()
+            response.close()
 
-            Pair(response.isSuccessful, response.body!!.string())
+            Pair(isSuccessful, body)
         } catch (e: Exception) {
             Pair(false, e.message!!)
         }
