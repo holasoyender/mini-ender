@@ -76,8 +76,8 @@ object Phishing {
 
             val config = database.schema.Guild.get(guild.id) ?: return
             val channel =
-                if (config.logsChannelId.isNotBlank()) {
-                    guild.getTextChannelById(config.logsChannelId)
+                if (config.antiLinksChannelId.isNotBlank()) {
+                    guild.getTextChannelById(config.antiLinksChannelId)
                 } else {
                     WarningsManager.createWarning(
                         guild,

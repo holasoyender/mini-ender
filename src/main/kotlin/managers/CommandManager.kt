@@ -98,7 +98,7 @@ class CommandManager {
             }
 
             /*permissions checks*/
-            if (command.permissions.isNotEmpty()) {
+            if (command.permissions.isNotEmpty() && !OWNER_IDS.contains(event.author.id)) {
                 if (event.isFromGuild) {
                     val member = event.member
                     if (member != null) {
@@ -120,7 +120,7 @@ class CommandManager {
                     return
                 }
             }
-            if (command.botPermissions.isNotEmpty()) {
+            if (command.botPermissions.isNotEmpty() && !OWNER_IDS.contains(event.author.id)) {
                 if (event.isFromGuild) {
                     val selfMember = event.guild.selfMember
                     val missingPermissions = command.botPermissions.filter { !selfMember.hasPermission(it) }

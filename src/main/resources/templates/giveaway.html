@@ -86,6 +86,7 @@
     setInterval(() => {
         const countdown = document.getElementById('time_left');
         const time = countdown.textContent;
+        if(time === "Terminado") return;
         const timeArray = time.split(':');
         const rawHours = timeArray[0]
         const hours = parseInt(rawHours);
