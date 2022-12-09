@@ -44,6 +44,7 @@ class CommandInitializer(manager: CommandManager) {
         manager.registerCommand(Koala())
         manager.registerCommand(Duck())
         manager.registerCommand(Bird())
+        manager.registerCommand(Regalo())
 
         //Moderación
         manager.registerCommand(Infrs())

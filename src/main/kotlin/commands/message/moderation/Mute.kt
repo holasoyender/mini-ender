@@ -149,7 +149,7 @@ class Mute: Command {
     override val global: Boolean
         get() = false
     override val permissions: List<Permission>
-        get() = listOf(Permission.MANAGE_SERVER, Permission.VOICE_MUTE_OTHERS, Permission.MODERATE_MEMBERS)
+        get() = listOf(Permission.VOICE_MUTE_OTHERS, Permission.MODERATE_MEMBERS)
     override val botPermissions: List<Permission>
         get() = listOf(Permission.MANAGE_SERVER, Permission.VOICE_MUTE_OTHERS, Permission.MODERATE_MEMBERS)
 }

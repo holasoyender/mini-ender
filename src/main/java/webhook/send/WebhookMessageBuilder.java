@@ -107,6 +107,17 @@ public class WebhookMessageBuilder {
     }
 
     /**
+     * Clears all components currently added this builder
+     *
+     * @return This builder for chaining convenience
+     */
+    @NotNull
+    public WebhookMessageBuilder resetComponents() {
+        this.components.clear();
+        return this;
+    }
+
+    /**
      * The mention whitelist.
      * <br>See {@link AllowedMentions} for more details.
      *
@@ -193,6 +204,29 @@ public class WebhookMessageBuilder {
         Objects.requireNonNull(components, "Components");
         if (this.components.size() + components.length > LayoutComponent.MAX_COMPONENTS)
             throw new IllegalStateException("Cannot have more than " + LayoutComponent.MAX_COMPONENTS + " component layouts in a message");
+        for (LayoutComponent component : components) {
+            Objects.requireNonNull(component, "Component");
+            this.components.add(component);
+        }
+        return this;
+    }
+
+    /**
+     * Sets the components of this builder
+     * <br>This will override any previously added components
+     * <br>See {@link LayoutComponent} for more information
+     * <br>See {@link LayoutComponent#MAX_COMPONENTS} for the maximum amount of components
+     *
+     * @param  components
+     *        The components to set
+     *
+     */
+    @NotNull
+    public WebhookMessageBuilder setComponents(@NotNull LayoutComponent... components) {
+        Objects.requireNonNull(components, "Components");
+        if (components.length > LayoutComponent.MAX_COMPONENTS)
+            throw new IllegalStateException("Cannot have more than " + LayoutComponent.MAX_COMPONENTS + " component layouts in a message");
+        this.components.clear();
         for (LayoutComponent component : components) {
             Objects.requireNonNull(component, "Component");
             this.components.add(component);

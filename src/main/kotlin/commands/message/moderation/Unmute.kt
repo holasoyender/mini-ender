@@ -63,7 +63,7 @@ class Unmute: Command {
     override val global: Boolean
         get() = false
     override val permissions: List<Permission>
-        get() = listOf(Permission.MANAGE_ROLES)
+        get() = listOf(Permission.MODERATE_MEMBERS)
     override val botPermissions: List<Permission>
         get() = listOf(Permission.MANAGE_ROLES)
 }

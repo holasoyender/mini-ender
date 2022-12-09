@@ -138,6 +138,13 @@ object GiveawayManager {
                 clickers = arrayOf()
             )
 
+            builder.edit(msg.id, message.setComponents(
+                ActionRow.of(
+                    Button.primary("cmd::giveaway:enter", "Entrar al sorteo").withEmoji(PartialEmoji.of("tadaa", "1037465732159656117", true)),
+                    Button.link("${Env.API_URL}/sorteo/${msg.id}", "Ver sorteo")
+                    )
+            ).build())
+
             sorteo.save()
             builder.close()
         }

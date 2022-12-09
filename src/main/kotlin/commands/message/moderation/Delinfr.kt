@@ -47,7 +47,7 @@ class Delinfr: Command {
     override val global: Boolean
         get() = false
     override val permissions: List<Permission>
-        get() = listOf(Permission.MANAGE_SERVER)
+        get() = listOf(Permission.MODERATE_MEMBERS)
     override val botPermissions: List<Permission>
         get() = listOf()
 }

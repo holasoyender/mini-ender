@@ -96,7 +96,7 @@ class Infrs: Command {
     override val global: Boolean
         get() = true
     override val permissions: List<Permission>
-        get() = listOf(Permission.MANAGE_SERVER)
+        get() = listOf(Permission.MODERATE_MEMBERS)
     override val botPermissions: List<Permission>
         get() = listOf(Permission.MESSAGE_EMBED_LINKS)
 }
