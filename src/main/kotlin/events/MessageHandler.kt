@@ -165,6 +165,27 @@ class MessageHandler: ListenerAdapter() {
     override fun onMessageUpdate(event: MessageUpdateEvent) {
         if(event.isFromGuild)
             EventLogger(event.guild, Guild.get(event.guild.id) ?: DefaultConfig.get()).log(event)
+
+        if(event.isFromGuild) {
+
+            val message = event.message
+
+            val guild = Guild.get(event.guild.id) ?: DefaultConfig.get()
+
+            if(!guild.antiLinksIgnoredChannels.contains(message.channel.id) && !guild.antiLinksIgnoredRoles.none { message.member?.roles?.map { r -> r.id }?.contains(it) == true }) {
+                if (guild.antiLinksEnabled && !guild.antiPhishingEnabled) {
+                    LinkManager.check(message)
+                }
+
+                if (guild.antiLinksEnabled) {
+                    if (Phishing.isPhishing(message))
+                        Phishing.checkPhishing(message)
+                    else
+                        LinkManager.check(message)
+                }
+            }
+        }
+
         super.onMessageUpdate(event)
     }
 }
