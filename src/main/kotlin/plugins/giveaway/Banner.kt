@@ -14,11 +14,10 @@ class Banner(guild: Guild) {
 
     init {
         image =  ImageIO.read(URL(guild.iconUrl ?: guild.jda.selfUser.avatarUrl ?: "https://cdn.discordapp.com/embed/avatars/0.png")) ?: throw Exception("No se ha podido cargar la imagen para el banner")
-        //baseBanner = ImageIO.read(javaClass.classLoader.getResource("./img/sorteo.png") ?: throw Exception("No se ha podido leer el banner de sorteos")) ?: throw Exception("No se ha podido leer el banner de sorteos")
-        baseBanner = ImageIO.read(URL("https://cdn.discordapp.com/attachments/859486644578025472/1046406289498058762/unknown.png")) ?: throw Exception("No se ha podido leer el banner de sorteos")
+        baseBanner = ImageIO.read(javaClass.classLoader.getResource("./img/sorteo.png") ?: throw Exception("No se ha podido leer el banner de sorteos")) ?: throw Exception("No se ha podido leer el banner de sorteos")
         processedBanner = baseBanner
     }
-/*
+
     fun getBanner(): BufferedImage {
         if (isProcessed) return processedBanner
 
@@ -31,6 +30,6 @@ class Banner(guild: Guild) {
         isProcessed = true
         processedBanner = baseBanner
         return processedBanner
-    }*/
+    }
 
 }

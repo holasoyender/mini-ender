@@ -363,8 +363,7 @@ public class WebhookMessage {
         payload.put("tts", isTTS);
         payload.put("allowed_mentions", allowedMentions);
         payload.put("flags", flags);
-        String json = payload.toString();
-        if (isFile()) {
+        if (isFile() && attachments.length > 0) {
             final MultipartBody.Builder builder = new MultipartBody.Builder().setType(MultipartBody.FORM);
 
             for (int i = 0; i < attachments.length; i++) {
@@ -373,8 +372,13 @@ public class WebhookMessage {
                     break;
                 builder.addFormDataPart("file" + i, attachment.getName(), new IOUtil.OctetBody(attachment.getData()));
             }
+            String json = payload.toString();
             return builder.addFormDataPart("payload_json", json).build();
+        } else {
+            payload.put("files", new JSONArray());
+            payload.put("attachments", new JSONArray());
         }
+        String json = payload.toString();
         return RequestBody.create(IOUtil.JSON, json);
     }
 

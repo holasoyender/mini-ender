@@ -29,6 +29,10 @@ class Sorteo: SlashCommand {
                 val winners = event.getOption("ganadores")?.asLong ?: return CommandResponse.error("Debes especificar un numero de ganadores valido")
                 val prize = event.getOption("premio")?.asString ?: return CommandResponse.error("Debes especificar un premio para el sorteo")
                 val host = event.getOption("host")?.asUser ?: event.user
+                var style = event.getOption("estilo")?.asString ?: "normal"
+
+                if(event.guild?.name?.lowercase() == "ibai")
+                    style = "ibai"
 
                 val formattedTime = Time.ms(time)
                 if(formattedTime < 1 || formattedTime > 604800000) return CommandResponse.error("El tiempo debe ser mayor a 1ms y menor a 1 semana")
@@ -37,7 +41,7 @@ class Sorteo: SlashCommand {
                 if(winners < 1 || winners > 10) return CommandResponse.error("El numero de ganadores debe estar entre 1 y 10")
 
                 event.reply("${Emojis.success} Sorteo creado en ${(channel as TextChannel).asMention}").queue {
-                    GiveawayManager.createGiveaway(event.guild!!, channel, formattedTime, winners, prize, host, it)
+                    GiveawayManager.createGiveaway(event.guild!!, channel, formattedTime, winners, prize, host, style, it)
                 }
 
             }
@@ -50,7 +54,7 @@ class Sorteo: SlashCommand {
                 val channel = event.guild!!.getTextChannelById(giveaway.channelId) ?: return CommandResponse.error("No se ha encontrado el canal del sorteo")
 
                 channel.retrieveWebhooks().queue { webhooks ->
-                    val webhook = webhooks.firstOrNull { w -> w.name == "Sorteos" }
+                    val webhook = webhooks.firstOrNull { w -> w.name == "Sorteo" }
 
                     if(webhook == null) {
                         event.reply("${f(Emojis.error)} No se ha encontrado el webhook del sorteo").queue()
@@ -71,7 +75,7 @@ class Sorteo: SlashCommand {
                 val channel = event.guild!!.getTextChannelById(giveaway.channelId) ?: return CommandResponse.error("No se ha encontrado el canal del sorteo")
 
                 channel.retrieveWebhooks().queue { webhooks ->
-                    val webhook = webhooks.firstOrNull { w -> w.name == "Sorteos" }
+                    val webhook = webhooks.firstOrNull { w -> w.name == "Sorteo" }
 
                     if(webhook == null) {
                         event.reply("${f(Emojis.error)} No se ha encontrado el webhook del sorteo").queue()
@@ -141,7 +145,12 @@ class Sorteo: SlashCommand {
                         OptionData(OptionType.STRING, "tiempo", "Tiempo del sorteo en segundos", true),
                         OptionData(OptionType.INTEGER, "ganadores", "Número de ganadores", true),
                         OptionData(OptionType.STRING, "premio", "El premio a sortear", true),
-                        OptionData(OptionType.USER, "host", "El host del sorteo", false)
+                        OptionData(OptionType.USER, "host", "El host del sorteo", false),
+                        OptionData(OptionType.STRING, "estilo", "Estilo del embed del sorteo", false)
+                            .addChoice("Normal", "normal")
+                            .addChoice("Mínima información", "minimum")
+                            .addChoice("Ibai", "ibai")
+
                     ),
             )
             .addSubcommands(
