@@ -53,6 +53,8 @@ object TwitchSubscriptionManager {
 
             val body = response.body!!.string()
             response.close()
+            response.body?.close()
+            httpClient.connectionPool.evictAll()
             val json = JSONObject(body)
             val accessToken = json["access_token"] as String
             val expiresIn = json["expires_in"] as Int
@@ -88,6 +90,8 @@ object TwitchSubscriptionManager {
 
             val body = response.body!!.string()
             response.close()
+            response.body?.close()
+            httpClient.connectionPool.evictAll()
             val json = JSONObject(body)
             val data = json["data"] as JSONArray
 
@@ -132,6 +136,8 @@ object TwitchSubscriptionManager {
 
             val body = response.body!!.string()
             response.close()
+            response.body?.close()
+            httpClient.connectionPool.evictAll()
             val json = JSONObject(body)
             val data = json["data"] as JSONArray
 
@@ -176,6 +182,8 @@ object TwitchSubscriptionManager {
 
             val body = response.body!!.string()
             response.close()
+            response.body?.close()
+            httpClient.connectionPool.evictAll()
             val json = JSONObject(body)
             val data = json["data"] as JSONArray
 
@@ -222,6 +230,8 @@ object TwitchSubscriptionManager {
             val body = response.body!!.string()
 
             response.close()
+            response.body?.close()
+            httpClient.connectionPool.evictAll()
             val json = JSONObject(body)
             val data = json["data"] as JSONArray
 
@@ -270,6 +280,8 @@ object TwitchSubscriptionManager {
             val isSuccessful = response.isSuccessful
             val body = response.body!!.string()
             response.close()
+            response.body?.close()
+            httpClient.connectionPool.evictAll()
 
             Pair(isSuccessful, body)
         } catch (e: Exception) {
@@ -292,6 +304,8 @@ object TwitchSubscriptionManager {
             val isSuccessful = response.isSuccessful
             val body = response.body!!.string()
             response.close()
+            response.body?.close()
+            httpClient.connectionPool.evictAll()
 
             Pair(isSuccessful, body)
         } catch (e: Exception) {
