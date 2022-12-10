@@ -28,7 +28,7 @@ class Clear: Command {
                     event.channel.iterableHistory
                         .takeAsync(amountOrUserId.toInt()).thenAccept { messages ->
                             val filteredMessages =
-                                messages.filter { it.timeCreated.isAfter(maxAge) && it.author.idLong != event.jda.selfUser.idLong }
+                                messages.filter { it.timeCreated.isAfter(maxAge) /*&& it.author.idLong != event.jda.selfUser.idLong*/ }
                             if (filteredMessages.isEmpty()) {
                                 msg.editMessage("${f(Emojis.error)}  No se han encontrado mensajes para borrar, asegurate de que no sean mas antiguos de 2 semanas")
                                     .mentionRepliedUser(false)
@@ -37,7 +37,9 @@ class Clear: Command {
                             }
 
                             event.channel.purgeMessages(filteredMessages)
-                            msg.editMessage("${Emojis.success}  Se han eliminado **${filteredMessages.size}** mensajes")
+                            msg.editMessage("${Emojis.success}  Se han eliminado **${filteredMessages.size}** mensajes${
+                                if(filteredMessages.size > 250) "`⚠️ Estas borrando muchos mensajes de golpe, es posible que tade un poco más de lo normal`" else ""
+                            }")
                                 .mentionRepliedUser(false)
                                 .queue()
                         }
@@ -67,7 +69,9 @@ class Clear: Command {
                             return@thenAccept
                         }
                         event.channel.purgeMessages(filteredMessages)
-                        msg.editMessage("${Emojis.success}  Se han eliminado **${filteredMessages.size}** mensajes del usuario con ID `${amountOrUserId}`")
+                        msg.editMessage("${Emojis.success}  Se han eliminado **${filteredMessages.size}** mensajes del usuario con ID `${amountOrUserId}` ${
+                            if(filteredMessages.size > 250) "`⚠️ Estas borrando muchos mensajes de golpe, es posible que tade un poco más de lo normal`" else ""
+                        }")
                             .mentionRepliedUser(false)
                             .queue()
                     }
