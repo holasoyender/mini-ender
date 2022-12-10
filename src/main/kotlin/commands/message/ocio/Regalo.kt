@@ -9,7 +9,7 @@ import java.awt.Color
 
 class Regalo: Command {
     override fun execute(event: MessageReceivedEvent, args: List<String>): CommandResponse {
-        val response = GiftManager.run(event.author)
+        val response = GiftManager.run(event.author, event.member, event.channel.id == "1050890422869827644")
 
         if(response.embed == null) {
             event.message.reply(response.message).queue()

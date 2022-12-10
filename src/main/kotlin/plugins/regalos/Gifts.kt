@@ -1,47 +1,85 @@
 package plugins.regalos
 
-import net.dv8tion.jda.api.utils.TimeFormat
+import enums.Severity
+import plugins.warnings.WarningsManager
 
 object Gifts {
 
-    private val gifs: List<Gift> = listOf(
+    private val gifts: List<Gift> = listOf(
         Gift(
             name = "No te ha tocado nada :(",
-            description = "Puedes intentarlo de nuevo ${TimeFormat.RELATIVE.format(System.currentTimeMillis() + 86400000)}",
+            description = "Parece que esta vez no has tenido suerte, pero no te preocupes, mañana puede ser tu día de suerte!",
             image = "https://media.tenor.com/OasM7f4Pe6UAAAAC/serious-ibai.gif",
             rarity = 0,
-            chance = 10
+            chance = 14
         ),
         Gift(
             name = "¡ Un rol exclusivo del servidor !",
-            description = "Has ganado un rol exclusivo del servidor, ¡Enhorabuena!\nPuedes reclamarlo mandándole un mensaje a <@!835642946962718731>",
+            description = "Has ganado un rol exclusivo del servidor, ¡Enhorabuena!\nSi no has recibido el rol automáticamente, contacta con <@!835642946962718731>.",
             image = "https://media.tenor.com/JITzgeo8qjYAAAAC/ibai-bailando.gif",
-            rarity = 0,
-            chance = 1
+            rarity = 5,
+            chance = 1,
+            hook = { member ->
+                val role = member?.guild?.getRoleById("1051119802472738846")
+                if (role != null) {
+                    member.guild.addRoleToMember(member, role)
+                        .queue({}, {
+                            WarningsManager.createWarning(
+                                member.guild,
+                                "No se ha podido dar el rol de regalo al usuario ${member.user.id}",
+                                Severity.LOW
+                            )
+                        })
+                }
+            }
         ),
         Gift(
-            name = "Un corazon de ibai :heart:",
-            description = "jajdsadjajdjsa pero que cojones esta haciendo con las manos",
+            name = "Clase de mates express con Ibai",
+            description = "Has ganado una clase de mates express con Ibai, ¡Enhorabuena!\nPresta atención :eyes: que esto es muy importante.",
+            image = "https://media.tenor.com/upTNR7Zz4McAAAAC/ibai-explicando.gif",
+            rarity = 1,
+            chance = 15,
+        ),
+        Gift(
+            name = "Un cuadro de Ibai",
+            description = "Has ganado un cuadro de Ibai, ¡Enhorabuena!\nSeguro que queda genial en tu salón.",
+            image = "https://cdn.discordapp.com/attachments/855118494005198939/1051157732104884346/luis-yrisarry-labadia-ibai3danim2-king-black.gif",
+            rarity = 1,
+            chance = 15,
+        ),
+        Gift(
+            name = "Un zumito",
+            description = "Has ganado un zumito, ¡Enhorabuena!\nEspero que te guste (lo he hecho yo :D).",
+            image = "https://media.tenor.com/7FAvZXFFnPMAAAAC/koi-grifi.gif",
+            rarity = 1,
+            chance = 15,
+        ),
+        Gift(
+            name = "Un saludito de Ibai",
+            description = "Has ganado un saludito de Ibai, ¡Enhorabuena!\nEspero que te guste.",
             image = "https://media.tenor.com/_W41NMLGC5AAAAAC/ibai.gif",
-            rarity = 0,
-            chance = 5
-        )
+            rarity = 1,
+            chance = 20,
+        ),
+        Gift(
+            name = "Una llave de karate",
+            description = "Has ganado una llave de karate, ¡Enhorabuena!\n¡Cuidado con la cabeza!",
+            image = "https://cdn.discordapp.com/attachments/855118494005198939/1051158043087355904/ibai-fail.gif",
+            rarity = 1,
+            chance = 20,
+        ),
+
     )
 
     fun getGift(): Gift {
-        val random = (0..100).random()
-        var chance = 0
-        for (gift in gifs) {
-            chance += gift.chance
-            if (random <= chance) {
-                return gift
-            }
+        //the chance is a percentage divided by 100 of the gift being selected
+        val chance = (0..100).random()
+        var currentChance = 0
+        for (gift in gifts) {
+            currentChance += gift.chance
+            if (chance <= currentChance) return gift
         }
-        return gifs[0]
-    }
-
-    fun giftsSize(): Int {
-        return gifs.size
+        return gifts[0]
     }
 
 }

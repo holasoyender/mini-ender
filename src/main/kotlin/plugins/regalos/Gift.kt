@@ -1,5 +1,6 @@
 package plugins.regalos
 
+import net.dv8tion.jda.api.entities.Member
 import org.json.JSONObject
 
 class Gift(
@@ -7,7 +8,8 @@ class Gift(
     description: String,
     image: String,
     rarity: Int,
-    chance: Int
+    chance: Int,
+    hook: ((member: Member?) -> Unit)? = null
 ) {
 
     val name: String
@@ -15,6 +17,7 @@ class Gift(
     val image: String
     val rarity: Int
     val chance: Int
+    val hook: ((member: Member?) -> Unit)?
 
     init {
         this.name = name
@@ -22,6 +25,7 @@ class Gift(
         this.image = image
         this.rarity = rarity
         this.chance = chance
+        this.hook = hook
     }
 
     fun format(): JSONObject {

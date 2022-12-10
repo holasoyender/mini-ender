@@ -10,7 +10,7 @@ import java.awt.Color
 
 class Regalo: SlashCommand {
     override fun execute(event: SlashCommandInteractionEvent): CommandResponse {
-        val response = GiftManager.run(event.user)
+        val response = GiftManager.run(event.user, event.member, false)
 
         if(response.embed == null) {
             event.reply(response.message).setEphemeral(response.ephemeral).queue()
