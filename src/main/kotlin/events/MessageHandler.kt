@@ -3,7 +3,6 @@ package events
 import cache.MessageCache
 import commandManager
 import config.DefaultConfig
-import config.Env.PREFIX
 import database.schema.Guild
 import logger.EventLogger
 import managers.GlobalCommandManager
@@ -16,6 +15,7 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.internal.entities.emoji.CustomEmojiImpl
+import org.json.JSONArray
 import plugins.antilink.LinkManager
 import plugins.antilink.Phishing
 import java.awt.Color
@@ -30,12 +30,14 @@ class MessageHandler: ListenerAdapter() {
 
         if(author.isBot) return
         if(message.isWebhookMessage) return
+        val guild = if(event.isFromGuild) Guild.get(event.guild.id) ?: DefaultConfig.get() else DefaultConfig.get()
+
+        val args = content.slice(guild.prefix.length until content.length).split(" ")
+        var invoker = args[0]
 
         if(event.isFromGuild) {
 
             MessageCache.addMessage(message)
-
-            val guild = Guild.get(event.guild.id) ?: DefaultConfig.get()
 
             if(!guild.antiLinksIgnoredChannels.contains(message.channel.id) && !guild.antiLinksIgnoredRoles.none { message.member?.roles?.map { r -> r.id }?.contains(it) == true }) {
                 if (guild.antiLinksEnabled && !guild.antiPhishingEnabled) {
@@ -51,7 +53,7 @@ class MessageHandler: ListenerAdapter() {
             }
         }
 
-        val prefix = if(event.isFromGuild) Guild.get(event.guild.id)?.prefix ?: PREFIX ?: "-" else PREFIX ?: "-"
+        val prefix = guild.prefix
 
         if(content == "<@!${event.jda.selfUser.id}>" || content == "<@${event.jda.selfUser.id}>") {
             val mentioned = message.mentions.getMentions().first()
@@ -92,10 +94,10 @@ class MessageHandler: ListenerAdapter() {
 
             if(globalPrefixes.any { content.startsWith(it) }) {
                 val globalPrefix = globalPrefixes.first { content.startsWith(it) }
-                val args = content.slice(globalPrefix.length until content.length).split(" ")
-                val invoker = args[0]
+                val globalArgs = content.slice(globalPrefix.length until content.length).split(" ")
+                val globalInvoker = globalArgs[0]
 
-                val command = commandManager?.getCommands()?.firstOrNull { it.name == invoker.lowercase() || it.aliases.contains(invoker.lowercase()) }
+                val command = commandManager?.getCommands()?.firstOrNull { it.name == globalInvoker.lowercase() || it.aliases.contains(invoker.lowercase()) }
                 if(command != null) {
 
                     if(command.global) {
@@ -117,7 +119,23 @@ class MessageHandler: ListenerAdapter() {
             return
         }
 
-        commandManager!!.run(event)
+        val customCommand = guild.customCommands.firstOrNull {
+            val name = it["name"] as String
+            val aliases = it["aliases"] as JSONArray
+            content.startsWith("$prefix$name") || aliases.any { alias -> content.startsWith("$prefix$alias") }
+        }
+        if(customCommand != null) {
+            val response = customCommand["response"] as String
+            val isCommand = commandManager?.getCommands()?.firstOrNull { it.name == response.lowercase() || it.aliases.contains(response.lowercase()) } != null
+            if(isCommand) {
+                invoker = response
+            } else {
+                message.reply(response).queue()
+                return
+            }
+        }
+
+        commandManager!!.run(invoker, event)
 
     }
 
@@ -141,11 +159,10 @@ class MessageHandler: ListenerAdapter() {
 
                         val command = commandManager?.getCommands()?.firstOrNull { it.name == invoker.lowercase() || it.aliases.contains(invoker.lowercase()) }
                         if(command != null) {
-
                             if(command.global) {
                                 val messageEvent = GlobalCommandManager.get(it.id)
                                 if(messageEvent != null) {
-                                    commandManager!!.run(messageEvent)
+                                    commandManager!!.run(invoker, messageEvent)
                                     GlobalCommandManager.remove(it.id)
                                 }
                             }

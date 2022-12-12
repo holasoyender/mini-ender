@@ -18,5 +18,6 @@ interface Command {
     val guildOnly: Boolean
     val global: Boolean
     val permissions: List<Permission>
+    val permissionLevel: /*min 0 max 5*/ Int
     val botPermissions: List<Permission>
 }

@@ -16,6 +16,7 @@ interface SlashCommand {
     val ownerOnly: Boolean
     val guildOnly: Boolean
     val permissions: List<Permission>
+    val permissionLevel: /*min 0 max 5*/ Int
     val botPermissions: List<Permission>
     val metadata: SlashCommandData?
 }

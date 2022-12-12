@@ -1,5 +1,6 @@
 package managers
 
+import database.schema.Guild
 import interfaces.SlashCommand
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent
 import utils.Constants.OWNER_IDS
@@ -61,7 +62,35 @@ class SlashCommandManager {
             }
 
             /*permissions checks*/
-            if (command.permissions.isNotEmpty() && !OWNER_IDS.contains(event.user.id)) {
+            var doPermissionChecks = true
+            if(command.permissionLevel > 1) {
+                if(event.isFromGuild) {
+                    val member = event.member!!
+                    val config = Guild.get(event.guild!!.id)
+                    if(config != null) {
+                        val rolePermissions = config.permissions
+                        val roles = member.roles
+                        /*
+                        * Esta es una de mis funciones favoritas de kotlin
+                        * dato innecesario lo sé, pero quería ponerlo
+                        */
+                        val role = roles.firstOrNull { rolePermissions.containsKey(it.id) }
+                        if(role != null) {
+                            val rolePermissionLevel = rolePermissions[role.id]!!
+                            if(rolePermissionLevel >= command.permissionLevel) {
+                                doPermissionChecks = false
+                            }
+                        }
+                    }
+                } else {
+                    event.reply("${f(Emojis.error)}  El comando ${command.name} solo puede ser usado en un servidor")
+                        .setEphemeral(true)
+                        .queue()
+                    return
+                }
+            }
+
+            if (command.permissions.isNotEmpty() && !OWNER_IDS.contains(event.user.id) && doPermissionChecks) {
                 if (event.isFromGuild) {
                     val member = event.member
                     if (member != null) {

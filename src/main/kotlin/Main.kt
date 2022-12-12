@@ -22,6 +22,7 @@ fun main(args: Array<String>) {
 
     val builder = DefaultShardManagerBuilder.createDefault(null)
 
+    Loga.aaaaaa()
     MessageRequest.setDefaultMentionRepliedUser(false)
     builder.disableCache(
         CacheFlag.EMOJI,

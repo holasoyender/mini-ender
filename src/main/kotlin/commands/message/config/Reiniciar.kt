@@ -37,6 +37,8 @@ class Reiniciar: Command {
         get() = false
     override val permissions: List<Permission>
         get() = listOf(Permission.ADMINISTRATOR)
+    override val permissionLevel: Int
+        get() = 5
     override val botPermissions: List<Permission>
         get() = listOf()
 }

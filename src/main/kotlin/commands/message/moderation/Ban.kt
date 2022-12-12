@@ -144,6 +144,8 @@ class Ban: Command {
         get() = false
     override val permissions: List<Permission>
         get() = listOf(Permission.BAN_MEMBERS)
+    override val permissionLevel: Int
+        get() = 2
     override val botPermissions: List<Permission>
         get() = listOf(Permission.BAN_MEMBERS)
 }

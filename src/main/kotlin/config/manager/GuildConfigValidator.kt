@@ -164,11 +164,11 @@ class GuildConfigValidator(
             if (commandValue["response"] !is String) return Pair(false, "El comando personalizado \"${command.key}\" no está bien definido")
             if (commandValue["description"] !is String) return Pair(false, "El comando personalizado \"${command.key}\" no está bien definido")
             if (commandValue["aliases"] !is List<*>) return Pair(false, "El comando personalizado \"${command.key}\" no está bien definido")
-            if(!isValidCommand(command.key as String)) return Pair(false, "El comando personalizado \"${command.key}\" ya existe como comando del bot")
+            if(isValidCommand(command.key as String)) return Pair(false, "El comando personalizado \"${command.key}\" ya existe como comando del bot")
             val aliases = commandValue["aliases"] as List<*>
             for (alias in aliases) {
                 if (alias !is String) return Pair(false, "El comando personalizado \"${command.key}\" no está bien definido")
-                if(!isValidCommand(alias)) return Pair(false, "El comando personalizado \"${command.key}\" ya existe como comando del bot")
+                if(isValidCommand(alias)) return Pair(false, "El comando personalizado \"${command.key}\" ya existe como comando del bot")
             }
         }
 

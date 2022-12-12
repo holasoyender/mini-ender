@@ -70,12 +70,12 @@ class CommandManager {
         }
     }
 
-    fun run(event: MessageReceivedEvent) {
+    fun run(invoker: String, event: MessageReceivedEvent) {
 
         val content = event.message.contentRaw
-        val prefix = if(event.isFromGuild) Guild.get(event.guild.id)?.prefix ?: PREFIX ?: "-" else PREFIX ?: "-"
+        val config = if(event.isFromGuild) Guild.get(event.guild.id) else null
+        val prefix = config?.prefix ?: PREFIX ?: "-"
         val args = content.slice(prefix.length until content.length).split(" ")
-        val invoker = args[0]
 
         val command =
             commands.firstOrNull { it.name == invoker.lowercase() || it.aliases.contains(invoker.lowercase()) }
@@ -98,10 +98,36 @@ class CommandManager {
             }
 
             /*permissions checks*/
-            if (command.permissions.isNotEmpty() && !OWNER_IDS.contains(event.author.id)) {
+
+            var doPermissionChecks = true
+            if(command.permissionLevel > 1) {
+                if(event.isFromGuild) {
+                    val member = event.member!!
+                    if(config != null) {
+                        val rolePermissions = config.permissions
+                        val roles = member.roles
+                        /*
+                        * Esta es una de mis funciones favoritas de kotlin
+                        * dato innecesario lo sé, pero quería ponerlo
+                        */
+                        val role = roles.firstOrNull { rolePermissions.containsKey(it.id) }
+                        if(role != null) {
+                            val rolePermissionLevel = rolePermissions[role.id]!!
+                            if(rolePermissionLevel >= command.permissionLevel) {
+                                doPermissionChecks = false
+                            }
+                        }
+                    }
+                } else {
+                    event.message.reply("${f(Emojis.error)}  El comando ${command.name} solo puede ser usado en un servidor")
+                        .queue()
+                    return
+                }
+            }
+
+            if (command.permissions.isNotEmpty() && !OWNER_IDS.contains(event.author.id) && doPermissionChecks) {
                 if (event.isFromGuild) {
-                    val member = event.member
-                    if (member != null) {
+                    val member = event.member!!
                         val missingPermissions = command.permissions.filter { !member.hasPermission(it) }
                         if (missingPermissions.isNotEmpty()) {
                             event.message.reply(
@@ -113,7 +139,6 @@ class CommandManager {
                             ).queue()
                             return
                         }
-                    }
                 } else {
                     event.message.reply("${f(Emojis.error)}  El comando ${command.name} solo puede ser usado en un servidor")
                         .queue()
@@ -169,9 +194,6 @@ class CommandManager {
                 }
 
             }
-
         }
-
     }
-
 }

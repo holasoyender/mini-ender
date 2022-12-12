@@ -82,6 +82,8 @@ class Exportar: Command {
         get() = false
     override val permissions: List<Permission>
         get() = listOf(Permission.MANAGE_SERVER)
+    override val permissionLevel: Int
+        get() = 4
     override val botPermissions: List<Permission>
         get() = listOf()
 }

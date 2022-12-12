@@ -64,6 +64,8 @@ class Panda: Command {
         get() = false
     override val permissions: List<Permission>
         get() = listOf()
+    override val permissionLevel: Int
+        get() = 1
     override val botPermissions: List<Permission>
         get() = listOf(Permission.MESSAGE_ATTACH_FILES)
 }

@@ -44,6 +44,8 @@ class Config: Command {
         get() = false
     override val permissions: List<Permission>
         get() = listOf()
+    override val permissionLevel: Int
+        get() = 10
     override val botPermissions: List<Permission>
         get() = listOf()
 }

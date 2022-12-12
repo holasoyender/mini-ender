@@ -56,6 +56,8 @@ class Delinfrs: Command {
         get() = false
     override val permissions: List<Permission>
         get() = listOf(Permission.ADMINISTRATOR)
+    override val permissionLevel: Int
+        get() = 3
     override val botPermissions: List<Permission>
         get() = listOf()
 }

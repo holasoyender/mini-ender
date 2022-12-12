@@ -33,6 +33,8 @@ class Reiniciar: SlashCommand {
         get() = true
     override val permissions: List<Permission>
         get() = listOf(Permission.ADMINISTRATOR)
+    override val permissionLevel: Int
+        get() = 5
     override val botPermissions: List<Permission>
         get() = listOf()
     override val metadata: SlashCommandData?

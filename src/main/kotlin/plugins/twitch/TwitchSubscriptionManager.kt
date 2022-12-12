@@ -52,9 +52,8 @@ object TwitchSubscriptionManager {
                 return Pair("", -1)
 
             val body = response.body!!.string()
-            response.close()
-            response.body?.close()
-            httpClient.connectionPool.evictAll()
+            response.body!!.close()
+
             val json = JSONObject(body)
             val accessToken = json["access_token"] as String
             val expiresIn = json["expires_in"] as Int
@@ -89,9 +88,8 @@ object TwitchSubscriptionManager {
                 return null
 
             val body = response.body!!.string()
-            response.close()
-            response.body?.close()
-            httpClient.connectionPool.evictAll()
+            response.body!!.close()
+
             val json = JSONObject(body)
             val data = json["data"] as JSONArray
 
@@ -135,9 +133,8 @@ object TwitchSubscriptionManager {
                 return emptyList()
 
             val body = response.body!!.string()
-            response.close()
-            response.body?.close()
-            httpClient.connectionPool.evictAll()
+            response.body!!.close()
+
             val json = JSONObject(body)
             val data = json["data"] as JSONArray
 
@@ -181,9 +178,8 @@ object TwitchSubscriptionManager {
                 return null
 
             val body = response.body!!.string()
-            response.close()
-            response.body?.close()
-            httpClient.connectionPool.evictAll()
+            response.body!!.close()
+
             val json = JSONObject(body)
             val data = json["data"] as JSONArray
 
@@ -229,9 +225,8 @@ object TwitchSubscriptionManager {
 
             val body = response.body!!.string()
 
-            response.close()
-            response.body?.close()
-            httpClient.connectionPool.evictAll()
+            response.body!!.close()
+
             val json = JSONObject(body)
             val data = json["data"] as JSONArray
 
@@ -279,9 +274,7 @@ object TwitchSubscriptionManager {
             val response = httpClient.newCall(request).execute()
             val isSuccessful = response.isSuccessful
             val body = response.body!!.string()
-            response.close()
-            response.body?.close()
-            httpClient.connectionPool.evictAll()
+            response.body!!.close()
 
             Pair(isSuccessful, body)
         } catch (e: Exception) {
@@ -303,9 +296,7 @@ object TwitchSubscriptionManager {
             val response = httpClient.newCall(request).execute()
             val isSuccessful = response.isSuccessful
             val body = response.body!!.string()
-            response.close()
-            response.body?.close()
-            httpClient.connectionPool.evictAll()
+            response.body!!.close()
 
             Pair(isSuccessful, body)
         } catch (e: Exception) {

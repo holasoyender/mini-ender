@@ -215,6 +215,8 @@ class Tempmute: Command {
         get() = false
     override val permissions: List<Permission>
         get() = listOf(Permission.VOICE_MUTE_OTHERS, Permission.MODERATE_MEMBERS)
+    override val permissionLevel: Int
+        get() = 2
     override val botPermissions: List<Permission>
         get() = listOf(Permission.MANAGE_SERVER, Permission.VOICE_MUTE_OTHERS, Permission.MODERATE_MEMBERS)
 }

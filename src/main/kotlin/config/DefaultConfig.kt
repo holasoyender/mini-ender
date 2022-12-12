@@ -39,35 +39,8 @@ object DefaultConfig {
     }
 
     fun get(guildID: String): Guild {
-        return Guild(
-            id = guildID,
-            prefix = Env.PREFIX ?: "-",
-
-            welcomeRoleId = "",
-            welcomeChannelId = "",
-            welcomeMessage = "",
-
-            muteRoleId = "",
-
-            moderationSilent = false,
-            permissions = mapOf(),
-
-            logsChannelId = "",
-
-            antiLinksEnabled = false,
-            antiLinksChannelId = "",
-            antiLinksIgnoredRoles = arrayOf(),
-            antiLinksIgnoredChannels = arrayOf(),
-            antiPhishingEnabled = false,
-
-            customCommands = arrayOf(),
-
-            twitchChannel = "",
-            twitchAnnounceChannelId = "",
-            twitchAnnounceMessage = "",
-            twitchLiveChannelId = "",
-            twitchLiveMessage = "",
-
-            raw = ""
-        )    }
+        val guild = get()
+        guild.id = guildID
+        return guild
+    }
 }

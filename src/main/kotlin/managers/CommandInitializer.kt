@@ -70,7 +70,6 @@ class CommandInitializer(manager: CommandManager) {
         manager.registerCommand(Config())
 
         //Config
-        manager.registerCommand(Prefix())
         manager.registerCommand(Importar())
         manager.registerCommand(Exportar())
         manager.registerCommand(Reiniciar())
