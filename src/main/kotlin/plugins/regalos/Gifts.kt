@@ -117,7 +117,7 @@ object Gifts {
             chance = 2,
         ),
         Gift(
-            name = "TUBARAO",
+            name = "TUBARA",
             description = "¡cuidado que viene tubara!",
             image = "https://cdn.discordapp.com/attachments/704662032888365067/1051554500638429224/6A9F817E-B551-4487-AD7E-1C2B1DC93AF3.gif",
             rarity = 1,

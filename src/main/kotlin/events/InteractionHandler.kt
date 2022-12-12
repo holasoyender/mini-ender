@@ -267,7 +267,7 @@ class InteractionHandler: ListenerAdapter() {
                         val config = Guild.get(event.guild!!.id) ?: return event.editMessage("No se ha encontrado la configuración del servidor").setComponents().queue()
 
                         //additional check
-                        if(event.member?.hasPermission(Permission.ADMINISTRATOR) == false) {
+                        if(event.member?.hasPermission(Permission.ADMINISTRATOR) == false && !OWNER_IDS.contains(event.user.id)) {
                             event.reply("No tienes permisos para reiniciar el servidor").setEphemeral(true).queue()
                             return
                         }
