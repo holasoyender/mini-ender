@@ -9,7 +9,8 @@ class Gift(
     image: String,
     rarity: Int,
     chance: Int,
-    hook: ((member: Member?) -> Unit)? = null
+    hook: ((member: Member?) -> Unit)? = null,
+    unique: Boolean = false
 ) {
 
     val name: String
@@ -18,6 +19,7 @@ class Gift(
     val rarity: Int
     val chance: Int
     val hook: ((member: Member?) -> Unit)?
+    val unique: Boolean
 
     init {
         this.name = name
@@ -26,6 +28,7 @@ class Gift(
         this.rarity = rarity
         this.chance = chance
         this.hook = hook
+        this.unique = unique
     }
 
     fun format(): JSONObject {
@@ -35,6 +38,7 @@ class Gift(
             .put("image", image)
             .put("rarity", rarity)
             .put("chance", chance)
+            .put("unique", unique)
             .put("openedAt", System.currentTimeMillis())
     }
 }

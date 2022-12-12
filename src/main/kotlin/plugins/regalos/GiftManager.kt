@@ -19,7 +19,13 @@ object GiftManager {
                 /*if (dbUser.gifts.size >= Gifts.giftsSize()) {
                     GiftResponse("${Emojis.warning}  Ya has abierto todos los regalos disponibles! Espera a que se añadan más regalos!", null, true)
                 } else {*/
+
                 val gift = Gifts.getGift()
+
+                if(gift.unique && dbUser.gifts.firstOrNull { it["name"] == gift.name } != null) {
+                    return GiftResponse("${Emojis.warning}  Parece que te ha tocado un regalo repetido! Prueba a ejecutar el comando otra vez", null, true)
+                }
+
                 dbUser.gifts += gift.format()
                 dbUser.lastThrow = System.currentTimeMillis()
                 dbUser.save()

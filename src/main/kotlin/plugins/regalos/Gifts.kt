@@ -12,7 +12,7 @@ object Gifts {
             description = "Parece que esta vez no has tenido suerte, pero no te preocupes, mañana puede ser tu día de suerte!",
             image = "https://media.tenor.com/OasM7f4Pe6UAAAAC/serious-ibai.gif",
             rarity = 0,
-            chance = 38
+            chance = 10
         ),
         Gift(
             name = "¡ Un rol exclusivo del servidor !",
@@ -32,7 +32,8 @@ object Gifts {
                             )
                         })
                 }
-            }
+            },
+            unique = true
         ),
         Gift(
             name = "Clase de mates express con Ibai",
@@ -90,14 +91,22 @@ object Gifts {
             rarity = 1,
             chance = 5,
             hook = {
-                it?.guild?.timeoutFor(it, 1, TimeUnit.MINUTES)
-                    ?.queue({}, { _ ->
-                        WarningsManager.createWarning(
-                            it.guild,
-                            "No se ha podido dar el temp-mute de regalo al usuario ${it.user.id}",
-                            Severity.VERY_LOW
-                        )
-                    })
+                try {
+                    it?.guild?.timeoutFor(it, 1, TimeUnit.MINUTES)
+                        ?.queue({}, { _ ->
+                            WarningsManager.createWarning(
+                                it.guild,
+                                "No se ha podido dar el temp-mute de regalo al usuario ${it.user.id}",
+                                Severity.VERY_LOW
+                            )
+                        })
+                } catch (e: Exception) {
+                    WarningsManager.createWarning(
+                        it?.guild ?: return@Gift,
+                        "No se ha podido dar el temp-mute de regalo al usuario ${it.user.id}",
+                        Severity.VERY_LOW
+                    )
+                }
             }
         ),
         Gift(
