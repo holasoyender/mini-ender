@@ -44,7 +44,7 @@ class GiveawayService(shardManager: ShardManager) {
                                 val channel = guild.getTextChannelById(giveaway.channelId)
                                 if (channel != null) {
 
-                                    channel.retrieveMessageById(giveaway.messageId).queue { message ->
+                                    channel.retrieveMessageById(giveaway.messageId).queue({ message ->
 
                                         if (message != null) {
 
@@ -63,7 +63,10 @@ class GiveawayService(shardManager: ShardManager) {
                                             WarningsManager.createWarning(guild, "El mensaje del sorteo con ID ${giveaway.messageId} no existe, el sorteo ha sido eliminado", Severity.MEDIUM)
                                             giveaway.delete()
                                         }
-                                    }
+                                    }, {
+                                        WarningsManager.createWarning(guild, "El mensaje del sorteo con ID ${giveaway.messageId} no existe, el sorteo ha sido eliminado", Severity.MEDIUM)
+                                        giveaway.delete()
+                                    })
 
                                 } else {
                                     WarningsManager.createWarning(guild, "El canal ${giveaway.channelId} no existe, el sorteo con ID ${giveaway.messageId} ha sido eliminado", Severity.MEDIUM)
