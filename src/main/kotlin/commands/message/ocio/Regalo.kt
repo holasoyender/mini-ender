@@ -40,8 +40,9 @@ Total: ${gifts.size} regalos```
             return CommandResponse.success()
         }
 
+        val skipTime = event.channel.id == "1050890422869827644" || (event.message.contentRaw.contains("force") && OWNER_IDS.contains(event.author.id))
 
-        val response = GiftManager.run(event.author, event.member, event.channel.id == "1050890422869827644")
+        val response = GiftManager.run(event.author, event.member, skipTime)
 
         if(response.embed == null) {
             event.message.reply(response.message).queue()
