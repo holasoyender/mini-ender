@@ -15,6 +15,9 @@ object DefaultConfig {
 
             muteRoleId = "",
 
+            moderationSilent = false,
+            permissions = mapOf(),
+
             logsChannelId = "",
 
             antiLinksEnabled = false,
@@ -45,6 +48,9 @@ object DefaultConfig {
             welcomeMessage = "",
 
             muteRoleId = "",
+
+            moderationSilent = false,
+            permissions = mapOf(),
 
             logsChannelId = "",
 

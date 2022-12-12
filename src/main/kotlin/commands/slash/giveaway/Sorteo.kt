@@ -145,7 +145,7 @@ class Sorteo: SlashCommand {
                         OptionData(OptionType.STRING, "tiempo", "Tiempo del sorteo en segundos", true),
                         OptionData(OptionType.INTEGER, "ganadores", "Número de ganadores", true),
                         OptionData(OptionType.STRING, "premio", "El premio a sortear", true),
-                        OptionData(OptionType.USER, "host", "El host del sorteo", false),
+                        OptionData(OptionType.USER, "host", "El host del sorteo", true),
                         OptionData(OptionType.STRING, "estilo", "Estilo del embed del sorteo", false)
                             .addChoice("Normal", "normal")
                             .addChoice("Mínima información", "minimum")

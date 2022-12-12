@@ -27,6 +27,12 @@ class GuildConfigValidator(
         val (roles, rolesError) = roles()
         if (!roles) return Pair(false, rolesError)
 
+        val (moderation, moderationError) = moderation()
+        if (!moderation) return Pair(false, moderationError)
+
+        val (permissions, permissionsError) = permissions()
+        if (!permissions) return Pair(false, permissionsError)
+
         val (logs, logsError) = logs()
         if (!logs) return Pair(false, logsError)
 
@@ -69,6 +75,26 @@ class GuildConfigValidator(
         if(roles["mute_role_id"] !is String) return Pair(false, "El rol de mute no está bien definido")
         if(!isIdOrEmpty(roles["mute_role_id"] as String)) return Pair(false, "El rol de mute no es un ID válido")
         if((roles["mute_role_id"] as String).isNotEmpty() && !isValidRole(roles["mute_role_id"] as String)) return Pair(false, "El rol de mute no existe en el servidor")
+        return Pair(true, "")
+    }
+
+    private fun moderation(): Pair<Boolean, String> {
+        val moderation = config["moderation"] ?: return Pair(false, "El modulo de moderación no está definido")
+        if(moderation !is Map<*, *>) return Pair(false, "El modulo de moderación no está bien definido")
+        if(moderation["silent"] !is Boolean) return Pair(false, "El modo silencioso no está bien definido")
+        return Pair(true, "")
+    }
+
+    private fun permissions(): Pair<Boolean, String> {
+        val permissions = config["permissions"] ?: return Pair(false, "El modulo de permisos no está definido")
+        if(permissions !is Map<*, *>) return Pair(false, "El modulo de permisos no está bien definido")
+        for((key, value) in permissions) {
+            if(key !is Long) return Pair(false, "El ID del rol $key no es un String")
+            if(!isIdOrEmpty(key.toString())) return Pair(false, "El ID del rol $key no es un ID válido")
+            if(key.toString().isNotEmpty() && !isValidRole(key.toString())) return Pair(false, "El ID del rol $key no existe en el servidor")
+            if(value !is Int) return Pair(false, "El nivel del rol $key no es un Int")
+            if(value < 0 || value > 5) return Pair(false, "El nivel del rol $key no es válido")
+        }
         return Pair(true, "")
     }
 

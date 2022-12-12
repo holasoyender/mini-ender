@@ -1,5 +1,7 @@
 package commands.message.dev
 
+import config.DefaultConfig
+import database.schema.Guild
 import interfaces.Command
 import interfaces.CommandResponse
 import net.dv8tion.jda.api.Permission
@@ -26,6 +28,7 @@ class Eval: Command {
         if(event.isFromGuild) {
             script.put("guild", event.guild)
             script.put("member", event.member)
+            script.put("config", Guild.get(event.guild.id) ?: DefaultConfig.get())
         }
         script.put("msgcache", cache.MessageCache)
 

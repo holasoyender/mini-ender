@@ -37,6 +37,7 @@ class Exportar: SlashCommand {
             val content = fileContent(file)
                 .replace("{guildId}", event.guild!!.id)
                 .replace("{guildName}", event.guild!!.name)
+                .replace("{everyoneRoleId}", event.guild!!.publicRole.id)
 
             event.reply("${Emojis.success}  Aquí tienes un nuevo archivo de configuración para este servidor")
                 .setFiles(FileUpload.fromData(content.byteInputStream(), "${event.guild!!.id}.yaml"))

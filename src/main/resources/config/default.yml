@@ -12,8 +12,15 @@ welcomes:
 roles:
   mute_role_id: ""  # ID del rol que se le dará a los usuarios silenciados, dejar en blanco para desactivar
 
+moderation:
+  silent: false  # Si está activado, los comandos ejecutados de manera incorrecta no mostrarán ningún mensaje de error
+
+permissions:
+  {everyoneRoleId}: 1 # Permisos del rol @everyone (0 = Ninguno, 1 = Comandos básicos, 2 = Comandos de moderación, 3 = Comandos de administración, 4 = Comandos de configuración, 5 = Todos los comandos)
+
 logs:
-  channel_id: "" # ID del canal donde se enviarán todos los logs, dejar en blanco para desactivar
+  channel_id: "" # ID del canal donde se enviarán todos los logs del servidor, dejar en blanco para desactivar
+  moderation_channel_id: "" # ID del canal donde se enviarán los logs de moderación, dejar en blanco para desactivar
 
 anti_links:
     enabled: false # Si está activado o no el sistema de anti-links

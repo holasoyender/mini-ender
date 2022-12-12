@@ -13,6 +13,10 @@ class Guild(
 
     muteRoleId: String,
 
+    moderationSilent: Boolean,
+
+    permissions: Map<String, Int>,
+
     logsChannelId: String,
 
     antiLinksEnabled: Boolean,
@@ -40,6 +44,10 @@ class Guild(
     var welcomeMessage: String
 
     var muteRoleId: String
+
+    var moderationSilent: Boolean
+
+    var permissions: Map<String, Int>
 
     var logsChannelId: String
 
@@ -72,6 +80,10 @@ class Guild(
         this.welcomeMessage = welcomeMessage
 
         this.muteRoleId = muteRoleId
+
+        this.moderationSilent = moderationSilent
+
+        this.permissions = permissions
 
         this.logsChannelId = logsChannelId
 
@@ -110,7 +122,7 @@ class Guild(
 
         if (exists()) {
             database.Postgres.dataSource?.connection.use { connection ->
-                val statement = connection!!.prepareStatement("UPDATE guilds SET prefix = ?, welcome_role_id = ?, welcome_channel_id = ?, welcome_message = ?, mute_role_id = ?, logs_channel_id = ?, anti_links_enabled = ?, anti_links_channel_id = ?, anti_links_ignored_roles = ?, anti_links_ignored_channels = ?, anti_phishing_enabled = ?, custom_commands = ?, twitch_channel = ?, twitch_announce_channel_id = ?, twitch_announce_message = ?, twitch_live_channel_id = ?, twitch_live_message = ?, raw = ? WHERE id = ?")
+                val statement = connection!!.prepareStatement("UPDATE guilds SET prefix = ?, welcome_role_id = ?, welcome_channel_id = ?, welcome_message = ?, mute_role_id = ?, moderation_silent = ?, permissions = ?, logs_channel_id = ?, anti_links_enabled = ?, anti_links_channel_id = ?, anti_links_ignored_roles = ?, anti_links_ignored_channels = ?, anti_phishing_enabled = ?, custom_commands = ?, twitch_channel = ?, twitch_announce_channel_id = ?, twitch_announce_message = ?, twitch_live_channel_id = ?, twitch_live_message = ?, raw = ? WHERE id = ?")
                 statement.setString(1, prefix)
 
                 statement.setString(2, welcomeRoleId)
@@ -119,32 +131,40 @@ class Guild(
 
                 statement.setString(5, muteRoleId)
 
-                statement.setString(6, logsChannelId)
+                statement.setBoolean(6, moderationSilent)
+                statement.setString(7, JSONObject().let {
+                    permissions.forEach { (key, value) ->
+                        it.put(key, value)
+                    }
+                    it
+                }.toString())
 
-                statement.setBoolean(7, antiLinksEnabled)
-                statement.setString(8, antiLinksChannelId)
-                statement.setArray(9, connection.createArrayOf("text", antiLinksIgnoredRoles))
-                statement.setArray(10, connection.createArrayOf("text", antiLinksIgnoredChannels))
-                statement.setBoolean(11, antiPhishingEnabled)
+                statement.setString(8, logsChannelId)
 
-                statement.setArray(12, connection.createArrayOf("jsonb", customCommands))
+                statement.setBoolean(9, antiLinksEnabled)
+                statement.setString(10, antiLinksChannelId)
+                statement.setArray(11, connection.createArrayOf("text", antiLinksIgnoredRoles))
+                statement.setArray(12, connection.createArrayOf("text", antiLinksIgnoredChannels))
+                statement.setBoolean(13, antiPhishingEnabled)
 
-                statement.setString(13, twitchChannel)
-                statement.setString(14, twitchAnnounceChannelId)
-                statement.setString(15, twitchAnnounceMessage)
-                statement.setString(16, twitchLiveChannelId)
-                statement.setString(17, twitchLiveMessage)
+                statement.setArray(14, connection.createArrayOf("json", customCommands))
 
-                statement.setString(18, raw)
+                statement.setString(15, twitchChannel)
+                statement.setString(16, twitchAnnounceChannelId)
+                statement.setString(17, twitchAnnounceMessage)
+                statement.setString(18, twitchLiveChannelId)
+                statement.setString(19, twitchLiveMessage)
 
-                statement.setString(19, id)
+                statement.setString(20, raw)
+
+                statement.setString(21, id)
 
                 statement.execute()
             }
         } else {
             database.Postgres.dataSource?.connection.use { connection ->
                 val statement =
-                    connection!!.prepareStatement("INSERT INTO guilds (id, prefix, welcome_role_id, welcome_channel_id, welcome_message, mute_role_id, logs_channel_id, anti_links_enabled, anti_links_channel_id, anti_links_ignored_roles, anti_links_ignored_channels, anti_phishing_enabled, custom_commands, twitch_channel, twitch_announce_channel_id, twitch_announce_message, twitch_live_channel_id, twitch_live_message, raw) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+                    connection!!.prepareStatement("INSERT INTO guilds (id, prefix, welcome_role_id, welcome_channel_id, welcome_message, mute_role_id, moderation_silent, permissions, logs_channel_id, anti_links_enabled, anti_links_channel_id, anti_links_ignored_roles, anti_links_ignored_channels, anti_phishing_enabled, custom_commands, twitch_channel, twitch_announce_channel_id, twitch_announce_message, twitch_live_channel_id, twitch_live_message, raw) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
                 statement.setString(1, id)
                 statement.setString(2, prefix)
 
@@ -154,23 +174,31 @@ class Guild(
 
                 statement.setString(6, muteRoleId)
 
-                statement.setString(7, logsChannelId)
+                statement.setBoolean(7, moderationSilent)
+                statement.setString(8, JSONObject().let {
+                    permissions.forEach { (key, value) ->
+                        it.put(key, value)
+                    }
+                    it
+                }.toString())
 
-                statement.setBoolean(8, antiLinksEnabled)
-                statement.setString(9, antiLinksChannelId)
-                statement.setArray(10, connection.createArrayOf("text", antiLinksIgnoredRoles))
-                statement.setArray(11, connection.createArrayOf("text", antiLinksIgnoredChannels))
-                statement.setBoolean(12, antiPhishingEnabled)
+                statement.setString(9, logsChannelId)
 
-                statement.setArray(13, connection.createArrayOf("jsonb", customCommands))
+                statement.setBoolean(10, antiLinksEnabled)
+                statement.setString(11, antiLinksChannelId)
+                statement.setArray(12, connection.createArrayOf("text", antiLinksIgnoredRoles))
+                statement.setArray(13, connection.createArrayOf("text", antiLinksIgnoredChannels))
+                statement.setBoolean(14, antiPhishingEnabled)
 
-                statement.setString(14, twitchChannel)
-                statement.setString(15, twitchAnnounceChannelId)
-                statement.setString(16, twitchAnnounceMessage)
-                statement.setString(17, twitchLiveChannelId)
-                statement.setString(18, twitchLiveMessage)
+                statement.setArray(15, connection.createArrayOf("json", customCommands))
 
-                statement.setString(19, raw)
+                statement.setString(16, twitchChannel)
+                statement.setString(17, twitchAnnounceChannelId)
+                statement.setString(18, twitchAnnounceMessage)
+                statement.setString(19, twitchLiveChannelId)
+                statement.setString(20, twitchLiveMessage)
+
+                statement.setString(21, raw)
 
                 statement.execute()
             }
@@ -221,6 +249,8 @@ class Guild(
                 welcome_channel_id TEXT NOT NULL,
                 welcome_message TEXT NOT NULL,
                 mute_role_id TEXT NOT NULL,
+                moderation_silent BOOLEAN NOT NULL,
+                permissions TEXT NOT NULL,
                 logs_channel_id TEXT NOT NULL,
                 anti_links_enabled BOOLEAN NOT NULL,
                 anti_links_channel_id TEXT NOT NULL,
@@ -256,6 +286,15 @@ class Guild(
                         result.getString("welcome_message"),
 
                         result.getString("mute_role_id"),
+
+                        result.getBoolean("moderation_silent"),
+                        result.getObject("permissions").toString().let {
+                            val map = mutableMapOf<String, Int>()
+                            JSONObject(it).keys().forEach { key ->
+                                map[key] = JSONObject(it).getInt(key)
+                            }
+                            map
+                        },
 
                         result.getString("logs_channel_id"),
 
@@ -301,6 +340,15 @@ class Guild(
 
                             result.getString("mute_role_id"),
 
+                            result.getBoolean("moderation_silent"),
+                            result.getObject("permissions").toString().let {
+                                val map = mutableMapOf<String, Int>()
+                                JSONObject(it).keys().forEach { key ->
+                                    map[key] = JSONObject(it).getInt(key)
+                                }
+                                map
+                            },
+
                             result.getString("logs_channel_id"),
 
                             result.getBoolean("anti_links_enabled"),
@@ -343,6 +391,15 @@ class Guild(
                             result.getString("welcome_message"),
 
                             result.getString("mute_role_id"),
+
+                            result.getBoolean("moderation_silent"),
+                            result.getObject("permissions").toString().let {
+                                val map = mutableMapOf<String, Int>()
+                                JSONObject(it).keys().forEach { key ->
+                                    map[key] = JSONObject(it).getInt(key)
+                                }
+                                map
+                            },
 
                             result.getString("logs_channel_id"),
 
@@ -387,6 +444,15 @@ class Guild(
                             result.getString("welcome_message"),
 
                             result.getString("mute_role_id"),
+
+                            result.getBoolean("moderation_silent"),
+                            result.getObject("permissions").toString().let {
+                                val map = mutableMapOf<String, Int>()
+                                JSONObject(it).keys().forEach { key ->
+                                    map[key] = JSONObject(it).getInt(key)
+                                }
+                                map
+                            },
 
                             result.getString("logs_channel_id"),
 

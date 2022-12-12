@@ -42,6 +42,9 @@ object GuildConfigImporter {
 
                     muteRoleId = (config["roles"] as Map<*, *>)["mute_role_id"] as String,
 
+                    moderationSilent = (config["moderation"] as Map<*, *>)["silent"] as Boolean,
+                    permissions = (config["permissions"] as Map<Long, Int>).map { it.key.toString() to it.value }.toMap(),
+
                     logsChannelId = (config["logs"] as Map<*, *>)["channel_id"] as String,
 
                     antiLinksEnabled = (config["anti_links"] as Map<*, *>)["enabled"] as Boolean,
@@ -91,7 +94,8 @@ object GuildConfigImporter {
 
                 guildConfig.muteRoleId = (config["roles"] as Map<*, *>)["mute_role_id"] as String
 
-                guildConfig.logsChannelId = (config["logs"] as Map<*, *>)["channel_id"] as String
+                guildConfig.moderationSilent = (config["moderation"] as Map<*, *>)["silent"] as Boolean
+                guildConfig.permissions = (config["permissions"] as Map<Long, Int>).map { it.key.toString() to it.value }.toMap()
 
                 guildConfig.antiLinksEnabled = (config["anti_links"] as Map<*, *>)["enabled"] as Boolean
                 guildConfig.antiLinksChannelId = (config["anti_links"] as Map<*, *>)["channel_id"] as String

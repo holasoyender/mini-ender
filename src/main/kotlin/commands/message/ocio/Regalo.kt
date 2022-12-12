@@ -4,6 +4,7 @@ import database.schema.Regalo
 import interfaces.Command
 import interfaces.CommandResponse
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.Message.MentionType
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import plugins.regalos.GiftManager
 import utils.Constants.OWNER_IDS
@@ -48,7 +49,9 @@ Total: ${gifts.size} regalos```
             val embed = response.embed
             embed.setColor(Color.decode("#2f3136"))
                 .setThumbnail("https://twemoji.maxcdn.com/v/latest/72x72/1f381.png")
-            event.message.replyEmbeds(embed.build()).queue()
+            event.message.replyEmbeds(embed.build()).setAllowedMentions(
+                listOf(MentionType.USER)
+            ).queue()
         }
         return CommandResponse.success()
     }
