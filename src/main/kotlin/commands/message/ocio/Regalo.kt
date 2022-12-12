@@ -40,8 +40,26 @@ Total: ${gifts.size} regalos```
             return CommandResponse.success()
         }
 
-        val skipTime = event.channel.id == "1050890422869827644" || (event.message.contentRaw.contains("force") && OWNER_IDS.contains(event.author.id))
+        if(event.message.contentRaw.contains("flush") && OWNER_IDS.contains(event.author.id)) {
 
+            val regalos = Regalo.getAll()
+            var totalFlushes = 0
+
+            regalos.forEach { regalo ->
+                val gifts = regalo.gifts.map { it["name"] as String to it["openedAt"] as Long }
+                gifts.forEach { g ->
+                    if(g.second < System.currentTimeMillis() - 86400000) {
+                        regalo.gifts = regalo.gifts.filter { it["name"] as String != g.first }.toTypedArray()
+                        regalo.save()
+                        totalFlushes++
+                    }
+                }
+            }
+            event.message.reply("Se han eliminado $totalFlushes regalos.").queue()
+            return CommandResponse.success()
+        }
+
+        val skipTime = event.channel.id == "1050890422869827644" || (event.message.contentRaw.contains("force") && OWNER_IDS.contains(event.author.id))
         val response = GiftManager.run(event.author, event.member, skipTime)
 
         if(response.embed == null) {

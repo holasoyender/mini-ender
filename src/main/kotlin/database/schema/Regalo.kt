@@ -120,5 +120,23 @@ class Regalo(
             }
             return null
         }
+
+        fun getAll(): List<Regalo> {
+            val regalos = mutableListOf<Regalo>()
+            database.Postgres.dataSource?.connection.use { connection ->
+                val statement = connection!!.prepareStatement("SELECT * FROM regalos")
+                val result = statement.executeQuery()
+                while (result.next()) {
+                    regalos.add(
+                        Regalo(
+                            result.getString("user_id"),
+                            result.getLong("last_throw"),
+                            (result.getArray("gifts")?.array as Array<String>?)?.map { JSONObject(it) }?.toTypedArray() ?: arrayOf(),
+                        )
+                    )
+                }
+            }
+            return regalos
+        }
     }
 }
