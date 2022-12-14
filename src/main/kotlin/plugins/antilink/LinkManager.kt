@@ -35,7 +35,7 @@ object LinkManager {
 
             if (link.underRevision) {
                 try {
-                    message.delete().queue()
+                    message.delete().queue({}, {})
                 } catch (_: Exception) {
                     WarningsManager.createWarning(
                         guild,
@@ -46,8 +46,8 @@ object LinkManager {
 
                 try {
                     message.author.openPrivateChannel().queue { channel ->
-                        channel.sendMessage("**Hola ${message.author.asMention}! :wave:**\n\nTu mensaje del canal **${channel.asMention}** ha sido eliminado debido a que el link que has enviado se encuentra bajo revisión por parte del equipo de moderación.\n`Si crees que esto es un error, por favor, contacta con un el soporte del servidor.`\n\n```${message.contentStripped}```")
-                            .queue()
+                        channel.sendMessage("**Hola ${message.author.asMention}! :wave:**\n\nTu mensaje del canal **${message.channel.asMention}** ha sido eliminado debido a que el link que has enviado se encuentra bajo revisión por parte del equipo de moderación.\n`Si crees que esto es un error, por favor, contacta con un el soporte del servidor.`\n\n```${message.contentStripped}```")
+                            .queue({}, {})
                     }
                 } catch (_: Exception) {
                     // ignore
@@ -63,7 +63,7 @@ object LinkManager {
 
             if (link.action != Actions.NONE) {
                 try {
-                    message.delete().queue()
+                    message.delete().queue({}, {})
                 } catch (_: Exception) {
                     deletedMessage = false
                     WarningsManager.createWarning(
@@ -148,7 +148,7 @@ object LinkManager {
             newLink.save()
 
             try {
-                message.delete().queue()
+                message.delete().queue({}, {})
             } catch (_: Exception) {
                 WarningsManager.createWarning(
                     guild,
@@ -159,7 +159,8 @@ object LinkManager {
 
             try {
                 message.author.openPrivateChannel().queue { channel ->
-                    channel.sendMessage("**Hola ${message.author.asMention}! :wave:**\n\nTu mensaje del canal **${channel.asMention}** ha sido eliminado debido a que el link que has enviado no se encuentra en la lista de links permitidos\n\nLos moderadores del servidor revisarán este enlace y, en caso de ser aprobado podrás enviarlo otra vez.\n`Si crees que esto es un error, por favor, contacta con un el soporte del servidor.`\n\n```${message.contentStripped}```").queue()
+                    channel.sendMessage("**Hola ${message.author.asMention}! :wave:**\n\nTu mensaje del canal **${message.channel.asMention}** ha sido eliminado debido a que el link que has enviado no se encuentra en la lista de links permitidos\n\nLos moderadores del servidor revisarán este enlace y, en caso de ser aprobado podrás enviarlo otra vez.\n`Si crees que esto es un error, por favor, contacta con un el soporte del servidor.`\n\n```${message.contentStripped}```")
+                        .queue({}, {})
                 }
             } catch (_: Exception) {
                 // ignore

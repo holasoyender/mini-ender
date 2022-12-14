@@ -28,42 +28,48 @@ class MessageHandler: ListenerAdapter() {
         val message = event.message
         val content = message.contentRaw
 
-        if(author.isBot) return
-        if(message.isWebhookMessage) return
-        val guild = if(event.isFromGuild) Guild.get(event.guild.id) ?: DefaultConfig.get() else DefaultConfig.get()
+        if (author.isBot) return
+        if (message.isWebhookMessage) return
+        val guild = if (event.isFromGuild) Guild.get(event.guild.id) ?: DefaultConfig.get() else DefaultConfig.get()
 
         val args = content.slice(guild.prefix.length until content.length).split(" ")
         var invoker = args[0]
 
-        if(event.isFromGuild) {
+        if (event.isFromGuild) {
 
             MessageCache.addMessage(message)
 
-            if(!guild.antiLinksIgnoredChannels.contains(message.channel.id) && !guild.antiLinksIgnoredRoles.none { message.member?.roles?.map { r -> r.id }?.contains(it) == true }) {
-                if (guild.antiLinksEnabled && !guild.antiPhishingEnabled) {
-                    LinkManager.check(message)
-                }
-
+            if (
+                !guild.antiLinksIgnoredChannels.contains(message.channel.id) &&
+                !guild.antiLinksIgnoredRoles.any { message.member?.roles?.map { r -> r.id }?.contains(it) == true }
+            ) {
                 if (guild.antiLinksEnabled) {
-                    if (Phishing.isPhishing(message))
-                        Phishing.checkPhishing(message)
-                    else
+                    if (guild.antiPhishingEnabled) {
+                        if (Phishing.isPhishing(message))
+                            Phishing.checkPhishing(message)
+                        else
+                            LinkManager.check(message)
+                    } else {
                         LinkManager.check(message)
+                    }
                 }
             }
         }
 
         val prefix = guild.prefix
 
-        if(content == "<@!${event.jda.selfUser.id}>" || content == "<@${event.jda.selfUser.id}>") {
+        if (content == "<@!${event.jda.selfUser.id}>" || content == "<@${event.jda.selfUser.id}>") {
             val mentioned = message.mentions.getMentions().first()
-            if(mentioned.id == event.jda.selfUser.id) {
+            if (mentioned.id == event.jda.selfUser.id) {
                 val embed = EmbedBuilder()
                     .setColor(Color.decode("#2f3136"))
                     .setAuthor("¡Hola, soy ${event.jda.selfUser.name}!", null, event.jda.selfUser.avatarUrl)
                     .setDescription("Mi prefijo en este servidor es `$prefix`, usa `${prefix}help` para ver la lista de comandos disponibles")
                 message.replyEmbeds(embed.build()).setActionRow(
-                    Button.link("https://discord.com/api/oauth2/authorize?client_id=${event.jda.selfUser.id}&permissions=8&scope=bot%20applications.commands", "Invítame"),
+                    Button.link(
+                        "https://discord.com/api/oauth2/authorize?client_id=${event.jda.selfUser.id}&permissions=8&scope=bot%20applications.commands",
+                        "Invítame"
+                    ),
                     Button.link("https://discord.gg/WgRBDFk63s", "Soporte"),
                     Button.link("https://kenabot.xyz", "Sitio web"),
                     Button.link("https://github.com/holsoyender/mini-ender", "Repositorio"),
@@ -72,13 +78,16 @@ class MessageHandler: ListenerAdapter() {
                 return
             }
         } else {
-            if(!event.isFromGuild && !content.startsWith(prefix)) {
+            if (!event.isFromGuild && !content.startsWith(prefix)) {
                 val embed = EmbedBuilder()
                     .setColor(Color.decode("#2f3136"))
                     .setAuthor("¡Hola, soy ${event.jda.selfUser.name}!", null, event.jda.selfUser.avatarUrl)
                     .setDescription("Mi prefijo en este servidor es `$prefix`, usa `${prefix}help` para ver la lista de comandos disponibles")
                 message.replyEmbeds(embed.build()).setActionRow(
-                    Button.link("https://discord.com/api/oauth2/authorize?client_id=${event.jda.selfUser.id}&permissions=8&scope=bot%20applications.commands", "Invítame"),
+                    Button.link(
+                        "https://discord.com/api/oauth2/authorize?client_id=${event.jda.selfUser.id}&permissions=8&scope=bot%20applications.commands",
+                        "Invítame"
+                    ),
                     Button.link("https://discord.gg/WgRBDFk63s", "Soporte"),
                     Button.link("https://kenabot.xyz", "Sitio web"),
                     Button.link("https://github.com/holsoyender/mini-ender", "Repositorio"),
@@ -88,19 +97,21 @@ class MessageHandler: ListenerAdapter() {
             }
         }
 
-        if(!content.startsWith(prefix)) {
+        if (!content.startsWith(prefix)) {
 
-            val globalPrefixes = listOf("!", "-", "/", "!!", ".", "$", "¡", "?", ",", ";", ">", "@", "#", "&").filter { it != prefix }
+            val globalPrefixes =
+                listOf("!", "-", "/", "!!", ".", "$", "¡", "?", ",", ";", ">", "@", "#", "&").filter { it != prefix }
 
-            if(globalPrefixes.any { content.startsWith(it) }) {
+            if (globalPrefixes.any { content.startsWith(it) }) {
                 val globalPrefix = globalPrefixes.first { content.startsWith(it) }
                 val globalArgs = content.slice(globalPrefix.length until content.length).split(" ")
                 val globalInvoker = globalArgs[0]
 
-                val command = commandManager?.getCommands()?.firstOrNull { it.name == globalInvoker.lowercase() || it.aliases.contains(invoker.lowercase()) }
-                if(command != null) {
+                val command = commandManager?.getCommands()
+                    ?.firstOrNull { it.name == globalInvoker.lowercase() || it.aliases.contains(invoker.lowercase()) }
+                if (command != null) {
 
-                    if(command.global) {
+                    if (command.global) {
                         message.addReaction(Emoji.fromCustom(CustomEmojiImpl("slash", 941024012270710874, false)))
                             .queue()
                         GlobalCommandManager.add(event)
@@ -124,10 +135,11 @@ class MessageHandler: ListenerAdapter() {
             val aliases = it["aliases"] as JSONArray
             content.startsWith("$prefix$name") || aliases.any { alias -> content.startsWith("$prefix$alias") }
         }
-        if(customCommand != null) {
+        if (customCommand != null) {
             val response = customCommand["response"] as String
-            val isCommand = commandManager?.getCommands()?.firstOrNull { it.name == response.lowercase() || it.aliases.contains(response.lowercase()) } != null
-            if(isCommand) {
+            val isCommand = commandManager?.getCommands()
+                ?.firstOrNull { it.name == response.lowercase() || it.aliases.contains(response.lowercase()) } != null
+            if (isCommand) {
                 invoker = response
             } else {
                 message.reply(response).queue()
@@ -141,27 +153,28 @@ class MessageHandler: ListenerAdapter() {
 
     override fun onMessageReactionAdd(event: MessageReactionAddEvent) {
 
-        if(event.emoji.type == Emoji.Type.CUSTOM) {
+        if (event.emoji.type == Emoji.Type.CUSTOM) {
             val emoji = event.emoji.asCustom()
-            if(emoji.id == "941024012270710874") {
+            if (emoji.id == "941024012270710874") {
 
                 event.retrieveMessage().queue {
 
-                    if(it.author.id != event.userId) return@queue
+                    if (it.author.id != event.userId) return@queue
 
                     val content = it.contentRaw
                     val globalPrefixes = listOf("!", "-", "/", "!!", ".", "$", "¡", "?", ",", ";", ">", "@", "#", "&")
 
-                    if(globalPrefixes.any { content.startsWith(it) }) {
+                    if (globalPrefixes.any { content.startsWith(it) }) {
                         val globalPrefix = globalPrefixes.first { content.startsWith(it) }
                         val args = content.slice(globalPrefix.length until content.length).split(" ")
                         val invoker = args[0]
 
-                        val command = commandManager?.getCommands()?.firstOrNull { it.name == invoker.lowercase() || it.aliases.contains(invoker.lowercase()) }
-                        if(command != null) {
-                            if(command.global) {
+                        val command = commandManager?.getCommands()
+                            ?.firstOrNull { it.name == invoker.lowercase() || it.aliases.contains(invoker.lowercase()) }
+                        if (command != null) {
+                            if (command.global) {
                                 val messageEvent = GlobalCommandManager.get(it.id)
-                                if(messageEvent != null) {
+                                if (messageEvent != null) {
                                     commandManager!!.run(invoker, messageEvent)
                                     GlobalCommandManager.remove(it.id)
                                 }
@@ -174,31 +187,34 @@ class MessageHandler: ListenerAdapter() {
     }
 
     override fun onMessageDelete(event: MessageDeleteEvent) {
-        if(event.isFromGuild)
+        if (event.isFromGuild)
             EventLogger(event.guild, Guild.get(event.guild.id) ?: DefaultConfig.get()).log(event)
         super.onMessageDelete(event)
     }
 
     override fun onMessageUpdate(event: MessageUpdateEvent) {
-        if(event.isFromGuild)
+        if (event.isFromGuild)
             EventLogger(event.guild, Guild.get(event.guild.id) ?: DefaultConfig.get()).log(event)
 
-        if(event.isFromGuild) {
+        if (event.isFromGuild) {
 
             val message = event.message
 
             val guild = Guild.get(event.guild.id) ?: DefaultConfig.get()
 
-            if(!guild.antiLinksIgnoredChannels.contains(message.channel.id) && !guild.antiLinksIgnoredRoles.none { message.member?.roles?.map { r -> r.id }?.contains(it) == true }) {
-                if (guild.antiLinksEnabled && !guild.antiPhishingEnabled) {
-                    LinkManager.check(message)
-                }
-
+            if (
+                !guild.antiLinksIgnoredChannels.contains(message.channel.id) &&
+                !guild.antiLinksIgnoredRoles.any { message.member?.roles?.map { r -> r.id }?.contains(it) == true }
+            ) {
                 if (guild.antiLinksEnabled) {
-                    if (Phishing.isPhishing(message))
-                        Phishing.checkPhishing(message)
-                    else
+                    if (guild.antiPhishingEnabled) {
+                        if (Phishing.isPhishing(message))
+                            Phishing.checkPhishing(message)
+                        else
+                            LinkManager.check(message)
+                    } else {
                         LinkManager.check(message)
+                    }
                 }
             }
         }
