@@ -1,6 +1,5 @@
 package api.routes
 
-import database.Postgres
 import jda
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
@@ -16,11 +15,6 @@ class Status {
             this["api"] = HashMap<String, Any>().apply {
                 this["status"] = "ok"
                 this["version"] = "1"
-            }
-            this["database"] = HashMap<String, Any>().apply {
-                this["status"] = if(Postgres.dataSource != null) "ok" else "error"
-                this["version"] = Postgres.dataSource?.connection?.metaData?.databaseProductVersion ?: "unknown"
-                this["driver"] = Postgres.dataSource?.connection?.metaData?.driverName ?: "unknown"
             }
             this["bot"] = HashMap<String, Any>().apply {
                 this["status"] = jda!!.status.name
