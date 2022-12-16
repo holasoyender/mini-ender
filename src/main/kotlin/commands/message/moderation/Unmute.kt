@@ -2,6 +2,7 @@ package commands.message.moderation
 
 import config.DefaultConfig
 import database.schema.Guild
+import database.schema.Infraction
 import interfaces.Command
 import interfaces.CommandResponse
 import net.dv8tion.jda.api.Permission
@@ -34,6 +35,14 @@ class Unmute: Command {
         if(!member.roles.contains(muteRole))
             return CommandResponse.error("El usuario no está silenciado")
 
+        val infraction = Infraction.getAllByUserId(event.guild.id, user.id).firstOrNull {
+            (it.type.name == "MUTE" || it.type.name == "TEMP_MUTE") && !it.ended
+        }
+
+        if(infraction != null) {
+            infraction.ended = true
+            infraction.save()
+        }
 
         event.guild.removeRoleFromMember(member, muteRole).queue({
             event.message.reply("${Emojis.success} ${member.asMention} ha sido desmuteado correctamente").queue()

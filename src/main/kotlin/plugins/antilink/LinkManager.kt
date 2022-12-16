@@ -46,7 +46,7 @@ object LinkManager {
 
                 try {
                     message.author.openPrivateChannel().queue { channel ->
-                        channel.sendMessage("**Hola ${message.author.asMention}! :wave:**\n\nTu mensaje del canal **${message.channel.asMention}** ha sido eliminado debido a que el link que has enviado se encuentra bajo revisión por parte del equipo de moderación.\n`Si crees que esto es un error, por favor, contacta con un el soporte del servidor.`\n\n```${message.contentStripped}```")
+                        channel.sendMessage("Tu mensaje del canal **${message.channel.asMention}** ha sido eliminado debido a que el link que has enviado se encuentra bajo revisión por parte del equipo de moderación.\n`Si crees que esto es un error, por favor, contacta con un el soporte del servidor.`\n\n```${message.contentStripped}```")
                             .queue({}, {})
                     }
                 } catch (_: Exception) {
@@ -103,13 +103,14 @@ object LinkManager {
                 )
                 .addField("Canal", "<#$channelId>", true)
                 .addField("Usuario", "${message.author.asMention} (${message.author.id})", true)
+                .addField("Moderador que añadió el dominio", "<@${link.moderatorId}> (${link.moderatorId})", true)
                 .setThumbnail("https://cdn.discordapp.com/attachments/839400943517827092/1038135823650013255/sentinel.png")
                 .setColor(0x2f3136)
 
             val config = database.schema.Guild.get(guild.id) ?: return
             val channel =
-                if (config.antiLinksChannelId.isNotBlank()) {
-                    guild.getTextChannelById(config.antiLinksChannelId)
+                if (config.logsChannelId.isNotBlank()) {
+                    guild.getTextChannelById(config.logsChannelId)
                 } else {
                     WarningsManager.createWarning(
                         guild,
@@ -159,7 +160,7 @@ object LinkManager {
 
             try {
                 message.author.openPrivateChannel().queue { channel ->
-                    channel.sendMessage("**Hola ${message.author.asMention}! :wave:**\n\nTu mensaje del canal **${message.channel.asMention}** ha sido eliminado debido a que el link que has enviado no se encuentra en la lista de links permitidos\n\nLos moderadores del servidor revisarán este enlace y, en caso de ser aprobado podrás enviarlo otra vez.\n`Si crees que esto es un error, por favor, contacta con un el soporte del servidor.`\n\n```${message.contentStripped}```")
+                    channel.sendMessage("Tu mensaje del canal **${message.channel.asMention}** ha sido eliminado debido a que el link que has enviado no se encuentra en la lista de links permitidos\n\nLos moderadores del servidor revisarán este enlace y, en caso de ser aprobado podrás enviarlo otra vez.\n`Si crees que esto es un error, por favor, contacta con un el soporte del servidor.`\n\n```${message.contentStripped}```")
                         .queue({}, {})
                 }
             } catch (_: Exception) {

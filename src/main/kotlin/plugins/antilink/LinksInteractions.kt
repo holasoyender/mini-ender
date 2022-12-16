@@ -223,6 +223,54 @@ object LinksInteractions {
         }
     }
 
+    fun handleDeleteLinkButton(event: ButtonInteractionEvent) {
+
+        val domain = event.componentId.split("::")[1].split(":")[2]
+
+        val link = Links.get(domain, event.guild!!.id)
+        if (link != null) {
+            link.delete()
+
+            event.editMessage("${Emojis.success}  El dominio `${domain}` ha sido eliminado de la base de datos")
+                .setComponents()
+                .setEmbeds()
+                .queue()
+
+        } else {
+            event.reply("${f(Emojis.error)}  El dominio `${domain}` no existe en la base de datos").setEphemeral(true).queue()
+        }
+    }
+
+    fun handleEditButton(event: ButtonInteractionEvent) {
+
+        val domain = event.componentId.split("::")[1].split(":")[2]
+
+        val link = Links.get(domain, event.guild!!.id)
+        if (link != null) {
+
+            event
+                .editMessage("${Emojis.right}  Elige la acción que deseas realizar con el dominio `${domain}`")
+                .setEmbeds()
+                .setComponents(
+                ActionRow.of(
+                    Button.success("cmd::links:accept:${link.domain}", "Aprobar link"),
+                    Button.danger("cmd::links:ban:${link.domain}", "Banear permanentemente"),
+                    Button.primary("cmd::links:kick:${link.domain}", "Expulsar"),
+                    Button.secondary("cmd::links:mute:${link.domain}", "Silenciar permanentemente"),
+                ),
+                ActionRow.of(
+                    Button.primary("cmd::links:warn:${link.domain}", "Avisar"),
+                    Button.danger("cmd::links:tempban:${link.domain}", "Banear temporalmente"),
+                    Button.secondary("cmd::links:tempmute:${link.domain}", "Silenciar temporalmente"),
+                    Button.primary("cmd::links:delete:${link.domain}", "Eliminar mensaje")
+                )
+            ).queue()
+
+        } else {
+            event.reply("${f(Emojis.error)}  El dominio `${domain}` no existe en la base de datos").setEphemeral(true).queue()
+        }
+    }
+
     private fun disableAllButtons(event: ButtonInteractionEvent, type: Actions) {
 
         event.message.editMessageComponents(

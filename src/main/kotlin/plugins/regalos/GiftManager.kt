@@ -13,7 +13,7 @@ object GiftManager {
 
         val dbUser = Regalo.get(user.id)
         if (dbUser != null) {
-            return if (dbUser.lastThrow > System.currentTimeMillis() - 86400000 && !skipTimeCheck) {
+            return if (dbUser.lastThrow > System.currentTimeMillis() - 72000000 && !skipTimeCheck) {
                 GiftResponse("${Emojis.warning}  Ya has abierto tu regalo de hoy! El próximo regalo estará disponible ${TimeFormat.RELATIVE.format(dbUser.lastThrow + 86400000)}", null, true)
             } else {
                 /*if (dbUser.gifts.size >= Gifts.giftsSize()) {

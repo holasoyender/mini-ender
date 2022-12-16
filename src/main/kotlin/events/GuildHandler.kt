@@ -2,6 +2,7 @@ package events
 
 import config.DefaultConfig
 import database.schema.Guild
+import database.schema.Infraction
 import logger.EventLogger
 import net.dv8tion.jda.api.events.guild.GuildBanEvent
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent
@@ -37,7 +38,30 @@ class GuildHandler: ListenerAdapter() {
     }
 
     override fun onGuildMemberJoin(event: GuildMemberJoinEvent) {
-        EventLogger(event.guild, Guild.get(event.guild.id) ?: DefaultConfig.get()).log(event)
+        val config = Guild.get(event.guild.id) ?: DefaultConfig.get()
+        EventLogger(event.guild, config).log(event)
+
+        if (config.muteRoleId.isNotEmpty()) {
+            val muteRole = event.guild.getRoleById(config.muteRoleId)
+
+            if (muteRole != null) {
+                val infractions = Infraction.getAllByUserId(event.guild.id, event.user.id)
+                if (infractions.isNotEmpty()) {
+
+                    val activeInfractions = infractions.filter { !it.ended }
+                    if (activeInfractions.isNotEmpty()) {
+
+                        val latestInfraction = activeInfractions.maxByOrNull { it.date }
+                        if (latestInfraction != null) {
+                            if (latestInfraction.type.name == "MUTE" || latestInfraction.type.name == "TEMP_MUTE") {
+                                event.guild.addRoleToMember(event.member, muteRole).queue({}, {})
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         super.onGuildMemberJoin(event)
     }
 

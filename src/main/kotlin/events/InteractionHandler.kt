@@ -217,6 +217,8 @@ class InteractionHandler: ListenerAdapter() {
                             "tempban" -> LinksInteractions.handleTempBanButton(event)
                             "tempmute" -> LinksInteractions.handleTempMuteButton(event)
                             "delete" -> LinksInteractions.handleDeleteButton(event)
+                            "delete-link" -> LinksInteractions.handleDeleteLinkButton(event)
+                            "edit" -> LinksInteractions.handleEditButton(event)
                         }
                     }
                     "infrs" -> {

@@ -69,7 +69,7 @@ class Mute: Command {
             type = InfractionType.MUTE,
             reason = reason,
             duration = 0,
-            ended = true,
+            ended = false,
             succeeded = true,
             date = System.currentTimeMillis()
         )
