@@ -18,8 +18,10 @@ class Guild(
     permissions: Map<String, Int>,
 
     logsChannelId: String,
+    moderationLogsChannelId: String,
 
     antiLinksEnabled: Boolean,
+    antiLinksAllowedLinks: Array<String>,
     antiLinksChannelId: String,
     antiLinksIgnoredRoles: Array<String>,
     antiLinksIgnoredChannels: Array<String>,
@@ -50,8 +52,10 @@ class Guild(
     var permissions: Map<String, Int>
 
     var logsChannelId: String
+    var moderationLogsChannelId: String
 
     var antiLinksEnabled: Boolean
+    var antiLinksAllowedLinks: Array<String>
     var antiLinksChannelId: String
     var antiLinksIgnoredRoles: Array<String>
     var antiLinksIgnoredChannels: Array<String>
@@ -86,8 +90,10 @@ class Guild(
         this.permissions = permissions
 
         this.logsChannelId = logsChannelId
+        this.moderationLogsChannelId = moderationLogsChannelId
 
         this.antiLinksEnabled = antiLinksEnabled
+        this.antiLinksAllowedLinks = antiLinksAllowedLinks
         this.antiLinksChannelId = antiLinksChannelId
         this.antiLinksIgnoredRoles = antiLinksIgnoredRoles
         this.antiLinksIgnoredChannels = antiLinksIgnoredChannels
@@ -122,7 +128,7 @@ class Guild(
 
         if (exists()) {
             database.Postgres.dataSource?.connection.use { connection ->
-                val statement = connection!!.prepareStatement("UPDATE guilds SET prefix = ?, welcome_role_id = ?, welcome_channel_id = ?, welcome_message = ?, mute_role_id = ?, moderation_silent = ?, permissions = ?, logs_channel_id = ?, anti_links_enabled = ?, anti_links_channel_id = ?, anti_links_ignored_roles = ?, anti_links_ignored_channels = ?, anti_phishing_enabled = ?, custom_commands = ?, twitch_channel = ?, twitch_announce_channel_id = ?, twitch_announce_message = ?, twitch_live_channel_id = ?, twitch_live_message = ?, raw = ? WHERE id = ?")
+                val statement = connection!!.prepareStatement("UPDATE guilds SET prefix = ?, welcome_role_id = ?, welcome_channel_id = ?, welcome_message = ?, mute_role_id = ?, moderation_silent = ?, permissions = ?, logs_channel_id = ?, moderation_logs_channel_id = ?, anti_links_enabled = ?, anti_links_allowed_links = ?, anti_links_channel_id = ?, anti_links_ignored_roles = ?, anti_links_ignored_channels = ?, anti_phishing_enabled = ?, custom_commands = ?, twitch_channel = ?, twitch_announce_channel_id = ?, twitch_announce_message = ?, twitch_live_channel_id = ?, twitch_live_message = ?, raw = ? WHERE id = ?")
                 statement.setString(1, prefix)
 
                 statement.setString(2, welcomeRoleId)
@@ -140,31 +146,33 @@ class Guild(
                 }.toString())
 
                 statement.setString(8, logsChannelId)
+                statement.setString(9, moderationLogsChannelId)
 
-                statement.setBoolean(9, antiLinksEnabled)
-                statement.setString(10, antiLinksChannelId)
-                statement.setArray(11, connection.createArrayOf("text", antiLinksIgnoredRoles))
-                statement.setArray(12, connection.createArrayOf("text", antiLinksIgnoredChannels))
-                statement.setBoolean(13, antiPhishingEnabled)
+                statement.setBoolean(10, antiLinksEnabled)
+                statement.setArray(11, connection.createArrayOf("text", antiLinksAllowedLinks))
+                statement.setString(12, antiLinksChannelId)
+                statement.setArray(13, connection.createArrayOf("text", antiLinksIgnoredRoles))
+                statement.setArray(14, connection.createArrayOf("text", antiLinksIgnoredChannels))
+                statement.setBoolean(15, antiPhishingEnabled)
 
-                statement.setArray(14, connection.createArrayOf("json", customCommands))
+                statement.setArray(16, connection.createArrayOf("json", customCommands))
 
-                statement.setString(15, twitchChannel)
-                statement.setString(16, twitchAnnounceChannelId)
-                statement.setString(17, twitchAnnounceMessage)
-                statement.setString(18, twitchLiveChannelId)
-                statement.setString(19, twitchLiveMessage)
+                statement.setString(17, twitchChannel)
+                statement.setString(18, twitchAnnounceChannelId)
+                statement.setString(19, twitchAnnounceMessage)
+                statement.setString(20, twitchLiveChannelId)
+                statement.setString(21, twitchLiveMessage)
 
-                statement.setString(20, raw)
+                statement.setString(22, raw)
 
-                statement.setString(21, id)
+                statement.setString(23, id)
 
                 statement.execute()
             }
         } else {
             database.Postgres.dataSource?.connection.use { connection ->
                 val statement =
-                    connection!!.prepareStatement("INSERT INTO guilds (id, prefix, welcome_role_id, welcome_channel_id, welcome_message, mute_role_id, moderation_silent, permissions, logs_channel_id, anti_links_enabled, anti_links_channel_id, anti_links_ignored_roles, anti_links_ignored_channels, anti_phishing_enabled, custom_commands, twitch_channel, twitch_announce_channel_id, twitch_announce_message, twitch_live_channel_id, twitch_live_message, raw) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+                    connection!!.prepareStatement("INSERT INTO guilds (id, prefix, welcome_role_id, welcome_channel_id, welcome_message, mute_role_id, moderation_silent, permissions, logs_channel_id, moderation_logs_channel_id, anti_links_enabled, anti_links_allowed_links, anti_links_channel_id, anti_links_ignored_roles, anti_links_ignored_channels, anti_phishing_enabled, custom_commands, twitch_channel, twitch_announce_channel_id, twitch_announce_message, twitch_live_channel_id, twitch_live_message, raw) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
                 statement.setString(1, id)
                 statement.setString(2, prefix)
 
@@ -183,22 +191,24 @@ class Guild(
                 }.toString())
 
                 statement.setString(9, logsChannelId)
+                statement.setString(10, moderationLogsChannelId)
 
-                statement.setBoolean(10, antiLinksEnabled)
-                statement.setString(11, antiLinksChannelId)
-                statement.setArray(12, connection.createArrayOf("text", antiLinksIgnoredRoles))
-                statement.setArray(13, connection.createArrayOf("text", antiLinksIgnoredChannels))
-                statement.setBoolean(14, antiPhishingEnabled)
+                statement.setBoolean(11, antiLinksEnabled)
+                statement.setArray(12, connection.createArrayOf("text", antiLinksAllowedLinks))
+                statement.setString(13, antiLinksChannelId)
+                statement.setArray(14, connection.createArrayOf("text", antiLinksIgnoredRoles))
+                statement.setArray(15, connection.createArrayOf("text", antiLinksIgnoredChannels))
+                statement.setBoolean(16, antiPhishingEnabled)
 
-                statement.setArray(15, connection.createArrayOf("json", customCommands))
+                statement.setArray(17, connection.createArrayOf("json", customCommands))
 
-                statement.setString(16, twitchChannel)
-                statement.setString(17, twitchAnnounceChannelId)
-                statement.setString(18, twitchAnnounceMessage)
-                statement.setString(19, twitchLiveChannelId)
-                statement.setString(20, twitchLiveMessage)
+                statement.setString(18, twitchChannel)
+                statement.setString(19, twitchAnnounceChannelId)
+                statement.setString(20, twitchAnnounceMessage)
+                statement.setString(21, twitchLiveChannelId)
+                statement.setString(22, twitchLiveMessage)
 
-                statement.setString(21, raw)
+                statement.setString(23, raw)
 
                 statement.execute()
             }
@@ -252,7 +262,9 @@ class Guild(
                 moderation_silent BOOLEAN NOT NULL,
                 permissions TEXT NOT NULL,
                 logs_channel_id TEXT NOT NULL,
+                moderation_logs_channel_id TEXT NOT NULL,
                 anti_links_enabled BOOLEAN NOT NULL,
+                anti_links_allowed_links TEXT[] NOT NULL,
                 anti_links_channel_id TEXT NOT NULL,
                 anti_links_ignored_roles TEXT[] NOT NULL,
                 anti_links_ignored_channels TEXT[] NOT NULL,
@@ -297,8 +309,10 @@ class Guild(
                         },
 
                         result.getString("logs_channel_id"),
+                        result.getString("moderation_logs_channel_id"),
 
                         result.getBoolean("anti_links_enabled"),
+                        result.getArray("anti_links_allowed_links").array as Array<String>,
                         result.getString("anti_links_channel_id"),
                         result.getArray("anti_links_ignored_roles").array as Array<String>,
                         result.getArray("anti_links_ignored_channels").array as Array<String>,
@@ -350,8 +364,10 @@ class Guild(
                             },
 
                             result.getString("logs_channel_id"),
+                            result.getString("moderation_logs_channel_id"),
 
                             result.getBoolean("anti_links_enabled"),
+                            result.getArray("anti_links_allowed_links").array as Array<String>,
                             result.getString("anti_links_channel_id"),
                             result.getArray("anti_links_ignored_roles").array as Array<String>,
                             result.getArray("anti_links_ignored_channels").array as Array<String>,
@@ -402,8 +418,10 @@ class Guild(
                             },
 
                             result.getString("logs_channel_id"),
+                            result.getString("moderation_logs_channel_id"),
 
                             result.getBoolean("anti_links_enabled"),
+                            result.getArray("anti_links_allowed_links").array as Array<String>,
                             result.getString("anti_links_channel_id"),
                             result.getArray("anti_links_ignored_roles").array as Array<String>,
                             result.getArray("anti_links_ignored_channels").array as Array<String>,
@@ -455,8 +473,10 @@ class Guild(
                             },
 
                             result.getString("logs_channel_id"),
+                            result.getString("moderation_logs_channel_id"),
 
                             result.getBoolean("anti_links_enabled"),
+                            result.getArray("anti_links_allowed_links").array as Array<String>,
                             result.getString("anti_links_channel_id"),
                             result.getArray("anti_links_ignored_roles").array as Array<String>,
                             result.getArray("anti_links_ignored_channels").array as Array<String>,

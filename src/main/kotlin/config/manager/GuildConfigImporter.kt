@@ -46,16 +46,22 @@ object GuildConfigImporter {
                     permissions = (config["permissions"] as Map<Long, Int>).map { it.key.toString() to it.value }.toMap(),
 
                     logsChannelId = (config["logs"] as Map<*, *>)["channel_id"] as String,
+                    moderationLogsChannelId = (config["logs"] as Map<*, *>)["moderation_channel_id"] as String,
 
                     antiLinksEnabled = (config["anti_links"] as Map<*, *>)["enabled"] as Boolean,
+                    antiLinksAllowedLinks = try {
+                        ((config["anti_links"] as Map<*, *>)["allowed_links"] as ArrayList<String>).toTypedArray()
+                    } catch (e: Exception) {
+                        arrayOf()
+                    },
                     antiLinksChannelId = (config["anti_links"] as Map<*, *>)["channel_id"] as String,
                     antiLinksIgnoredRoles = try {
-                        ((config["anti_links"] as Map<*, *>)["ignored_roles"] as Array<String>)
+                        ((config["anti_links"] as Map<*, *>)["ignored_roles"] as ArrayList<String>).toTypedArray()
                     } catch (e: Exception) {
                         arrayOf()
                     },
                     antiLinksIgnoredChannels = try {
-                        ((config["anti_links"] as Map<*, *>)["ignored_channels"] as Array<String>)
+                        ((config["anti_links"] as Map<*, *>)["ignored_channels"] as ArrayList<String>).toTypedArray()
                     } catch (e: Exception) {
                         arrayOf()
                     },
@@ -97,15 +103,23 @@ object GuildConfigImporter {
                 guildConfig.moderationSilent = (config["moderation"] as Map<*, *>)["silent"] as Boolean
                 guildConfig.permissions = (config["permissions"] as Map<Long, Int>).map { it.key.toString() to it.value }.toMap()
 
+                guildConfig.logsChannelId = (config["logs"] as Map<*, *>)["channel_id"] as String
+                guildConfig.moderationLogsChannelId = (config["logs"] as Map<*, *>)["moderation_channel_id"] as String
+
                 guildConfig.antiLinksEnabled = (config["anti_links"] as Map<*, *>)["enabled"] as Boolean
+                guildConfig.antiLinksAllowedLinks = try {
+                    ((config["anti_links"] as Map<*, *>)["allowed_links"] as ArrayList<String>).toTypedArray()
+                } catch (e: Exception) {
+                    arrayOf()
+                }
                 guildConfig.antiLinksChannelId = (config["anti_links"] as Map<*, *>)["channel_id"] as String
                 guildConfig.antiLinksIgnoredRoles = try {
-                    ((config["anti_links"] as Map<*, *>)["ignored_roles"] as Array<String>)
+                    ((config["anti_links"] as Map<*, *>)["ignored_roles"] as ArrayList<String>).toTypedArray()
                 } catch (e: Exception) {
                     arrayOf()
                 }
                 guildConfig.antiLinksIgnoredChannels = try {
-                    ((config["anti_links"] as Map<*, *>)["ignored_channels"] as Array<String>)
+                    ((config["anti_links"] as Map<*, *>)["ignored_channels"] as ArrayList<String>).toTypedArray()
                 } catch (e: Exception) {
                     arrayOf()
                 }

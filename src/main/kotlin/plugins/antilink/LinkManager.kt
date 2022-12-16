@@ -13,12 +13,29 @@ import plugins.warnings.WarningsManager
 
 object LinkManager {
 
-    fun check(message: Message): Boolean {
+    fun check(message: Message, config: database.schema.Guild): Boolean {
 
-        val content = if(message.contentRaw.length > 1024) message.contentRaw.substring(0, 1020) + "..." else message.contentRaw
+        val content =
+            if (message.contentRaw.length > 1024) message.contentRaw.substring(0, 1020) + "..." else message.contentRaw
         val checker = Checker(message.contentRaw)
 
+
         return if (checker.isLink || checker.isDiscordInvite) {
+
+            if (config.antiLinksAllowedLinks.isNotEmpty()) {
+                val allowedLinks = config.antiLinksAllowedLinks.map { it.lowercase() }
+                if (allowedLinks.any {
+                        val link = checker.link.lowercase()
+                            .replace("https://", "")
+                            .replace("http://", "")
+                            .split("?")[0]
+
+                        link.contains(it)
+                    }) {
+                    return false
+                }
+            }
+
             handleFoundLink(content, message.guild, message.channel.id, message, checker)
             true
         } else {
@@ -109,8 +126,8 @@ object LinkManager {
 
             val config = database.schema.Guild.get(guild.id) ?: return
             val channel =
-                if (config.logsChannelId.isNotBlank()) {
-                    guild.getTextChannelById(config.logsChannelId)
+                if (config.moderationLogsChannelId.isNotBlank()) {
+                    guild.getTextChannelById(config.moderationLogsChannelId)
                 } else {
                     WarningsManager.createWarning(
                         guild,

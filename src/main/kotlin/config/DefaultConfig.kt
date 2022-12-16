@@ -19,8 +19,10 @@ object DefaultConfig {
             permissions = mapOf(),
 
             logsChannelId = "",
+            moderationLogsChannelId = "",
 
             antiLinksEnabled = false,
+            antiLinksAllowedLinks = arrayOf(),
             antiLinksChannelId = "",
             antiLinksIgnoredRoles = arrayOf(),
             antiLinksIgnoredChannels = arrayOf(),

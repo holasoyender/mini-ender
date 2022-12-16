@@ -96,7 +96,7 @@ Total: ${gifts.size} regalos```
     override val permissions: List<Permission>
         get() = listOf()
     override val permissionLevel: Int
-        get() = 1
+        get() = 0
     override val botPermissions: List<Permission>
         get() = listOf()
 }

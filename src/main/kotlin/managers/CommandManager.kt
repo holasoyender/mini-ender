@@ -100,28 +100,24 @@ class CommandManager {
             /*permissions checks*/
 
             var doPermissionChecks = true
-            if(command.permissionLevel > 1) {
-                if(event.isFromGuild) {
+            if(command.permissionLevel >= 1) {
+                if (event.isFromGuild) {
                     val member = event.member!!
-                    if(config != null) {
+                    if (config != null) {
                         val rolePermissions = config.permissions
                         val roles = member.roles
-                        /*
-                        * Esta es una de mis funciones favoritas de kotlin
-                        * dato innecesario lo sé, pero quería ponerlo
-                        */
-                        val role = roles.firstOrNull { rolePermissions.containsKey(it.id) }
-                        if(role != null) {
-                            val rolePermissionLevel = rolePermissions[role.id]!!
-                            if(rolePermissionLevel >= command.permissionLevel) {
+                        val commonRoles = roles.filter { rolePermissions.containsKey(it.id) }
+                        if (commonRoles.isNotEmpty()) {
+                            /*
+                            * Esta es una de mis funciones favoritas de kotlin
+                            * dato innecesario lo sé, pero quería ponerlo
+                            */
+                            val maxPermission = commonRoles.maxOf { rolePermissions[it.id]!! }
+                            if (maxPermission >= command.permissionLevel) {
                                 doPermissionChecks = false
                             }
                         }
                     }
-                } else {
-                    event.message.reply("${f(Emojis.error)}  El comando ${command.name} solo puede ser usado en un servidor")
-                        .queue()
-                    return
                 }
             }
 

@@ -48,9 +48,9 @@ class MessageHandler: ListenerAdapter() {
                         if (Phishing.isPhishing(message))
                             Phishing.checkPhishing(message)
                         else
-                            LinkManager.check(message)
+                            LinkManager.check(message, guild)
                     } else {
-                        LinkManager.check(message)
+                        LinkManager.check(message, guild)
                     }
                 }
             }
@@ -211,9 +211,9 @@ class MessageHandler: ListenerAdapter() {
                         if (Phishing.isPhishing(message))
                             Phishing.checkPhishing(message)
                         else
-                            LinkManager.check(message)
+                            LinkManager.check(message, guild)
                     } else {
-                        LinkManager.check(message)
+                        LinkManager.check(message, guild)
                     }
                 }
             }

@@ -24,6 +24,7 @@ logs:
 
 anti_links:
     enabled: false # Si está activado o no el sistema de anti-links
+    allowed_links: [] # Lista de enlaces permitidos, entre comillas y separados por comas. El link debe de estar sin el protocolo (http:// o https://)
     channel_id: "" # El canal donde se enviarán los logs del sistema anti-links, si se activa el sistema, pero no se pone el canal, se enviarán los logs al canal de logs
     ignore_roles: [] # IDs de los roles que no serán afectados por el sistema anti-links, separados por comas y entre comillas
     ignore_channels: [] # IDs de los canales donde no se aplicará el sistema anti-links, separados por comas y entre comillas

@@ -104,6 +104,10 @@ class GuildConfigValidator(
         if(logs["channel_id"] !is String) return Pair(false, "El canal de logs no está bien definido")
         if(!isIdOrEmpty(logs["channel_id"] as String)) return Pair(false, "El canal de logs no es un ID válido")
         if((logs["channel_id"] as String).isNotEmpty() && !isValidChannel(logs["channel_id"] as String)) return Pair(false, "El canal de logs no existe en el servidor")
+        if(logs["moderation_channel_id"] !is String) return Pair(false, "El canal de logs de moderación no está bien definido")
+        if(!isIdOrEmpty(logs["moderation_channel_id"] as String)) return Pair(false, "El canal de logs de moderación no es un ID válido")
+        if((logs["moderation_channel_id"] as String).isNotEmpty() && !isValidChannel(logs["moderation_channel_id"] as String)) return Pair(false, "El canal de logs de moderación no existe en el servidor")
+
         return Pair(true, "")
     }
 
@@ -121,6 +125,13 @@ class GuildConfigValidator(
             if(role !is String) return Pair(false, "La lista de roles ignorados no está bien definida (ID en la posición ${ignoreRoles.indexOf(role)} no es válida)")
             if(!isId(role)) return Pair(false, "La lista de roles ignorados no está bien definida (ID en la posición ${ignoreRoles.indexOf(role)} no es válida)")
             if(role.isNotEmpty() && !isValidRole(role)) return Pair(false, "La lista de roles ignorados no está bien definida (ID en la posición ${ignoreRoles.indexOf(role)} no existe en el servidor)")
+        }
+
+        if(antiLinks["allowed_links"] !is List<*>) return Pair(false, "La lista de links permitidos no está bien definida")
+        val allowedLinks = antiLinks["allowed_links"] as List<*>
+        for(link in allowedLinks) {
+            if(link !is String) return Pair(false, "La lista de links permitidos no está bien definida (link en la posición ${allowedLinks.indexOf(link)} no es válido)")
+            if(link.startsWith("http://") || link.startsWith("https://")) return Pair(false, "La lista de links permitidos no está bien definida (link en la posición ${allowedLinks.indexOf(link)} no es válido)\nPrueba a quitar el protocolo (http:// o https://)")
         }
 
         if(antiLinks["ignore_channels"] !is List<*>) return Pair(false, "La lista de canales ignorados no está bien definida")
