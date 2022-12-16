@@ -52,16 +52,17 @@ object GuildConfigImporter {
                     antiLinksAllowedLinks = try {
                         ((config["anti_links"] as Map<*, *>)["allowed_links"] as ArrayList<String>).toTypedArray()
                     } catch (e: Exception) {
+                        e.printStackTrace()
                         arrayOf()
                     },
                     antiLinksChannelId = (config["anti_links"] as Map<*, *>)["channel_id"] as String,
                     antiLinksIgnoredRoles = try {
-                        ((config["anti_links"] as Map<*, *>)["ignored_roles"] as ArrayList<String>).toTypedArray()
+                        ((config["anti_links"] as Map<*, *>)["ignore_roles"] as ArrayList<String>).toTypedArray()
                     } catch (e: Exception) {
                         arrayOf()
                     },
                     antiLinksIgnoredChannels = try {
-                        ((config["anti_links"] as Map<*, *>)["ignored_channels"] as ArrayList<String>).toTypedArray()
+                        ((config["anti_links"] as Map<*, *>)["ignore_channels"] as ArrayList<String>).toTypedArray()
                     } catch (e: Exception) {
                         arrayOf()
                     },
@@ -110,16 +111,17 @@ object GuildConfigImporter {
                 guildConfig.antiLinksAllowedLinks = try {
                     ((config["anti_links"] as Map<*, *>)["allowed_links"] as ArrayList<String>).toTypedArray()
                 } catch (e: Exception) {
+                    e.printStackTrace()
                     arrayOf()
                 }
                 guildConfig.antiLinksChannelId = (config["anti_links"] as Map<*, *>)["channel_id"] as String
                 guildConfig.antiLinksIgnoredRoles = try {
-                    ((config["anti_links"] as Map<*, *>)["ignored_roles"] as ArrayList<String>).toTypedArray()
+                    ((config["anti_links"] as Map<*, *>)["ignore_roles"] as ArrayList<String>).toTypedArray()
                 } catch (e: Exception) {
                     arrayOf()
                 }
                 guildConfig.antiLinksIgnoredChannels = try {
-                    ((config["anti_links"] as Map<*, *>)["ignored_channels"] as ArrayList<String>).toTypedArray()
+                    ((config["anti_links"] as Map<*, *>)["ignore_channels"] as ArrayList<String>).toTypedArray()
                 } catch (e: Exception) {
                     arrayOf()
                 }
