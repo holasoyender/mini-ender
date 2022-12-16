@@ -41,11 +41,11 @@ class Clear: Command {
                                 if(filteredMessages.size > 250) "`⚠️ Estas borrando muchos mensajes de golpe, es posible que tade un poco más de lo normal`" else ""
                             }")
                                 .mentionRepliedUser(false)
-                                .queue()
+                                .queue({}, {})
                         }
                 } catch (e: Exception) {
                     msg.editMessage("${f(Emojis.error)}  No se han podido eliminar los mensajes: `${e.message}`")
-                        .mentionRepliedUser(false).queue()
+                        .mentionRepliedUser(false).queue({}, {})
                 }
             }
 
