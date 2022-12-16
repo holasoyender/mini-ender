@@ -124,8 +124,9 @@ class CommandManager {
             if (command.permissions.isNotEmpty() && !OWNER_IDS.contains(event.author.id) && doPermissionChecks) {
                 if (event.isFromGuild) {
                     val member = event.member!!
-                        val missingPermissions = command.permissions.filter { !member.hasPermission(it) }
-                        if (missingPermissions.isNotEmpty()) {
+                    val missingPermissions = command.permissions.filter { !member.hasPermission(it) }
+                    if (missingPermissions.isNotEmpty()) {
+                        if (config?.moderationSilent == false)
                             event.message.reply(
                                 "${f(Emojis.error)}  No tienes los permisos necesarios para usar el comando ${command.name}\nNecesitas los siguientes permisos: `${
                                     missingPermissions.joinToString(
@@ -133,8 +134,9 @@ class CommandManager {
                                     )
                                 }`"
                             ).queue()
-                            return
-                        }
+
+                        return
+                    }
                 } else {
                     event.message.reply("${f(Emojis.error)}  El comando ${command.name} solo puede ser usado en un servidor")
                         .queue()
