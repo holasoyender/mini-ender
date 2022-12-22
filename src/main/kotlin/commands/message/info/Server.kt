@@ -10,7 +10,7 @@ import net.dv8tion.jda.api.utils.TimeFormat
 import java.awt.Color
 import java.time.Instant
 
-class Server: Command {
+class Server : Command {
     override fun execute(event: MessageReceivedEvent, args: List<String>): CommandResponse {
 
 
@@ -28,7 +28,11 @@ class Server: Command {
                 false
             )
             .setDescription(
-                "**Propietario**: <@!${event.guild.ownerId}> (${event.guild.ownerId})\n**Creado el**: ${TimeFormat.DEFAULT.format(event.guild.timeCreated)} (${TimeFormat.RELATIVE.format(event.guild.timeCreated)})"
+                "**Propietario**: <@!${event.guild.ownerId}> (${event.guild.ownerId})\n**Creado el**: ${
+                    TimeFormat.DEFAULT.format(
+                        event.guild.timeCreated
+                    )
+                } (${TimeFormat.RELATIVE.format(event.guild.timeCreated)})"
             )
             .addField("Nivel de seguridad", levelName(event.guild), true)
             .addField("Miembros totales", "${event.guild.memberCount} miembros", true)

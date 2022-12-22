@@ -186,9 +186,9 @@ object LinkManager {
 
             val logEmbed = EmbedBuilder()
                 .setAuthor("Link desconocido detectado", null, message.author.effectiveAvatarUrl)
-                .setDescription("He impedido que el usuario ${message.author.asMention} enviara el siguiente mensaje:```$content```\nYa que el dominio `${checker.domain}` no se encuentra registrado en la base de datos.\n\nLa acción que se tome con los botones será la que se aplique a todos los casos de este dominio.")
+                .setDescription("He eliminado el siguiente mensaje:```$content```\nYa que el dominio `${checker.domain}` no se encuentra registrado en la base de datos.\n\nLa acción que se tome con los botones será la que se aplique a todos los casos de este dominio.")
                 .addField("Canal", "<#$channelId>", true)
-                .addField("Usuario", "${message.author.asMention} (${message.author.id})", true)
+                //.addField("Usuario", "${message.author.asMention} (${message.author.id})", true)
                 .setThumbnail("https://cdn.discordapp.com/attachments/839400943517827092/1038135823650013255/sentinel.png")
                 .setColor(0xED4245)
 
