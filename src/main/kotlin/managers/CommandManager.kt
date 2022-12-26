@@ -73,7 +73,7 @@ class CommandManager {
     fun run(invoker: String, event: MessageReceivedEvent) {
 
         val content = event.message.contentRaw
-        val config = if(event.isFromGuild) Guild.get(event.guild.id) else null
+        val config = if (event.isFromGuild) Guild.get(event.guild.id) else null
         val prefix = config?.prefix ?: PREFIX ?: "-"
         val args = content.slice(prefix.length until content.length).split(" ")
 
@@ -100,22 +100,25 @@ class CommandManager {
             /*permissions checks*/
 
             var doPermissionChecks = true
-            if(command.permissionLevel >= 1) {
-                if (event.isFromGuild) {
-                    val member = event.member!!
-                    if (config != null) {
-                        val rolePermissions = config.permissions
-                        val roles = member.roles
-                        val commonRoles = roles.filter { rolePermissions.containsKey(it.id) }
-                        if (commonRoles.isNotEmpty()) {
-                            /*
+            if (event.isFromGuild) {
+                val member = event.member!!
+                if (config != null) {
+                    val rolePermissions = config.permissions
+                    val roles = member.roles
+                    val commonRoles = roles.filter { rolePermissions.containsKey(it.id) }
+                    if (commonRoles.isNotEmpty()) {
+                        /*
                             * Esta es una de mis funciones favoritas de kotlin
                             * dato innecesario lo sé, pero quería ponerlo
                             */
-                            val maxPermission = commonRoles.maxOf { rolePermissions[it.id]!! }
-                            if (maxPermission >= command.permissionLevel) {
-                                doPermissionChecks = false
-                            }
+                        val maxPermission = commonRoles.maxOf { rolePermissions[it.id]!! }
+                        if (maxPermission >= command.permissionLevel) {
+                            doPermissionChecks = false
+                        } else {
+                            if (!config.moderationSilent)
+                                event.message.reply("${f(Emojis.error)}  No tienes permisos suficientes para usar el comando `${command.name}`")
+                                    .queue()
+                            return
                         }
                     }
                 }
