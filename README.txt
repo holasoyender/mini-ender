@@ -2,6 +2,8 @@
 
 Mini-ender es un pequeño bot de discord para que los moderadores y desarrolladores de KenaBot puedan hacer las cosas que suele hacer ender cuando él no está (seguramente esté durmiendo)
 
+Para usar: docker run -d --name miniender -p 6690:6690 --env-file .env --restart=always holasoyender/miniender:latest
+
 Cualquier contribución es bienvenida, ya sea para corregir errores o para agregar nuevas funciones, siempre que se sigan las reglas de estilo de código de este proyecto.
 Para dudas o sugerencias a cerca de este bot o de KenaBot en general, puedes unirte al servidor de soporte de KenaBot en discord: https://discord.gg/WgRBDFk63s
 
@@ -10,6 +12,7 @@ Aquí tienes una lista de links útiles relacionados con este proyecto:
  - Licencia: https://github.com/holasoyender/mini-ender/blob/main/LICENSE
  - Página del proyecto: https://kenabot.xyz
  - KenaBot Open Source: https://github.com/Kenabot
+ - Imágen de docker del proyecto: https://hub.docker.com/r/holasoyender/miniender
 
 Agradecimientos especiales a todos los que han ayudado al desarrollo tanto de este bot como de KenaBot:
  - MicroondasV2 https://github.com/MicroondasV2
