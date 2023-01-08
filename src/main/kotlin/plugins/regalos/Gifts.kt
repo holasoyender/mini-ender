@@ -12,14 +12,14 @@ object Gifts {
             description = "Parece que esta vez no has tenido suerte, pero no te preocupes, mañana puede ser tu día de suerte!",
             image = "https://media.tenor.com/OasM7f4Pe6UAAAAC/serious-ibai.gif",
             rarity = 0,
-            chance = 16
+            chance = 6
         ),
         Gift(
             name = "¡ Un rol exclusivo del servidor !",
             description = "Has ganado un rol exclusivo del servidor, ¡Enhorabuena!\nSi no has recibido el rol automáticamente, contacta con <@!835642946962718731>.",
             image = "https://media.tenor.com/JITzgeo8qjYAAAAC/ibai-bailando.gif",
             rarity = 5,
-            chance = 5,
+            chance = 15,
             hook = { member ->
                 val role = member?.guild?.getRoleById("1051119802472738846")
                 if (role != null) {
