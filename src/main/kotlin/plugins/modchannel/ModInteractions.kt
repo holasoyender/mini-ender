@@ -17,7 +17,7 @@ object ModInteractions {
 
     fun handleMuteButton(event: ButtonInteractionEvent) {
 
-        if(event.message.member?.roles?.map { it.id }?.contains("735191377184292935") == true) {
+        if(event.message.member?.roles?.map { it.id }?.contains("735191377184292935") == false) {
             event.reply("No puedes usar este botón").setEphemeral(true).queue()
             return
         }
@@ -102,7 +102,7 @@ object ModInteractions {
 
     fun handleBanButton(event: ButtonInteractionEvent) {
 
-        if(event.message.member?.roles?.map { it.id }?.contains("735191377184292935") == true) {
+        if(event.message.member?.roles?.map { it.id }?.contains("735191377184292935") == false) {
             event.reply("No puedes usar este botón").setEphemeral(true).queue()
             return
         }
