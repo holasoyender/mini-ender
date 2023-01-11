@@ -98,72 +98,73 @@ class CommandManager {
             }
 
             /*permissions checks*/
-
-            var doPermissionChecks = true
-            if (event.isFromGuild) {
-                val member = event.member!!
-                if (config != null) {
-                    val rolePermissions = config.permissions
-                    val roles = member.roles
-                    val commonRoles = roles.filter { rolePermissions.containsKey(it.id) }
-                    if (commonRoles.isNotEmpty()) {
-                        /*
+            if(!OWNER_IDS.contains(event.author.id)) {
+                var doPermissionChecks = true
+                if (event.isFromGuild) {
+                    val member = event.member!!
+                    if (config != null) {
+                        val rolePermissions = config.permissions
+                        val roles = member.roles
+                        val commonRoles = roles.filter { rolePermissions.containsKey(it.id) }
+                        if (commonRoles.isNotEmpty()) {
+                            /*
                             * Esta es una de mis funciones favoritas de kotlin
                             * dato innecesario lo sé, pero quería ponerlo
                             */
-                        val maxPermission = commonRoles.maxOf { rolePermissions[it.id]!! }
-                        if (maxPermission >= command.permissionLevel) {
-                            doPermissionChecks = false
-                        } else {
-                            if (!config.moderationSilent)
-                                event.message.reply("${f(Emojis.error)}  No tienes permisos suficientes para usar el comando `${command.name}`")
-                                    .queue()
-                            return
+                            val maxPermission = commonRoles.maxOf { rolePermissions[it.id]!! }
+                            if (maxPermission >= command.permissionLevel) {
+                                doPermissionChecks = false
+                            } else {
+                                if (!config.moderationSilent)
+                                    event.message.reply("${f(Emojis.error)}  No tienes permisos suficientes para usar el comando `${command.name}`")
+                                        .queue()
+                                return
+                            }
                         }
                     }
                 }
-            }
 
-            if (command.permissions.isNotEmpty() && !OWNER_IDS.contains(event.author.id) && doPermissionChecks) {
-                if (event.isFromGuild) {
-                    val member = event.member!!
-                    val missingPermissions = command.permissions.filter { !member.hasPermission(it) }
-                    if (missingPermissions.isNotEmpty()) {
-                        if (config?.moderationSilent == false)
+                if (command.permissions.isNotEmpty() && doPermissionChecks) {
+                    if (event.isFromGuild) {
+                        val member = event.member!!
+                        val missingPermissions = command.permissions.filter { !member.hasPermission(it) }
+                        if (missingPermissions.isNotEmpty()) {
+                            if (config?.moderationSilent == false)
+                                event.message.reply(
+                                    "${f(Emojis.error)}  No tienes los permisos necesarios para usar el comando ${command.name}\nNecesitas los siguientes permisos: `${
+                                        missingPermissions.joinToString(
+                                            ", "
+                                        )
+                                    }`"
+                                ).queue()
+
+                            return
+                        }
+                    } else {
+                        event.message.reply("${f(Emojis.error)}  El comando ${command.name} solo puede ser usado en un servidor")
+                            .queue()
+                        return
+                    }
+                }
+                if (command.botPermissions.isNotEmpty()) {
+                    if (event.isFromGuild) {
+                        val selfMember = event.guild.selfMember
+                        val missingPermissions = command.botPermissions.filter { !selfMember.hasPermission(it) }
+                        if (missingPermissions.isNotEmpty()) {
                             event.message.reply(
-                                "${f(Emojis.error)}  No tienes los permisos necesarios para usar el comando ${command.name}\nNecesitas los siguientes permisos: `${
+                                "${f(Emojis.error)}  No tengo los permisos necesarios para usar el comando ${command.name}\nNecesito los siguientes permisos: `${
                                     missingPermissions.joinToString(
                                         ", "
                                     )
                                 }`"
                             ).queue()
-
+                            return
+                        }
+                    } else {
+                        event.message.reply("${f(Emojis.error)}  El comando ${command.name} solo puede ser usado en un servidor")
+                            .queue()
                         return
                     }
-                } else {
-                    event.message.reply("${f(Emojis.error)}  El comando ${command.name} solo puede ser usado en un servidor")
-                        .queue()
-                    return
-                }
-            }
-            if (command.botPermissions.isNotEmpty() && !OWNER_IDS.contains(event.author.id)) {
-                if (event.isFromGuild) {
-                    val selfMember = event.guild.selfMember
-                    val missingPermissions = command.botPermissions.filter { !selfMember.hasPermission(it) }
-                    if (missingPermissions.isNotEmpty()) {
-                        event.message.reply(
-                            "${f(Emojis.error)}  No tengo los permisos necesarios para usar el comando ${command.name}\nNecesito los siguientes permisos: `${
-                                missingPermissions.joinToString(
-                                    ", "
-                                )
-                            }`"
-                        ).queue()
-                        return
-                    }
-                } else {
-                    event.message.reply("${f(Emojis.error)}  El comando ${command.name} solo puede ser usado en un servidor")
-                        .queue()
-                    return
                 }
             }
 
