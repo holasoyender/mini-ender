@@ -18,6 +18,7 @@ import net.dv8tion.jda.internal.entities.emoji.CustomEmojiImpl
 import org.json.JSONArray
 import plugins.antilink.LinkManager
 import plugins.antilink.Phishing
+import plugins.modchannel.ModChannel
 import java.awt.Color
 
 class MessageHandler: ListenerAdapter() {
@@ -52,6 +53,15 @@ class MessageHandler: ListenerAdapter() {
                     } else {
                         LinkManager.check(message, guild)
                     }
+                }
+            }
+
+            if(ModChannel.isModChannel(message, guild)) {
+                val parsed = ModChannel.parse(message)
+                if(parsed.users.isEmpty()) {
+                    message.addReaction(Emoji.fromUnicode("❌")).queue({}, {})
+                } else {
+                    ModChannel.doAction(parsed, message)
                 }
             }
         }
