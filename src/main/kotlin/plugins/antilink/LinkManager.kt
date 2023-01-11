@@ -25,10 +25,10 @@ object LinkManager {
             if (!message.member!!.roles.map { it.id }.contains("703321891833774090")) {
                 message.delete().queue()
                 message.member!!.user.openPrivateChannel().queue({
-                    it.sendMessage("**¡Hey ${message.member!!.user.asTag}!** <:ibaiSonrisa:899666729452572723>\n" +
+                    it.sendMessage("**¡Hey ${message.member!!.user.asTag}!**\n" +
                             "Parece que has intentado enviar un link por el canal **${message.channel.name}**, pero solo los usuarios de más de nivel 10 pueden enviar links!\n" +
                             "Puedes subir de nivel participando activamente en el servidor enviando mensajes a los canales de texto\n" +
-                            "¿Por que no pruebas a mandar un mensaje por el <#701444109667270660>? <:ibaiWillynice:899666727179280465>"
+                            "¿Por que no pruebas a mandar un mensaje por el <#701444109667270660>?"
                     ).queue({}, {})
                 }, {})
 
@@ -47,6 +47,18 @@ object LinkManager {
                     }) {
                     return false
                 }
+            }
+
+            if(message.channel.id == "701448577456799845") {
+                val allowed = listOf(
+                    "open.spotify.com",
+                    "spotify.com",
+                    "soundcloud.com",
+                    "deezer.com",
+                    "music.apple.com",
+                )
+                if(allowed.any { checker.link.contains(it) })
+                    return false
             }
 
             handleFoundLink(content, message.guild, message.channel.id, message, checker, silent)
@@ -115,12 +127,12 @@ object LinkManager {
             }
 
             val actionTaken = when (link.action) {
-                Actions.BAN -> ActionRouter.ban(message.author, guild, link)
-                Actions.KICK -> ActionRouter.kick(message.author, guild, link)
-                Actions.MUTE -> ActionRouter.mute(message.author, guild, link)
-                Actions.WARN -> ActionRouter.warn(message.author, guild, link)
-                Actions.TEMP_BAN -> ActionRouter.tempBan(message.author, guild, link)
-                Actions.TEMP_MUTE -> ActionRouter.tempMute(message.author, guild, link)
+                Actions.BAN -> ActionRouter.ban(message.author, guild, link, silent)
+                Actions.KICK -> ActionRouter.kick(message.author, guild, link, silent)
+                Actions.MUTE -> ActionRouter.mute(message.author, guild, link, silent)
+                Actions.WARN -> ActionRouter.warn(message.author, guild, link, silent)
+                Actions.TEMP_BAN -> ActionRouter.tempBan(message.author, guild, link, silent)
+                Actions.TEMP_MUTE -> ActionRouter.tempMute(message.author, guild, link, silent)
                 Actions.NONE -> false
                 Actions.DELETE -> deletedMessage
             }

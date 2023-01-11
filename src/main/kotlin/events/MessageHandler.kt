@@ -17,7 +17,6 @@ import org.json.JSONArray
 import plugins.antilink.LinkManager
 import plugins.antilink.Phishing
 import plugins.modchannel.ModChannel
-import java.awt.Color
 
 class MessageHandler: ListenerAdapter() {
 

@@ -11,34 +11,45 @@ import java.util.concurrent.TimeUnit
 
 object ActionRouter {
 
-    fun ban(user: User, guild: Guild, link: Links): Boolean {
+    fun ban(user: User, guild: Guild, link: Links, silent: Boolean): Boolean {
 
         var success = true
 
-        user.openPrivateChannel().queue { channel ->
-            channel.sendMessage("**Hola ${user.asMention}! :wave:**\n\nHas sido baneado del servidor **${guild.name}** debido a que has enviado un link que ha sido considerado como spam.\n`Si crees que esto es un error, por favor, contacta con un el soporte del servidor.`\nDominio identificado como spam:```${link.domain}```")
-                .queue({
-                    guild.ban(user, 60, TimeUnit.SECONDS).reason("Sistema de anti-links").queue({ run {} },
-                        {
-                            success = false
-                            WarningsManager.createWarning(
-                                guild,
-                                "No se pudo banear a \"${user.asTag}\" por el sistema de anti-links",
-                                Severity.MEDIUM
-                            )
-                        })
-                }, {
-                    guild.ban(user, 60, TimeUnit.SECONDS).reason("Sistema de anti-links").queue({ run {} },
-                        {
-                            success = false
-                            WarningsManager.createWarning(
-                                guild,
-                                "No se pudo banear a \"${user.asTag}\" por el sistema de anti-links",
-                                Severity.MEDIUM
-                            )
-                        })
-                })
-        }
+        if (!silent)
+            user.openPrivateChannel().queue { channel ->
+                channel.sendMessage("**Hola ${user.asMention}! :wave:**\n\nHas sido baneado del servidor **${guild.name}** debido a que has enviado un link que ha sido considerado como spam.\n`Si crees que esto es un error, por favor, contacta con un el soporte del servidor.`\nDominio identificado como spam:```${link.domain}```")
+                    .queue({
+                        guild.ban(user, 60, TimeUnit.SECONDS).reason("Sistema de anti-links").queue({ run {} },
+                            {
+                                success = false
+                                WarningsManager.createWarning(
+                                    guild,
+                                    "No se pudo banear a \"${user.asTag}\" por el sistema de anti-links",
+                                    Severity.MEDIUM
+                                )
+                            })
+                    }, {
+                        guild.ban(user, 60, TimeUnit.SECONDS).reason("Sistema de anti-links").queue({ run {} },
+                            {
+                                success = false
+                                WarningsManager.createWarning(
+                                    guild,
+                                    "No se pudo banear a \"${user.asTag}\" por el sistema de anti-links",
+                                    Severity.MEDIUM
+                                )
+                            })
+                    })
+            }
+        else guild.ban(user, 60, TimeUnit.SECONDS).reason("Sistema de anti-links").queue({ run {} },
+            {
+                success = false
+                WarningsManager.createWarning(
+                    guild,
+                    "No se pudo banear a \"${user.asTag}\" por el sistema de anti-links",
+                    Severity.MEDIUM
+                )
+            })
+
 
         val infraction = Infraction(
             user.id,
@@ -57,34 +68,44 @@ object ActionRouter {
         return success
     }
 
-    fun ban(user: User, guild: Guild, checker: Checker): Boolean {
+    fun ban(user: User, guild: Guild, checker: Checker, silent: Boolean): Boolean {
 
         var success = true
 
-        user.openPrivateChannel().queue { channel ->
-            channel.sendMessage("**Hola ${user.asMention}! :wave:**\n\nHas sido baneado del servidor **${guild.name}** debido a que has enviado un link que ha sido considerado como phishing.\n`Si crees que esto es un error, por favor, contacta con un el soporte del servidor.`\nDominio identificado como phishing:```${checker.domain}```")
-                .queue({
-                    guild.ban(user, 60, TimeUnit.SECONDS).reason("Sistema de anti-phishing").queue({ run {} },
-                        {
-                            success = false
-                            WarningsManager.createWarning(
-                                guild,
-                                "No se pudo banear a \"${user.asTag}\" por el sistema de anti-phishing",
-                                Severity.MEDIUM
-                            )
-                        })
-                }, {
-                    guild.ban(user, 60, TimeUnit.SECONDS).reason("Sistema de anti-phishing").queue({ run {} },
-                        {
-                            success = false
-                            WarningsManager.createWarning(
-                                guild,
-                                "No se pudo banear a \"${user.asTag}\" por el sistema de anti-phishing",
-                                Severity.MEDIUM
-                            )
-                        })
-                })
-        }
+        if (!silent)
+            user.openPrivateChannel().queue { channel ->
+                channel.sendMessage("**Hola ${user.asMention}! :wave:**\n\nHas sido baneado del servidor **${guild.name}** debido a que has enviado un link que ha sido considerado como phishing.\n`Si crees que esto es un error, por favor, contacta con un el soporte del servidor.`\nDominio identificado como phishing:```${checker.domain}```")
+                    .queue({
+                        guild.ban(user, 60, TimeUnit.SECONDS).reason("Sistema de anti-phishing").queue({ run {} },
+                            {
+                                success = false
+                                WarningsManager.createWarning(
+                                    guild,
+                                    "No se pudo banear a \"${user.asTag}\" por el sistema de anti-phishing",
+                                    Severity.MEDIUM
+                                )
+                            })
+                    }, {
+                        guild.ban(user, 60, TimeUnit.SECONDS).reason("Sistema de anti-phishing").queue({ run {} },
+                            {
+                                success = false
+                                WarningsManager.createWarning(
+                                    guild,
+                                    "No se pudo banear a \"${user.asTag}\" por el sistema de anti-phishing",
+                                    Severity.MEDIUM
+                                )
+                            })
+                    })
+            }
+        else guild.ban(user, 60, TimeUnit.SECONDS).reason("Sistema de anti-phishing").queue({ run {} },
+            {
+                success = false
+                WarningsManager.createWarning(
+                    guild,
+                    "No se pudo banear a \"${user.asTag}\" por el sistema de anti-phishing",
+                    Severity.MEDIUM
+                )
+            })
 
         val infraction = Infraction(
             user.id,
@@ -103,34 +124,44 @@ object ActionRouter {
         return success
     }
 
-    fun kick(user: User, guild: Guild, link: Links): Boolean {
+    fun kick(user: User, guild: Guild, link: Links, silent: Boolean): Boolean {
 
         var success = true
 
-        user.openPrivateChannel().queue { channel ->
-            channel.sendMessage("**Hola ${user.asMention}! :wave:**\n\nHas sido expulsado del servidor **${guild.name}** debido a que has enviado un link que ha sido considerado como spam.\n`Si crees que esto es un error, por favor, contacta con un el soporte del servidor.`\nDominio identificado como spam:```${link.domain}```")
-                .queue({
-                    guild.kick(user).reason("Sistema de anti-links").queue({ run {} },
-                        {
-                            success = false
-                            WarningsManager.createWarning(
-                                guild,
-                                "No se pudo expulsar a \"${user.asTag}\" por el sistema de anti-links",
-                                Severity.MEDIUM
-                            )
-                        })
-                }, {
-                    guild.kick(user).reason("Sistema de anti-links").queue({ run {} },
-                        {
-                            success = false
-                            WarningsManager.createWarning(
-                                guild,
-                                "No se pudo expulsar a \"${user.asTag}\" por el sistema de anti-links",
-                                Severity.MEDIUM
-                            )
-                        })
-                })
-        }
+        if (!silent)
+            user.openPrivateChannel().queue { channel ->
+                channel.sendMessage("**Hola ${user.asMention}! :wave:**\n\nHas sido expulsado del servidor **${guild.name}** debido a que has enviado un link que ha sido considerado como spam.\n`Si crees que esto es un error, por favor, contacta con un el soporte del servidor.`\nDominio identificado como spam:```${link.domain}```")
+                    .queue({
+                        guild.kick(user).reason("Sistema de anti-links").queue({ run {} },
+                            {
+                                success = false
+                                WarningsManager.createWarning(
+                                    guild,
+                                    "No se pudo expulsar a \"${user.asTag}\" por el sistema de anti-links",
+                                    Severity.MEDIUM
+                                )
+                            })
+                    }, {
+                        guild.kick(user).reason("Sistema de anti-links").queue({ run {} },
+                            {
+                                success = false
+                                WarningsManager.createWarning(
+                                    guild,
+                                    "No se pudo expulsar a \"${user.asTag}\" por el sistema de anti-links",
+                                    Severity.MEDIUM
+                                )
+                            })
+                    })
+            }
+        else guild.kick(user).reason("Sistema de anti-links").queue({ run {} },
+            {
+                success = false
+                WarningsManager.createWarning(
+                    guild,
+                    "No se pudo expulsar a \"${user.asTag}\" por el sistema de anti-links",
+                    Severity.MEDIUM
+                )
+            })
 
         val infraction = Infraction(
             user.id,
@@ -149,7 +180,7 @@ object ActionRouter {
         return success
     }
 
-    fun mute(user: User, guild: Guild, link: Links): Boolean {
+    fun mute(user: User, guild: Guild, link: Links, silent: Boolean): Boolean {
 
         var success = true
 
@@ -185,10 +216,11 @@ object ActionRouter {
             }
         }
 
-        user.openPrivateChannel().queue { channel ->
-            channel.sendMessage("**Hola ${user.asMention}! :wave:**\n\nHas sido silenciado en el servidor **${guild.name}** debido a que has enviado un link que ha sido considerado como spam.\n`Si crees que esto es un error, por favor, contacta con un el soporte del servidor.`\nDominio identificado como spam:```${link.domain}```")
-                .queue({}, {})
-        }
+        if (!silent)
+            user.openPrivateChannel().queue { channel ->
+                channel.sendMessage("**Hola ${user.asMention}! :wave:**\n\nHas sido silenciado en el servidor **${guild.name}** debido a que has enviado un link que ha sido considerado como spam.\n`Si crees que esto es un error, por favor, contacta con un el soporte del servidor.`\nDominio identificado como spam:```${link.domain}```")
+                    .queue({}, {})
+            }
 
         val infraction = Infraction(
             user.id,
@@ -208,7 +240,7 @@ object ActionRouter {
 
     }
 
-    fun warn(user: User, guild: Guild, link: Links): Boolean {
+    fun warn(user: User, guild: Guild, link: Links, silent: Boolean): Boolean {
 
         val infraction = Infraction(
             user.id,
@@ -225,44 +257,54 @@ object ActionRouter {
 
         infraction.save()
 
-        user.openPrivateChannel().queue { channel ->
-            channel.sendMessage("**Hola ${user.asMention}! :wave:**\n\nHas sido advertido en el servidor **${guild.name}** debido a que has enviado un link que ha sido considerado como spam.\n`Si crees que esto es un error, por favor, contacta con un el soporte del servidor.`\nDominio identificado como spam:```${link.domain}```")
-                .queue({}, {})
-        }
+        if (!silent)
+            user.openPrivateChannel().queue { channel ->
+                channel.sendMessage("**Hola ${user.asMention}! :wave:**\n\nHas sido advertido en el servidor **${guild.name}** debido a que has enviado un link que ha sido considerado como spam.\n`Si crees que esto es un error, por favor, contacta con un el soporte del servidor.`\nDominio identificado como spam:```${link.domain}```")
+                    .queue({}, {})
+            }
 
         return true
 
     }
 
-    fun tempBan(user: User, guild: Guild, link: Links): Boolean {
+    fun tempBan(user: User, guild: Guild, link: Links, silent: Boolean): Boolean {
 
         var success = true
 
-        user.openPrivateChannel().queue { channel ->
-            channel.sendMessage("**Hola ${user.asMention}! :wave:**\n\nHas sido baneado temporalmente del servidor **${guild.name}** durante `${link.durationRaw}` debido a que has enviado un link que ha sido considerado como spam.\n`Si crees que esto es un error, por favor, contacta con un el soporte del servidor.`\nDominio identificado como spam:```${link.domain}```")
-                .queue({
-                    guild.ban(user, 60, TimeUnit.SECONDS).reason("Sistema de anti-links").queue({ run {} },
-                        {
-                            success = false
-                            WarningsManager.createWarning(
-                                guild,
-                                "No se pudo banear temporalmente a \"${user.asTag}\" por el sistema de anti-links",
-                                Severity.MEDIUM
-                            )
-                        })
-                }, {
-                    guild.ban(user, 60, TimeUnit.SECONDS).reason("Sistema de anti-links").queue({ run {} },
-                        {
-                            success = false
-                            WarningsManager.createWarning(
-                                guild,
-                                "No se pudo banear temporalmente a \"${user.asTag}\" por el sistema de anti-links",
-                                Severity.MEDIUM
-                            )
-                        })
-                })
-        }
-
+        if (!silent)
+            user.openPrivateChannel().queue { channel ->
+                channel.sendMessage("**Hola ${user.asMention}! :wave:**\n\nHas sido baneado temporalmente del servidor **${guild.name}** durante `${link.durationRaw}` debido a que has enviado un link que ha sido considerado como spam.\n`Si crees que esto es un error, por favor, contacta con un el soporte del servidor.`\nDominio identificado como spam:```${link.domain}```")
+                    .queue({
+                        guild.ban(user, 60, TimeUnit.SECONDS).reason("Sistema de anti-links").queue({ run {} },
+                            {
+                                success = false
+                                WarningsManager.createWarning(
+                                    guild,
+                                    "No se pudo banear temporalmente a \"${user.asTag}\" por el sistema de anti-links",
+                                    Severity.MEDIUM
+                                )
+                            })
+                    }, {
+                        guild.ban(user, 60, TimeUnit.SECONDS).reason("Sistema de anti-links").queue({ run {} },
+                            {
+                                success = false
+                                WarningsManager.createWarning(
+                                    guild,
+                                    "No se pudo banear temporalmente a \"${user.asTag}\" por el sistema de anti-links",
+                                    Severity.MEDIUM
+                                )
+                            })
+                    })
+            }
+        else guild.ban(user, 60, TimeUnit.SECONDS).reason("Sistema de anti-links").queue({ run {} },
+            {
+                success = false
+                WarningsManager.createWarning(
+                    guild,
+                    "No se pudo banear temporalmente a \"${user.asTag}\" por el sistema de anti-links",
+                    Severity.MEDIUM
+                )
+            })
 
         val infraction = Infraction(
             user.id,
@@ -282,7 +324,7 @@ object ActionRouter {
 
     }
 
-    fun tempMute(user: User, guild: Guild, link: Links): Boolean {
+    fun tempMute(user: User, guild: Guild, link: Links, silent: Boolean): Boolean {
 
         var success = true
 
@@ -336,10 +378,11 @@ object ActionRouter {
 
             }
 
-            user.openPrivateChannel().queue { channel ->
-                channel.sendMessage("**Hola ${user.asMention}! :wave:**\n\nHas sido silenciado temporalmente en el servidor **${guild.name}** durante `${link.durationRaw}` debido a que has enviado un link que ha sido considerado como spam.\n`Si crees que esto es un error, por favor, contacta con un el soporte del servidor.`\nDominio identificado como spam:```${link.domain}```")
-                    .queue({}, {})
-            }
+            if (!silent)
+                user.openPrivateChannel().queue { channel ->
+                    channel.sendMessage("**Hola ${user.asMention}! :wave:**\n\nHas sido silenciado temporalmente en el servidor **${guild.name}** durante `${link.durationRaw}` debido a que has enviado un link que ha sido considerado como spam.\n`Si crees que esto es un error, por favor, contacta con un el soporte del servidor.`\nDominio identificado como spam:```${link.domain}```")
+                        .queue({}, {})
+                }
 
         } catch (e: Exception) {
             success = false
