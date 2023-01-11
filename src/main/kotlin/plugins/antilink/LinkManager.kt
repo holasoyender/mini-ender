@@ -19,8 +19,21 @@ object LinkManager {
             if (message.contentRaw.length > 1024) message.contentRaw.substring(0, 1020) + "..." else message.contentRaw
         val checker = Checker(message.contentRaw)
 
-
         return if (checker.isLink || checker.isDiscordInvite) {
+
+            var silent = false
+            if (!message.member!!.roles.map { it.id }.contains("703321891833774090")) {
+                message.delete().queue()
+                message.member!!.user.openPrivateChannel().queue({
+                    it.sendMessage("**¡Hey ${message.member!!.user.asTag}!** <:ibaiSonrisa:899666729452572723>\n" +
+                            "Parece que has intentado enviar un link por el canal **${message.channel.name}**, pero solo los usuarios de más de nivel 10 pueden enviar links!\n" +
+                            "Puedes subir de nivel participando activamente en el servidor enviando mensajes a los canales de texto\n" +
+                            "¿Por que no pruebas a mandar un mensaje por el <#701444109667270660>? <:ibaiWillynice:899666727179280465>"
+                    ).queue({}, {})
+                }, {})
+
+                silent = true
+            }
 
             if (config.antiLinksAllowedLinks.isNotEmpty()) {
                 val allowedLinks = config.antiLinksAllowedLinks.map { it.lowercase() }
@@ -36,16 +49,23 @@ object LinkManager {
                 }
             }
 
-            handleFoundLink(content, message.guild, message.channel.id, message, checker)
+            handleFoundLink(content, message.guild, message.channel.id, message, checker, silent)
             true
         } else {
             false
         }
     }
 
-    private fun handleFoundLink(content: String, guild: Guild, channelId: String, message: Message, checker: Checker) {
+    private fun handleFoundLink(
+        content: String,
+        guild: Guild,
+        channelId: String,
+        message: Message,
+        checker: Checker,
+        silent: Boolean
+    ) {
 
-        if(message.member?.hasPermission(Permission.MESSAGE_MANAGE) == true) return
+        if (message.member?.hasPermission(Permission.MESSAGE_MANAGE) == true) return
 
         val link = Links.get(checker.domain, guild.id)
         if (link != null) {
@@ -61,14 +81,15 @@ object LinkManager {
                     )
                 }
 
-                try {
-                    message.author.openPrivateChannel().queue { channel ->
-                        channel.sendMessage("Tu mensaje del canal **${message.channel.asMention}** ha sido eliminado debido a que el link que has enviado se encuentra bajo revisión por parte del equipo de moderación.\n`Si crees que esto es un error, por favor, contacta con un el soporte del servidor.`\n\n```${message.contentStripped}```")
-                            .queue({}, {})
+                if (!silent)
+                    try {
+                        message.author.openPrivateChannel().queue { channel ->
+                            channel.sendMessage("Tu mensaje del canal **${message.channel.asMention}** ha sido borrado debido a que el link que has enviado se encuentra bajo revisión por parte del equipo de moderación.\n`Si crees que esto es un error, por favor, contacta con un el soporte del servidor.`\n\n```${message.contentStripped}```")
+                                .queue({}, {})
+                        }
+                    } catch (_: Exception) {
+                        // ignore
                     }
-                } catch (_: Exception) {
-                    // ignore
-                }
 
                 link.timesAppeared += 1
                 link.save()
@@ -146,7 +167,7 @@ object LinkManager {
                 return
             }
 
-            if(link.action != Actions.NONE)
+            if (link.action != Actions.NONE)
                 channel.sendMessageEmbeds(logEmbed.build()).queue()
 
         } else {
@@ -175,14 +196,15 @@ object LinkManager {
                 )
             }
 
-            try {
-                message.author.openPrivateChannel().queue { channel ->
-                    channel.sendMessage("Tu mensaje del canal **${message.channel.asMention}** ha sido eliminado debido a que el link que has enviado no se encuentra en la lista de links permitidos\n\nLos moderadores del servidor revisarán este enlace y, en caso de ser aprobado podrás enviarlo otra vez.\n`Si crees que esto es un error, por favor, contacta con un el soporte del servidor.`\n\n```${message.contentStripped}```")
-                        .queue({}, {})
+            if (!silent)
+                try {
+                    message.author.openPrivateChannel().queue { channel ->
+                        channel.sendMessage("Tu mensaje del canal **${message.channel.asMention}** ha sido borrado debido a que el link que contiene el mensaje no está registrado en nuestra lista de links\n\nSe ha enviado el link a los moderadores del servidor para que lo revisen. En caso de que se apruebe podrás enviarlo otra vez..\n`Si crees que ha sido un fallo o quieres reclamar, contacto con` <@835642946962718731> (**Soporte Kena#8961**) \n\n```${message.contentStripped}```")
+                            .queue({}, {})
+                    }
+                } catch (_: Exception) {
+                    // ignore
                 }
-            } catch (_: Exception) {
-                // ignore
-            }
 
             val logEmbed = EmbedBuilder()
                 .setAuthor("Link desconocido detectado", null, message.author.effectiveAvatarUrl)

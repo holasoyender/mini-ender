@@ -67,7 +67,7 @@ class Exportar: Command {
     override val description: String
         get() = "Exportar la configuración del servidor"
     override val aliases: List<String>
-        get() = listOf("export", "configexport", "configexportar")
+        get() = listOf("export", "configexport", "configexportar", "config")
     override val usage: String
         get() = ""
     override val category: String
