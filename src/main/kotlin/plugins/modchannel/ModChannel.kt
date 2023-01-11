@@ -108,7 +108,7 @@ object ModChannel {
             ActionRow.of(
                 Button.danger("cmd::mod:ban", "Banear" + if(parsedMessage.duration != "0") " (${parsedMessage.duration})" else " (Permanente)"),
                 Button.danger("cmd::mod:mute", "Mutear" + if(parsedMessage.duration != "0") " (${parsedMessage.duration})" else " (Permanente)"),
-                Button.secondary("cmd::empty", "${parsedMessage.users.size} Usuarios", true)
+                Button.secondary("cmd::empty", "${parsedMessage.users.size} Usuario" + if(parsedMessage.users.size != 1) "s" else "", true)
             )
         )
 

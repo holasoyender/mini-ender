@@ -95,7 +95,7 @@ object ModInteractions {
                     "cmd::mod:mute",
                     "Mutear" + if (parsed.duration != "0") " (${parsed.duration})" else " (Permanente)"
                 ).asDisabled(),
-                Button.secondary("cmd::empty", "${parsed.users.size} Usuarios").asDisabled()
+                Button.secondary("cmd::empty", "${parsed.users.size} Usuario" + if(parsed.users.size != 1) "s" else "").asDisabled()
             )
         ).queue()
     }
@@ -161,7 +161,7 @@ object ModInteractions {
                     "cmd::mod:mute",
                     "Mutear" + if (parsed.duration != "0") " (${parsed.duration})" else " (Permanente)"
                 ).asDisabled(),
-                Button.secondary("cmd::empty", "${parsed.users.size} Usuarios").asDisabled()
+                Button.secondary("cmd::empty", "${parsed.users.size} Usuario" + if(parsed.users.size != 1) "s" else "").asDisabled()
             )
         ).queue()
     }
