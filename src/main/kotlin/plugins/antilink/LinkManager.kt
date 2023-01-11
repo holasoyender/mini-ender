@@ -83,10 +83,10 @@ object LinkManager {
 
                 if (!silent)
                     try {
-                        message.author.openPrivateChannel().queue { channel ->
+                        message.author.openPrivateChannel().queue({ channel ->
                             channel.sendMessage("Tu mensaje del canal **${message.channel.asMention}** ha sido borrado debido a que el link que has enviado se encuentra bajo revisión por parte del equipo de moderación.\n`Si crees que esto es un error, por favor, contacta con un el soporte del servidor.`\n\n```${message.contentStripped}```")
                                 .queue({}, {})
-                        }
+                        }, {})
                     } catch (_: Exception) {
                         // ignore
                     }
@@ -198,10 +198,10 @@ object LinkManager {
 
             if (!silent)
                 try {
-                    message.author.openPrivateChannel().queue { channel ->
+                    message.author.openPrivateChannel().queue({ channel ->
                         channel.sendMessage("Tu mensaje del canal **${message.channel.asMention}** ha sido borrado debido a que el link que contiene el mensaje no está registrado en nuestra lista de links\n\nSe ha enviado el link a los moderadores del servidor para que lo revisen. En caso de que se apruebe podrás enviarlo otra vez..\n`Si crees que ha sido un fallo o quieres reclamar, contacto con` <@835642946962718731> (**Soporte Kena#8961**) \n\n```${message.contentStripped}```")
                             .queue({}, {})
-                    }
+                    }, {})
                 } catch (_: Exception) {
                     // ignore
                 }

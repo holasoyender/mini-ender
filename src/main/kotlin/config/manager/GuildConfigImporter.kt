@@ -43,6 +43,7 @@ object GuildConfigImporter {
                     muteRoleId = (config["roles"] as Map<*, *>)["mute_role_id"] as String,
 
                     moderationSilent = (config["moderation"] as Map<*, *>)["silent"] as Boolean,
+                    moderationChannelId = (config["moderation"] as Map<*, *>)["channel_id"] as String,
                     permissions = (config["permissions"] as Map<Long, Int>).map { it.key.toString() to it.value }.toMap(),
 
                     logsChannelId = (config["logs"] as Map<*, *>)["channel_id"] as String,
@@ -102,6 +103,7 @@ object GuildConfigImporter {
                 guildConfig.muteRoleId = (config["roles"] as Map<*, *>)["mute_role_id"] as String
 
                 guildConfig.moderationSilent = (config["moderation"] as Map<*, *>)["silent"] as Boolean
+                guildConfig.moderationChannelId = (config["moderation"] as Map<*, *>)["moderation_channel_id"] as String
                 guildConfig.permissions = (config["permissions"] as Map<Long, Int>).map { it.key.toString() to it.value }.toMap()
 
                 guildConfig.logsChannelId = (config["logs"] as Map<*, *>)["channel_id"] as String

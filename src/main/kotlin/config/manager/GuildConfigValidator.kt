@@ -82,6 +82,9 @@ class GuildConfigValidator(
         val moderation = config["moderation"] ?: return Pair(false, "El modulo de moderación no está definido")
         if(moderation !is Map<*, *>) return Pair(false, "El modulo de moderación no está bien definido")
         if(moderation["silent"] !is Boolean) return Pair(false, "El modo silencioso no está bien definido")
+        if(moderation["moderation_channel_id"] !is String) return Pair(false, "El canal de moderación no está bien definido")
+        if(!isIdOrEmpty(moderation["moderation_channel_id"] as String)) return Pair(false, "El canal de moderación no es un ID válido")
+        if((moderation["moderation_channel_id"] as String).isNotEmpty() && !isValidChannel(moderation["moderation_channel_id"] as String)) return Pair(false, "El canal de moderación no existe en el servidor")
         return Pair(true, "")
     }
 

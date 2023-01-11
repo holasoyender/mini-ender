@@ -92,8 +92,8 @@ class EventLogger(
                 .addField("Autor", "${message.author.asMention} (`${message.author.id}`)", true)
                 .addField("Canal", "${message.channel.asMention} (`${message.channel.id}`)", true)
                 .addField("Fecha", "${TimeFormat.DEFAULT.format(System.currentTimeMillis())} (${TimeFormat.RELATIVE.format(System.currentTimeMillis())})", true)
-                .addField("Antes", "```${message.contentDisplay}```", false)
-                .addField("Después", "```${event.message.contentDisplay}```", false)
+                .addField("Antes", "```${if(message.contentDisplay.length > 1024) message.contentDisplay.substring(0, 1024) else message.contentDisplay}```", false)
+                .addField("Después", "```${if(event.message.contentDisplay.length > 1024) event.message.contentDisplay.substring(0, 1024) else event.message.contentDisplay}```", false)
                 .setThumbnail("https://cdn.discordapp.com/attachments/839400943517827092/1045076638532108419/emoji.png")
 
             log(embed)

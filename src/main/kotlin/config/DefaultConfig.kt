@@ -16,6 +16,7 @@ object DefaultConfig {
             muteRoleId = "",
 
             moderationSilent = false,
+            moderationChannelId= "",
             permissions = mapOf(),
 
             logsChannelId = "",

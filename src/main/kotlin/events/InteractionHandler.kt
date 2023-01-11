@@ -22,6 +22,7 @@ import net.dv8tion.jda.api.utils.FileUpload
 import net.dv8tion.jda.internal.entities.emoji.CustomEmojiImpl
 import plugins.antilink.LinksInteractions
 import plugins.giveaway.GiveawayInteractions
+import plugins.modchannel.ModInteractions
 import slashCommandManager
 import utils.Constants.OWNER_IDS
 import utils.Emojis
@@ -219,6 +220,13 @@ class InteractionHandler: ListenerAdapter() {
                             "delete" -> LinksInteractions.handleDeleteButton(event)
                             "delete-link" -> LinksInteractions.handleDeleteLinkButton(event)
                             "edit" -> LinksInteractions.handleEditButton(event)
+                        }
+                    }
+                    "mod" -> {
+
+                        when(event.componentId.split("::")[1].split(":")[1]) {
+                            "ban" -> ModInteractions.handleBanButton(event)
+                            "mute" -> ModInteractions.handleMuteButton(event)
                         }
                     }
                     "infrs" -> {
