@@ -41,7 +41,7 @@ object Phishing {
             val channelId = message.channel.id
             val checker = Checker(content)
 
-            val actionTaken = ActionRouter.ban(message.author, guild, checker)
+            val actionTaken = ActionRouter.ban(message.author, guild, checker, false)
 
             var deletedMessage = true
 
