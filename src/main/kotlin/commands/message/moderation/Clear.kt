@@ -1,5 +1,6 @@
 package commands.message.moderation
 
+import database.schema.Guild
 import interfaces.Command
 import interfaces.CommandResponse
 import net.dv8tion.jda.api.Permission
@@ -9,7 +10,7 @@ import utils.Emojis.f
 import java.time.OffsetDateTime
 
 class Clear: Command {
-    override fun execute(event: MessageReceivedEvent, args: List<String>): CommandResponse {
+    override fun execute(event: MessageReceivedEvent, args: List<String>, config: Guild): CommandResponse {
 
         val amountOrUserId = args.getOrNull(1)?.toLongOrNull()
             ?: return CommandResponse.error("Debes de especificar una cantidad válida")

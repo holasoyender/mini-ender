@@ -1,6 +1,7 @@
 package commands.message.config
 
 import config.manager.GuildConfigImporter
+import database.schema.Guild
 import interfaces.Command
 import interfaces.CommandResponse
 import net.dv8tion.jda.api.Permission
@@ -8,7 +9,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import utils.Emojis
 
 class Importar: Command {
-    override fun execute(event: MessageReceivedEvent, args: List<String>): CommandResponse {
+    override fun execute(event: MessageReceivedEvent, args: List<String>, config: Guild): CommandResponse {
 
         val file = event.message.attachments.firstOrNull() ?: return CommandResponse.error("No se ha adjuntado ningún archivo")
         val response = GuildConfigImporter.import(file, event.guild)

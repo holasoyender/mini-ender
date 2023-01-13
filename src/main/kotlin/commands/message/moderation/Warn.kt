@@ -7,12 +7,13 @@ import enums.InfractionType
 import interfaces.Command
 import interfaces.CommandResponse
 import logger.InfractionLogger
+import messages.Formatter
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import utils.Emojis
 
 class Warn: Command {
-    override fun execute(event: MessageReceivedEvent, args: List<String>): CommandResponse {
+    override fun execute(event: MessageReceivedEvent, args: List<String>, config: Guild): CommandResponse {
 
         val user = try {
             event.message.mentions.users.firstOrNull() ?: args.getOrNull(1)
@@ -71,20 +72,31 @@ class Warn: Command {
             event.message.reply("${Emojis.success}  Has avisado al usuario ${user.asMention} con la razón: `$reason`")
                 .queue()
         } else {
-            user.openPrivateChannel().queue({ channel ->
-                channel.sendMessage("${Emojis.warning}  Has sido avisado en el servidor **${event.guild.name}** con la razón: `$reason`")
-                    .queue(
-                        {
-                            event.message.reply("${Emojis.success}  Has avisado al usuario ${user.asMention} con la razón: `$reason`")
-                                .queue()
-                        }, {
-                            event.message.reply("${Emojis.success}  Has avisado al usuario ${user.asMention} con la razón: `$reason` pero no ha podido ser notificado")
-                                .queue()
-                        })
-            }, {
-                event.message.reply("${Emojis.success}  Has avisado al usuario ${user.asMention} con la razón: `$reason` pero no ha podido ser notificado")
+            if (config.sanctionMessage.isNotEmpty() && config.sanctionMessage.isNotBlank()) {
+                user.openPrivateChannel().queue({ channel ->
+                    channel.sendMessage(
+                        Formatter.formatSanctionMessage(
+                            config.sanctionMessage,
+                            infraction,
+                            event.guild
+                        )
+                    )
+                        .queue(
+                            {
+                                event.message.reply("${Emojis.success}  Has avisado al usuario ${user.asMention} con la razón: `$reason`")
+                                    .queue()
+                            }, {
+                                event.message.reply("${Emojis.success}  Has avisado al usuario ${user.asMention} con la razón: `$reason` pero no ha podido ser notificado")
+                                    .queue()
+                            })
+                }, {
+                    event.message.reply("${Emojis.success}  Has avisado al usuario ${user.asMention} con la razón: `$reason` pero no ha podido ser notificado")
+                        .queue()
+                })
+            } else {
+                event.message.reply("${Emojis.success}  Has avisado al usuario ${user.asMention} con la razón: `$reason`")
                     .queue()
-            })
+            }
         }
 
         InfractionLogger(event.guild, Guild.get(event.guild.id) ?: DefaultConfig.get()).log(infraction)

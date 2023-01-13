@@ -1,5 +1,6 @@
 package commands.message.info
 
+import database.schema.Guild
 import emoji.Emoji
 import emoji.EmojiManager
 import interfaces.Command
@@ -11,7 +12,7 @@ import net.dv8tion.jda.api.utils.TimeFormat
 import java.awt.Color
 
 class Emojis: Command {
-    override fun execute(event: MessageReceivedEvent, args: List<String>): CommandResponse {
+    override fun execute(event: MessageReceivedEvent, args: List<String>, config: Guild): CommandResponse {
 
         val emoji = event.message.mentions.customEmojis.firstOrNull() ?: args.getOrNull(1)
             ?.let {

@@ -1,5 +1,6 @@
 package commands.message.config
 
+import database.schema.Guild
 import interfaces.Command
 import interfaces.CommandResponse
 import net.dv8tion.jda.api.Permission
@@ -7,7 +8,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 
 class Reiniciar: Command {
-    override fun execute(event: MessageReceivedEvent, args: List<String>): CommandResponse {
+    override fun execute(event: MessageReceivedEvent, args: List<String>, config: Guild): CommandResponse {
 
         event.message.reply("¿Estás seguro de que quieres reiniciar la configuración de este servidor?").setActionRow(
             Button.danger("cmd::reiniciar:${event.author.id}", "Reiniciar configuración"),

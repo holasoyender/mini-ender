@@ -1,6 +1,6 @@
 package managers
 
-import config.Env.PREFIX
+import config.DefaultConfig
 import database.schema.Guild
 import interfaces.Command
 import interfaces.SimpleCommand
@@ -73,8 +73,8 @@ class CommandManager {
     fun run(invoker: String, event: MessageReceivedEvent) {
 
         val content = event.message.contentRaw
-        val config = if (event.isFromGuild) Guild.get(event.guild.id) else null
-        val prefix = config?.prefix ?: PREFIX ?: "-"
+        val config = if (event.isFromGuild) Guild.get(event.guild.id) ?: DefaultConfig.get() else DefaultConfig.get()
+        val prefix = config.prefix
         val args = content.slice(prefix.length until content.length).split(" ")
 
         val command =
@@ -102,26 +102,25 @@ class CommandManager {
                 var doPermissionChecks = true
                 if (event.isFromGuild) {
                     val member = event.member!!
-                    if (config != null) {
-                        val rolePermissions = config.permissions
-                        val roles = member.roles
-                        val commonRoles = roles.filter { rolePermissions.containsKey(it.id) }
-                        if (commonRoles.isNotEmpty()) {
-                            /*
+                    val rolePermissions = config.permissions
+                    val roles = member.roles
+                    val commonRoles = roles.filter { rolePermissions.containsKey(it.id) }
+                    if (commonRoles.isNotEmpty()) {
+                        /*
                             * Esta es una de mis funciones favoritas de kotlin
                             * dato innecesario lo sé, pero quería ponerlo
                             */
-                            val maxPermission = commonRoles.maxOf { rolePermissions[it.id]!! }
-                            if (maxPermission >= command.permissionLevel) {
-                                doPermissionChecks = false
-                            } else {
-                                if (!config.moderationSilent)
-                                    event.message.reply("${f(Emojis.error)}  No tienes permisos suficientes para usar el comando `${command.name}`")
-                                        .queue()
-                                return
-                            }
+                        val maxPermission = commonRoles.maxOf { rolePermissions[it.id]!! }
+                        if (maxPermission >= command.permissionLevel) {
+                            doPermissionChecks = false
+                        } else {
+                            if (!config.moderationSilent)
+                                event.message.reply("${f(Emojis.error)}  No tienes permisos suficientes para usar el comando `${command.name}`")
+                                    .queue()
+                            return
                         }
                     }
+
                 }
 
                 if (command.permissions.isNotEmpty() && doPermissionChecks) {
@@ -129,7 +128,7 @@ class CommandManager {
                         val member = event.member!!
                         val missingPermissions = command.permissions.filter { !member.hasPermission(it) }
                         if (missingPermissions.isNotEmpty()) {
-                            if (config?.moderationSilent == false)
+                            if (!config.moderationSilent)
                                 event.message.reply(
                                     "${f(Emojis.error)}  No tienes los permisos necesarios para usar el comando ${command.name}\nNecesitas los siguientes permisos: `${
                                         missingPermissions.joinToString(
@@ -168,7 +167,7 @@ class CommandManager {
                 }
             }
 
-            val worker = command.run { execute(event, args) }
+            val worker = command.run { execute(event, args, config) }
 
             if (worker.exitStatus != 0) {
                 event.message.reply("${f(Emojis.error)}  El comando ${command.name} ha fallado con el siguiente error: \n`${worker.error ?: "Desconocido"}`")

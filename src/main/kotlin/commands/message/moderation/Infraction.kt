@@ -1,5 +1,6 @@
 package commands.message.moderation
 
+import database.schema.Guild
 import database.schema.Infraction
 import interfaces.Command
 import interfaces.CommandResponse
@@ -10,7 +11,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.utils.TimeFormat
 
 class Infraction: Command {
-    override fun execute(event: MessageReceivedEvent, args: List<String>): CommandResponse {
+    override fun execute(event: MessageReceivedEvent, args: List<String>, config: Guild): CommandResponse {
 
         val id = args.getOrNull(1)?.toLongOrNull() ?: return CommandResponse.error("Debes de especificar una ID de infracción valida")
 

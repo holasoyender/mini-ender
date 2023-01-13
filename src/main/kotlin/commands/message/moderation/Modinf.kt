@@ -1,5 +1,6 @@
 package commands.message.moderation
 
+import database.schema.Guild
 import database.schema.Infraction
 import interfaces.Command
 import interfaces.CommandResponse
@@ -9,8 +10,7 @@ import utils.Emojis
 import utils.Time
 
 class Modinf: Command {
-    override fun execute(event: MessageReceivedEvent, args: List<String>): CommandResponse {
-
+    override fun execute(event: MessageReceivedEvent, args: List<String>, config: Guild): CommandResponse {
 
         val id = args.getOrNull(1)?.toLongOrNull() ?: return CommandResponse.error("Debes de especificar una ID de infracción valida")
         val input = args.getOrNull(2) ?: return CommandResponse.error("Debes de especificar un tiempo valido")

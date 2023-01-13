@@ -1,5 +1,6 @@
 package commands.message.bot
 
+import database.schema.Guild
 import database.schema.Warnings
 import enums.Severity
 import interfaces.Command
@@ -12,7 +13,7 @@ import utils.Emojis
 import utils.Emojis.f
 
 class Warnings: Command {
-    override fun execute(event: MessageReceivedEvent, args: List<String>): CommandResponse {
+    override fun execute(event: MessageReceivedEvent, args: List<String>, config: Guild): CommandResponse {
 
         val warnings = Warnings.getAll(event.guild.id)
 

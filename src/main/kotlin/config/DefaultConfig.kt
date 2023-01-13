@@ -37,6 +37,10 @@ object DefaultConfig {
             twitchLiveChannelId = "",
             twitchLiveMessage = "",
 
+            sanctionMessage = "",
+            antiLinksNewLinkMessage = "",
+            antiLinksSanctionMessage = "",
+            antiLinksUnderRevisionMessage = "",
             raw = ""
         )
     }

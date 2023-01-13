@@ -1,5 +1,6 @@
 package commands.message.moderation
 
+import database.schema.Guild
 import database.schema.Links
 import interfaces.Command
 import interfaces.CommandResponse
@@ -11,7 +12,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.api.utils.TimeFormat
 
 class Link: Command {
-    override fun execute(event: MessageReceivedEvent, args: List<String>): CommandResponse {
+    override fun execute(event: MessageReceivedEvent, args: List<String>, config: Guild): CommandResponse {
 
         val domain = args.getOrNull(1) ?: return CommandResponse.error("Debes especificar un dominio del sistema de anti-links")
         val link = Links.get(domain, event.guild.id) ?: return CommandResponse.error("No se ha encontrado ningún dominio con ese nombre en la base de datos")

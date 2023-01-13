@@ -1,6 +1,5 @@
 package commands.message.dev
 
-import config.DefaultConfig
 import database.schema.Guild
 import interfaces.Command
 import interfaces.CommandResponse
@@ -10,7 +9,7 @@ import javax.script.ScriptEngineManager
 import javax.script.ScriptException
 
 class Eval: Command {
-    override fun execute(event: MessageReceivedEvent, args: List<String>): CommandResponse {
+    override fun execute(event: MessageReceivedEvent, args: List<String>, config: Guild): CommandResponse {
 
         val toEval: String = args.subList(1, args.size).joinToString(" ")
 
@@ -28,7 +27,7 @@ class Eval: Command {
         if(event.isFromGuild) {
             script.put("guild", event.guild)
             script.put("member", event.member)
-            script.put("config", Guild.get(event.guild.id) ?: DefaultConfig.get())
+            script.put("config", config)
         }
         script.put("msgcache", cache.MessageCache)
 

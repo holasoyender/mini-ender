@@ -36,6 +36,11 @@ class Guild(
     twitchLiveChannelId: String,
     twitchLiveMessage: String,
 
+    sanctionMessage: String,
+    antiLinksNewLinkMessage: String,
+    antiLinksUnderRevisionMessage: String,
+    antiLinksSanctionMessage: String,
+
     raw: String
 ): Schema {
 
@@ -70,6 +75,11 @@ class Guild(
     var twitchAnnounceMessage: String
     var twitchLiveChannelId: String
     var twitchLiveMessage: String
+
+    var sanctionMessage: String
+    var antiLinksNewLinkMessage: String
+    var antiLinksUnderRevisionMessage: String
+    var antiLinksSanctionMessage: String
 
     var raw: String
 
@@ -110,6 +120,11 @@ class Guild(
         this.twitchLiveChannelId = twitchLiveChannelId
         this.twitchLiveMessage = twitchLiveMessage
 
+        this.sanctionMessage = sanctionMessage
+        this.antiLinksNewLinkMessage = antiLinksNewLinkMessage
+        this.antiLinksUnderRevisionMessage = antiLinksUnderRevisionMessage
+        this.antiLinksSanctionMessage = antiLinksSanctionMessage
+
         this.raw = raw
 
         if (exists()) {
@@ -131,7 +146,7 @@ class Guild(
 
         if (exists()) {
             database.Postgres.dataSource?.connection.use { connection ->
-                val statement = connection!!.prepareStatement("UPDATE guilds SET prefix = ?, welcome_role_id = ?, welcome_channel_id = ?, welcome_message = ?, mute_role_id = ?, moderation_silent = ?, moderation_channel_id = ?, permissions = ?, logs_channel_id = ?, moderation_logs_channel_id = ?, anti_links_enabled = ?, anti_links_allowed_links = ?, anti_links_channel_id = ?, anti_links_ignored_roles = ?, anti_links_ignored_channels = ?, anti_phishing_enabled = ?, custom_commands = ?, twitch_channel = ?, twitch_announce_channel_id = ?, twitch_announce_message = ?, twitch_live_channel_id = ?, twitch_live_message = ?, raw = ? WHERE id = ?")
+                val statement = connection!!.prepareStatement("UPDATE guilds SET prefix = ?, welcome_role_id = ?, welcome_channel_id = ?, welcome_message = ?, mute_role_id = ?, moderation_silent = ?, moderation_channel_id = ?, permissions = ?, logs_channel_id = ?, moderation_logs_channel_id = ?, anti_links_enabled = ?, anti_links_allowed_links = ?, anti_links_channel_id = ?, anti_links_ignored_roles = ?, anti_links_ignored_channels = ?, anti_phishing_enabled = ?, custom_commands = ?, twitch_channel = ?, twitch_announce_channel_id = ?, twitch_announce_message = ?, twitch_live_channel_id = ?, twitch_live_message = ?, sanction_message = ?, anti_links_new_link_message = ?, anti_links_under_revision_message = ?, anti_links_sanction_message = ?, raw = ? WHERE id = ?")
                 statement.setString(1, prefix)
 
                 statement.setString(2, welcomeRoleId)
@@ -167,16 +182,21 @@ class Guild(
                 statement.setString(21, twitchLiveChannelId)
                 statement.setString(22, twitchLiveMessage)
 
-                statement.setString(23, raw)
+                statement.setString(23, sanctionMessage)
+                statement.setString(24, antiLinksNewLinkMessage)
+                statement.setString(25, antiLinksUnderRevisionMessage)
+                statement.setString(26, antiLinksSanctionMessage)
 
-                statement.setString(24, id)
+                statement.setString(27, raw)
+
+                statement.setString(28, id)
 
                 statement.execute()
             }
         } else {
             database.Postgres.dataSource?.connection.use { connection ->
                 val statement =
-                    connection!!.prepareStatement("INSERT INTO guilds (id, prefix, welcome_role_id, welcome_channel_id, welcome_message, mute_role_id, moderation_silent, moderation_channel_id, permissions, logs_channel_id, moderation_logs_channel_id, anti_links_enabled, anti_links_allowed_links, anti_links_channel_id, anti_links_ignored_roles, anti_links_ignored_channels, anti_phishing_enabled, custom_commands, twitch_channel, twitch_announce_channel_id, twitch_announce_message, twitch_live_channel_id, twitch_live_message, raw) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+                    connection!!.prepareStatement("INSERT INTO guilds (id, prefix, welcome_role_id, welcome_channel_id, welcome_message, mute_role_id, moderation_silent, moderation_channel_id, permissions, logs_channel_id, moderation_logs_channel_id, anti_links_enabled, anti_links_allowed_links, anti_links_channel_id, anti_links_ignored_roles, anti_links_ignored_channels, anti_phishing_enabled, custom_commands, twitch_channel, twitch_announce_channel_id, twitch_announce_message, twitch_live_channel_id, twitch_live_message, sanction_message, anti_links_new_link_message, anti_links_under_revision_message, anti_links_sanction_message, raw) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
                 statement.setString(1, id)
                 statement.setString(2, prefix)
 
@@ -213,7 +233,12 @@ class Guild(
                 statement.setString(22, twitchLiveChannelId)
                 statement.setString(23, twitchLiveMessage)
 
-                statement.setString(24, raw)
+                statement.setString(24, sanctionMessage)
+                statement.setString(25, antiLinksNewLinkMessage)
+                statement.setString(26, antiLinksUnderRevisionMessage)
+                statement.setString(27, antiLinksSanctionMessage)
+
+                statement.setString(28, raw)
 
                 statement.execute()
             }
@@ -281,6 +306,10 @@ class Guild(
                 twitch_announce_message TEXT NOT NULL,
                 twitch_live_channel_id TEXT NOT NULL,
                 twitch_live_message TEXT NOT NULL,
+                sanction_message TEXT NOT NULL,
+                anti_links_new_link_message TEXT NOT NULL,
+                anti_links_under_revision_message TEXT NOT NULL,
+                anti_links_sanction_message TEXT NOT NULL,
                 raw TEXT NOT NULL
             );"""
                 )
@@ -333,6 +362,11 @@ class Guild(
                         result.getString("twitch_announce_message"),
                         result.getString("twitch_live_channel_id"),
                         result.getString("twitch_live_message"),
+
+                        result.getString("sanction_message"),
+                        result.getString("anti_links_new_link_message"),
+                        result.getString("anti_links_under_revision_message"),
+                        result.getString("anti_links_sanction_message"),
 
                         result.getString("raw")
 
@@ -390,6 +424,11 @@ class Guild(
                             result.getString("twitch_live_channel_id"),
                             result.getString("twitch_live_message"),
 
+                            result.getString("sanction_message"),
+                            result.getString("anti_links_new_link_message"),
+                            result.getString("anti_links_under_revision_message"),
+                            result.getString("anti_links_sanction_message"),
+
                             result.getString("raw")
                         )
                     )
@@ -444,6 +483,11 @@ class Guild(
                             result.getString("twitch_announce_message"),
                             result.getString("twitch_live_channel_id"),
                             result.getString("twitch_live_message"),
+
+                            result.getString("sanction_message"),
+                            result.getString("anti_links_new_link_message"),
+                            result.getString("anti_links_under_revision_message"),
+                            result.getString("anti_links_sanction_message"),
 
                             result.getString("raw")
                         )
@@ -500,6 +544,11 @@ class Guild(
                             result.getString("twitch_announce_message"),
                             result.getString("twitch_live_channel_id"),
                             result.getString("twitch_live_message"),
+
+                            result.getString("sanction_message"),
+                            result.getString("anti_links_new_link_message"),
+                            result.getString("anti_links_under_revision_message"),
+                            result.getString("anti_links_sanction_message"),
 
                             result.getString("raw")
                         )
