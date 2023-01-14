@@ -22,7 +22,6 @@ object LinkManager {
 
         return if (checker.isLink || checker.isDiscordInvite) {
 
-            var silent = false
             if (!message.member!!.roles.map { it.id }.contains("703321891833774090")) {
                 message.delete().queue()
                 message.member!!.user.openPrivateChannel().queue({
@@ -33,7 +32,6 @@ object LinkManager {
                     ).queue({}, {})
                 }, {})
 
-                silent = true
             }
 
             if (config.antiLinksAllowedLinks.isNotEmpty()) {
@@ -62,7 +60,7 @@ object LinkManager {
                     return false
             }
 
-            handleFoundLink(content, message.guild, message.channel.id, message, checker, silent)
+            handleFoundLink(content, message.guild, message.channel.id, message, checker)
             true
         } else {
             false
@@ -75,7 +73,6 @@ object LinkManager {
         channelId: String,
         message: Message,
         checker: Checker,
-        silent: Boolean
     ) {
 
         if (message.member?.hasPermission(Permission.MESSAGE_MANAGE) == true) return
