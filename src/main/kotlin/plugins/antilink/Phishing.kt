@@ -41,7 +41,8 @@ object Phishing {
             val channelId = message.channel.id
             val checker = Checker(content)
 
-            val actionTaken = ActionRouter.ban(message.author, guild, checker)
+            val config = database.schema.Guild.get(guild.id) ?: return
+            val actionTaken = ActionRouter.ban(message.author, guild, checker, config)
 
             var deletedMessage = true
 
@@ -74,7 +75,6 @@ object Phishing {
                 .setThumbnail("https://cdn.discordapp.com/attachments/839400943517827092/1038135823650013255/sentinel.png")
                 .setColor(0x2f3136)
 
-            val config = database.schema.Guild.get(guild.id) ?: return
             val channel =
                 if (config.antiLinksChannelId.isNotBlank()) {
                     guild.getTextChannelById(config.antiLinksChannelId)
