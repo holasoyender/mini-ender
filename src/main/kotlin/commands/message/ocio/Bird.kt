@@ -1,5 +1,6 @@
 package commands.message.ocio
 
+import database.schema.Guild
 import http.HttpManager
 import interfaces.Command
 import interfaces.CommandResponse
@@ -23,7 +24,7 @@ class Bird: Command {
     * Supongo que este es mi código ahora, si el legítimo autor llega a leer esto, lo siento :p
     *  - holasoyender 15/11/2022
     */
-    override fun execute(event: MessageReceivedEvent, args: List<String>): CommandResponse {
+    override fun execute(event: MessageReceivedEvent, args: List<String>, config: Guild): CommandResponse {
         try {
 
             val url = URL("https://shibe.online/api/birds")

@@ -1,5 +1,6 @@
 package commands.message.moderation
 
+import database.schema.Guild
 import database.schema.Infraction
 import interfaces.Command
 import interfaces.CommandResponse
@@ -14,7 +15,7 @@ import utils.Emojis.f
 import java.time.Instant
 
 class Infrs: Command {
-    override fun execute(event: MessageReceivedEvent, args: List<String>): CommandResponse {
+    override fun execute(event: MessageReceivedEvent, args: List<String>, config: Guild): CommandResponse {
 
         try {
             val user = event.message.mentions.users.firstOrNull() ?: args.getOrNull(1)

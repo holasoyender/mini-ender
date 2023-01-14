@@ -7,12 +7,13 @@ import enums.InfractionType
 import interfaces.Command
 import interfaces.CommandResponse
 import logger.InfractionLogger
+import messages.Formatter
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import utils.Emojis
 
 class Kick: Command {
-    override fun execute(event: MessageReceivedEvent, args: List<String>): CommandResponse {
+    override fun execute(event: MessageReceivedEvent, args: List<String>, config: Guild): CommandResponse {
 
         val user = try {
             event.message.mentions.users.firstOrNull() ?: args.getOrNull(1)
@@ -78,36 +79,55 @@ class Kick: Command {
             })
 
         } else {
-            user.openPrivateChannel().queue({ channel ->
-                channel.sendMessage("${Emojis.warning}  Has sido expulsado del servidor **${event.guild.name}** con la razón: `$reason`")
-                    .queue(
-                        {
-                            member.kick().reason(reason).queue({
-                                infraction.save()
-                                event.message.reply("${Emojis.success}  Has expulsado al usuario ${user.asMention} con la razón: `$reason`")
-                                    .queue()
+            if (config.sanctionMessage.isNotEmpty() && config.sanctionMessage.isNotBlank()) {
+                user.openPrivateChannel().queue({ channel ->
+                    channel.sendMessage(
+                        Formatter.formatSanctionMessage(
+                            config.sanctionMessage,
+                            infraction,
+                            event.guild
+                        )
+                    )
+                        .queue(
+                            {
+                                member.kick().reason(reason).queue({
+                                    infraction.save()
+                                    event.message.reply("${Emojis.success}  Has expulsado al usuario ${user.asMention} con la razón: `$reason`")
+                                        .queue()
+                                }, {
+                                    infraction.succeeded = false
+                                    infraction.save()
+                                    event.message.reply("${Emojis.warning}  No se ha podido expulsar al usuario ${user.asMention}, comprueba que tenga los permisos necesarios necesarios y que no tenga un rol superior al mio")
+                                        .queue()
+                                })
                             }, {
-                                infraction.succeeded = false
-                                infraction.save()
-                                event.message.reply("${Emojis.warning}  No se ha podido expulsar al usuario ${user.asMention}, comprueba que tenga los permisos necesarios necesarios y que no tenga un rol superior al mio")
-                                    .queue()
+                                member.kick().reason(reason).queue({
+                                    infraction.save()
+                                    event.message.reply("${Emojis.success}  Has expulsado al usuario ${user.asMention} con la razón: `$reason` pero no ha podido ser notificado")
+                                        .queue()
+                                }, {
+                                    infraction.succeeded = false
+                                    infraction.save()
+                                    event.message.reply("${Emojis.warning}  No se ha podido expulsar al usuario ${user.asMention}, comprueba que tenga los permisos necesarios necesarios y que no tenga un rol superior al mio")
+                                        .queue()
+                                })
                             })
-                        }, {
-                            member.kick().reason(reason).queue({
-                                infraction.save()
-                                event.message.reply("${Emojis.success}  Has expulsado al usuario ${user.asMention} con la razón: `$reason` pero no ha podido ser notificado")
-                                    .queue()
-                            }, {
-                                infraction.succeeded = false
-                                infraction.save()
-                                event.message.reply("${Emojis.warning}  No se ha podido expulsar al usuario ${user.asMention}, comprueba que tenga los permisos necesarios necesarios y que no tenga un rol superior al mio")
-                                    .queue()
-                            })
-                        })
-            }, {
+                }, {
+                    member.kick().reason(reason).queue({
+                        infraction.save()
+                        event.message.reply("${Emojis.success}  Has expulsado al usuario ${user.asMention} con la razón: `$reason` pero no ha podido ser notificado")
+                            .queue()
+                    }, {
+                        infraction.succeeded = false
+                        infraction.save()
+                        event.message.reply("${Emojis.warning}  No se ha podido expulsar al usuario ${user.asMention}, comprueba que tenga los permisos necesarios necesarios y que no tenga un rol superior al mio")
+                            .queue()
+                    })
+                })
+            } else {
                 member.kick().reason(reason).queue({
                     infraction.save()
-                    event.message.reply("${Emojis.success}  Has expulsado al usuario ${user.asMention} con la razón: `$reason` pero no ha podido ser notificado")
+                    event.message.reply("${Emojis.success}  Has expulsado al usuario ${user.asMention} con la razón: `$reason`")
                         .queue()
                 }, {
                     infraction.succeeded = false
@@ -115,7 +135,7 @@ class Kick: Command {
                     event.message.reply("${Emojis.warning}  No se ha podido expulsar al usuario ${user.asMention}, comprueba que tenga los permisos necesarios necesarios y que no tenga un rol superior al mio")
                         .queue()
                 })
-            })
+            }
         }
 
         InfractionLogger(event.guild, Guild.get(event.guild.id) ?: DefaultConfig.get()).log(infraction)

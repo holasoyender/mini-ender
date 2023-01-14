@@ -1,11 +1,12 @@
 package interfaces
 
+import database.schema.Guild
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
 interface Command {
 
-    fun execute(event: MessageReceivedEvent, args: List<String>): CommandResponse
+    fun execute(event: MessageReceivedEvent, args: List<String>, config: Guild): CommandResponse
 
     val name: String
 

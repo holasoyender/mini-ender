@@ -1,5 +1,6 @@
 package commands.message.ocio
 
+import database.schema.Guild
 import http.HttpManager
 import interfaces.Command
 import interfaces.CommandResponse
@@ -16,7 +17,7 @@ import java.net.URL
 import javax.imageio.ImageIO
 
 class Gato: Command {
-    override fun execute(event: MessageReceivedEvent, args: List<String>): CommandResponse {
+    override fun execute(event: MessageReceivedEvent, args: List<String>, config: Guild): CommandResponse {
         try {
 
             val url = URL("https://api.thecatapi.com/v1/images/search")

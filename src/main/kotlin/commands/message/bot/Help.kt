@@ -1,7 +1,6 @@
 package commands.message.bot
 
 import commandManager
-import config.DefaultConfig
 import database.schema.Guild
 import interfaces.Command
 import interfaces.CommandResponse
@@ -19,7 +18,7 @@ import java.time.Instant
 
 
 class Help: Command {
-    override fun execute(event: MessageReceivedEvent, args: List<String>): CommandResponse {
+    override fun execute(event: MessageReceivedEvent, args: List<String>, config: Guild): CommandResponse {
 
         /*
         * Por alguna razón se me ha olvidado quitar el primer argumento de la lista de args, por lo que el primer argumento
@@ -30,11 +29,9 @@ class Help: Command {
         *  - holasoyender 29/09/2022
         * */
 
-        val config = if(event.isFromGuild) Guild.get(event.guild.id) ?: DefaultConfig.get() else DefaultConfig.get()
-
         if(args.size > 1) {
-            val _input = args[1]
-            val input = _input.lowercase()
+            val s = args[1]
+            val input = s.lowercase()
 
             val command = commandManager?.getCommands()?.find { it.name == input || it.aliases.contains(input) }
             if(command != null) {
@@ -65,7 +62,7 @@ class Help: Command {
             } else {
 
                 val slashCommand = slashCommandManager?.getCommands()?.find { it.name == input }
-                    ?: return CommandResponse.error("No se ha encontrado el comando $_input")
+                    ?: return CommandResponse.error("No se ha encontrado el comando $s")
 
                 event.jda.retrieveCommands().queue({
                     val cmd = it.find { c -> c.name == slashCommand.name }

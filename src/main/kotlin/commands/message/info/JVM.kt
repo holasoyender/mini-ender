@@ -1,12 +1,13 @@
 package commands.message.info
 
+import database.schema.Guild
 import interfaces.Command
 import interfaces.CommandResponse
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 
 class JVM: Command {
-    override fun execute(event: MessageReceivedEvent, args: List<String>): CommandResponse {
+    override fun execute(event: MessageReceivedEvent, args: List<String>, config: Guild): CommandResponse {
 
         val runtime = Runtime.getRuntime()
         val msg = """
@@ -17,7 +18,7 @@ class JVM: Command {
             Free: ${runtime.freeMemory() / 1024 / 1024} MB
             
             === Sistema ===
-            OS: ${System.getProperty("os.name")} ${System.getProperty("os.version")} ${System.getProperty("os.arch")}
+            OS: ${System.getProperty("os.name")} ${System.getProperty("os.version")}
             Cores: ${runtime.availableProcessors()}
             
             === JVM ===

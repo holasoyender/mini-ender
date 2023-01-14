@@ -1,5 +1,6 @@
 package commands.message.bot
 
+import database.schema.Guild
 import interfaces.Command
 import interfaces.CommandResponse
 import net.dv8tion.jda.api.Permission
@@ -8,7 +9,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import utils.Emojis
 
 class Error: Command {
-    override fun execute(event: MessageReceivedEvent, args: List<String>): CommandResponse {
+    override fun execute(event: MessageReceivedEvent, args: List<String>, config: Guild): CommandResponse {
 
         event.message.reply("${Emojis.success}  Haz click en el botón para reportar un error").setActionRow(
             Button.primary("cmd::error:${event.author.id}", "Reportar error")

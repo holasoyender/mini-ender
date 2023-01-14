@@ -13,11 +13,9 @@ import java.io.InputStream
 import java.io.InputStreamReader
 
 class Exportar: Command {
-    override fun execute(event: MessageReceivedEvent, args: List<String>): CommandResponse {
+    override fun execute(event: MessageReceivedEvent, args: List<String>, config: Guild): CommandResponse {
 
-        val config = Guild.get(event.guild.id)
-
-        if(config != null) {
+        if(config.id.isNotBlank() || !config.exists()) {
 
             val content = config.raw
             val inputStream = content.byteInputStream()

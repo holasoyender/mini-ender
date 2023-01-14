@@ -1,5 +1,6 @@
 package commands.message.ocio
 
+import database.schema.Guild
 import http.HttpManager
 import interfaces.Command
 import interfaces.CommandResponse
@@ -15,7 +16,7 @@ import java.net.URL
 import javax.imageio.ImageIO
 
 class Panda: Command {
-    override fun execute(event: MessageReceivedEvent, args: List<String>): CommandResponse {
+    override fun execute(event: MessageReceivedEvent, args: List<String>, config: Guild): CommandResponse {
         try {
 
             val urls = listOf("https://some-random-api.ml/img/panda", "https://some-random-api.ml/img/red_panda")

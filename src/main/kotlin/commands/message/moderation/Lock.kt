@@ -1,5 +1,6 @@
 package commands.message.moderation
 
+import database.schema.Guild
 import interfaces.Command
 import interfaces.CommandResponse
 import net.dv8tion.jda.api.Permission
@@ -8,7 +9,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import utils.Emojis
 
 class Lock: Command {
-    override fun execute(event: MessageReceivedEvent, args: List<String>): CommandResponse {
+    override fun execute(event: MessageReceivedEvent, args: List<String>, config: Guild): CommandResponse {
 
         val role = try {
             event.message.mentions.roles.firstOrNull() ?: args.getOrNull(1)

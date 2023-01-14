@@ -1,5 +1,6 @@
 package commands.message.bot
 
+import database.schema.Guild
 import interfaces.Command
 import interfaces.CommandResponse
 import net.dv8tion.jda.api.Permission
@@ -9,7 +10,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import utils.Emojis
 
 class Say: Command {
-    override fun execute(event: MessageReceivedEvent, args: List<String>): CommandResponse {
+    override fun execute(event: MessageReceivedEvent, args: List<String>, config: Guild): CommandResponse {
 
         val channel = try {
             event.message.mentions.channels.firstOrNull() ?: args.getOrNull(1)?.let { event.guild.getGuildChannelById(it) } ?: event.channel

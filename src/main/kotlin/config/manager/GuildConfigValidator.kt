@@ -45,6 +45,9 @@ class GuildConfigValidator(
         val (customCommands, customCommandsError) = customCommands()
         if (!customCommands) return Pair(false, customCommandsError)
 
+        val (messages, messagesError) = messages()
+        if (!messages) return Pair(false, messagesError)
+
         return Pair(true, "")
     }
 
@@ -185,6 +188,18 @@ class GuildConfigValidator(
                 if(isValidCommand(alias)) return Pair(false, "El comando personalizado \"${command.key}\" ya existe como comando del bot")
             }
         }
+
+        return Pair(true, "")
+    }
+
+    private fun messages(): Pair<Boolean, String> {
+        val messages = config["messages"] ?: return Pair(false, "El modulo de mensajes no está definido")
+        if(messages !is Map<*, *>) return Pair(false, "El modulo de mensajes no está bien definido")
+
+        if(messages["sanction"] !is String) return Pair(false, "El mensaje de sanciones no está bien definido")
+        if(messages["anti_links_new_link"] !is String) return Pair(false, "El mensaje de nuevo link no está bien definido")
+        if(messages["anti_links_under_revision"] !is String) return Pair(false, "El mensaje de links bajo revisión no está bien definido")
+        if(messages["anti_links_sanction"] !is String) return Pair(false, "El mensaje de sanción por links no está bien definido")
 
         return Pair(true, "")
     }

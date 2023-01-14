@@ -1,5 +1,6 @@
 package commands.message.moderation
 
+import database.schema.Guild
 import database.schema.Infraction
 import interfaces.Command
 import interfaces.CommandResponse
@@ -9,7 +10,7 @@ import net.dv8tion.jda.api.interactions.components.buttons.Button
 import utils.Emojis
 
 class Delinfrs: Command {
-    override fun execute(event: MessageReceivedEvent, args: List<String>): CommandResponse {
+    override fun execute(event: MessageReceivedEvent, args: List<String>, config: Guild): CommandResponse {
 
         val user = try {
             event.message.mentions.users.firstOrNull() ?: args.getOrNull(1)

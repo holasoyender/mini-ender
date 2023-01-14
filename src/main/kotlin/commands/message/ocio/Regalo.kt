@@ -1,5 +1,6 @@
 package commands.message.ocio
 
+import database.schema.Guild
 import database.schema.Regalo
 import interfaces.Command
 import interfaces.CommandResponse
@@ -11,7 +12,7 @@ import utils.Constants.OWNER_IDS
 import java.awt.Color
 
 class Regalo: Command {
-    override fun execute(event: MessageReceivedEvent, args: List<String>): CommandResponse {
+    override fun execute(event: MessageReceivedEvent, args: List<String>, config: Guild): CommandResponse {
         if(!listOf("1050890422869827644", "1051176776098906112").contains(event.channel.id)) return CommandResponse.error("Este comando no está disponible en este canal.")
 
         val user = try {

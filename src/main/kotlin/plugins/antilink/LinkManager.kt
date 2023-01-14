@@ -3,6 +3,7 @@ package plugins.antilink
 import database.schema.Links
 import enums.Actions
 import enums.Severity
+import messages.Formatter
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
@@ -80,6 +81,7 @@ object LinkManager {
         if (message.member?.hasPermission(Permission.MESSAGE_MANAGE) == true) return
 
         val link = Links.get(checker.domain, guild.id)
+        val config = database.schema.Guild.get(guild.id) ?: return
         if (link != null) {
 
             if (link.underRevision) {
@@ -93,10 +95,19 @@ object LinkManager {
                     )
                 }
 
-                if (!silent)
+                if (config.antiLinksUnderRevisionMessage.isNotBlank())
                     try {
                         message.author.openPrivateChannel().queue({ channel ->
-                            channel.sendMessage("Tu mensaje del canal **${message.channel.asMention}** ha sido borrado debido a que el link que has enviado se encuentra bajo revisión por parte del equipo de moderación.\n`Si crees que esto es un error, por favor, contacta con un el soporte del servidor.`\n\n```${message.contentStripped}```")
+                            channel.sendMessage(
+                                Formatter.formatLinksMessage(
+                                    config.antiLinksUnderRevisionMessage,
+                                    message.channel,
+                                    message.author,
+                                    guild,
+                                    message.contentStripped,
+                                    checker
+                                )
+                            )
                                 .queue({}, {})
                         }, {})
                     } catch (_: Exception) {
@@ -107,7 +118,6 @@ object LinkManager {
                 link.save()
                 return
             }
-
 
             var deletedMessage = true
 
@@ -127,12 +137,12 @@ object LinkManager {
             }
 
             val actionTaken = when (link.action) {
-                Actions.BAN -> ActionRouter.ban(message.author, guild, link, silent)
-                Actions.KICK -> ActionRouter.kick(message.author, guild, link, silent)
-                Actions.MUTE -> ActionRouter.mute(message.author, guild, link, silent)
-                Actions.WARN -> ActionRouter.warn(message.author, guild, link, silent)
-                Actions.TEMP_BAN -> ActionRouter.tempBan(message.author, guild, link, silent)
-                Actions.TEMP_MUTE -> ActionRouter.tempMute(message.author, guild, link, silent)
+                Actions.BAN -> ActionRouter.ban(message.author, guild, link, config)
+                Actions.KICK -> ActionRouter.kick(message.author, guild, link, config)
+                Actions.MUTE -> ActionRouter.mute(message.author, guild, link, config)
+                Actions.WARN -> ActionRouter.warn(message.author, guild, link, config)
+                Actions.TEMP_BAN -> ActionRouter.tempBan(message.author, guild, link, config)
+                Actions.TEMP_MUTE -> ActionRouter.tempMute(message.author, guild, link, config)
                 Actions.NONE -> false
                 Actions.DELETE -> deletedMessage
             }
@@ -157,7 +167,6 @@ object LinkManager {
                 .setThumbnail("https://cdn.discordapp.com/attachments/839400943517827092/1038135823650013255/sentinel.png")
                 .setColor(0x2f3136)
 
-            val config = database.schema.Guild.get(guild.id) ?: return
             val channel =
                 if (config.moderationLogsChannelId.isNotBlank()) {
                     guild.getTextChannelById(config.moderationLogsChannelId)
@@ -208,15 +217,23 @@ object LinkManager {
                 )
             }
 
-            if (!silent)
-                try {
-                    message.author.openPrivateChannel().queue({ channel ->
-                        channel.sendMessage("Tu mensaje del canal **${message.channel.asMention}** ha sido borrado debido a que el link que contiene el mensaje no está registrado en nuestra lista de links\n\nSe ha enviado el link a los moderadores del servidor para que lo revisen. En caso de que se apruebe podrás enviarlo otra vez..\n`Si crees que ha sido un fallo o quieres reclamar, contacto con` <@835642946962718731> (**Soporte Kena#8961**) \n\n```${message.contentStripped}```")
-                            .queue({}, {})
-                    }, {})
-                } catch (_: Exception) {
-                    // ignore
-                }
+            try {
+                message.author.openPrivateChannel().queue({ channel ->
+                    channel.sendMessage(
+                        Formatter.formatLinksMessage(
+                            config.antiLinksNewLinkMessage,
+                            message.channel,
+                            message.author,
+                            guild,
+                            message.contentStripped,
+                            checker
+                        )
+                    )
+                        .queue({}, {})
+                }, {})
+            } catch (_: Exception) {
+                // ignore
+            }
 
             val logEmbed = EmbedBuilder()
                 .setAuthor("Link desconocido detectado", null, message.author.effectiveAvatarUrl)
@@ -226,7 +243,6 @@ object LinkManager {
                 .setThumbnail("https://cdn.discordapp.com/attachments/839400943517827092/1038135823650013255/sentinel.png")
                 .setColor(0xED4245)
 
-            val config = database.schema.Guild.get(guild.id) ?: return
             val channel =
                 if (config.antiLinksChannelId.isNotBlank()) {
                     guild.getTextChannelById(config.antiLinksChannelId)

@@ -11,7 +11,7 @@ import java.awt.Color
 import java.time.Instant
 
 class Server : Command {
-    override fun execute(event: MessageReceivedEvent, args: List<String>): CommandResponse {
+    override fun execute(event: MessageReceivedEvent, args: List<String>, config: database.schema.Guild): CommandResponse {
 
 
         /*

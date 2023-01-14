@@ -7,6 +7,7 @@ import enums.InfractionType
 import interfaces.Command
 import interfaces.CommandResponse
 import logger.InfractionLogger
+import messages.Formatter
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.utils.TimeFormat
@@ -16,7 +17,7 @@ import java.util.concurrent.TimeUnit
 
 
 class Tempban: Command {
-    override fun execute(event: MessageReceivedEvent, args: List<String>): CommandResponse {
+    override fun execute(event: MessageReceivedEvent, args: List<String>, config: Guild): CommandResponse {
 
         val user = try {
             event.message.mentions.users.firstOrNull() ?: args.getOrNull(1)
@@ -94,49 +95,67 @@ class Tempban: Command {
             })
 
         } else {
-            user.openPrivateChannel().queue({ channel ->
-                channel.sendMessage(
-                    "${Emojis.warning}  Has sido baneado durante **${rawTime}** del servidor **${event.guild.name}** con la razón: `$reason` hasta el ${
-                        TimeFormat.DEFAULT.format(
-                            time + System.currentTimeMillis()
+            if (config.sanctionMessage.isNotEmpty() && config.sanctionMessage.isNotBlank()) {
+                user.openPrivateChannel().queue({ channel ->
+                    channel.sendMessage(
+                        Formatter.formatSanctionMessage(
+                            config.sanctionMessage,
+                            infraction,
+                            event.guild
                         )
-                    } (${TimeFormat.RELATIVE.format(time + System.currentTimeMillis())})"
-                )
-                    .queue(
-                        {
-                            member.ban(0, TimeUnit.SECONDS).reason(reason).queue({
-                                infraction.save()
-                                event.message.reply(
-                                    "${Emojis.success}  Has baneado al usuario ${user.asMention} con la razón: `$reason` hasta el ${
-                                        TimeFormat.DEFAULT.format(
-                                            time + System.currentTimeMillis()
-                                        )
-                                    } (${TimeFormat.RELATIVE.format(time + System.currentTimeMillis())})"
-                                ).queue()
+                    )
+                        .queue(
+                            {
+                                member.ban(0, TimeUnit.SECONDS).reason(reason).queue({
+                                    infraction.save()
+                                    event.message.reply(
+                                        "${Emojis.success}  Has baneado al usuario ${user.asMention} con la razón: `$reason` hasta el ${
+                                            TimeFormat.DEFAULT.format(
+                                                time + System.currentTimeMillis()
+                                            )
+                                        } (${TimeFormat.RELATIVE.format(time + System.currentTimeMillis())})"
+                                    ).queue()
+                                }, {
+                                    infraction.succeeded = false
+                                    infraction.save()
+                                    event.message.reply("${Emojis.warning}  No se ha podido banear al usuario ${user.asMention}, comprueba que tenga los permisos necesarios necesarios y que no tenga un rol superior al mio")
+                                        .queue()
+                                })
                             }, {
-                                infraction.succeeded = false
-                                infraction.save()
-                                event.message.reply("${Emojis.warning}  No se ha podido banear al usuario ${user.asMention}, comprueba que tenga los permisos necesarios necesarios y que no tenga un rol superior al mio")
-                                    .queue()
+                                member.ban(0, TimeUnit.SECONDS).reason(reason).queue({
+                                    infraction.save()
+                                    event.message.reply(
+                                        "${Emojis.success}  Has baneado al usuario ${user.asMention} con la razón: `$reason` hasta el ${
+                                            TimeFormat.DEFAULT.format(
+                                                time + System.currentTimeMillis()
+                                            )
+                                        } (${TimeFormat.RELATIVE.format(time + System.currentTimeMillis())}), pero no ha podido ser notificado"
+                                    ).queue()
+                                }, {
+                                    infraction.succeeded = false
+                                    infraction.save()
+                                    event.message.reply("${Emojis.warning}  No se ha podido banear al usuario ${user.asMention}, comprueba que tenga los permisos necesarios necesarios y que no tenga un rol superior al mio")
+                                        .queue()
+                                })
                             })
-                        }, {
-                            member.ban(0, TimeUnit.SECONDS).reason(reason).queue({
-                                infraction.save()
-                                event.message.reply(
-                                    "${Emojis.success}  Has baneado al usuario ${user.asMention} con la razón: `$reason` hasta el ${
-                                        TimeFormat.DEFAULT.format(
-                                            time + System.currentTimeMillis()
-                                        )
-                                    } (${TimeFormat.RELATIVE.format(time + System.currentTimeMillis())}), pero no ha podido ser notificado"
-                                ).queue()
-                            }, {
-                                infraction.succeeded = false
-                                infraction.save()
-                                event.message.reply("${Emojis.warning}  No se ha podido banear al usuario ${user.asMention}, comprueba que tenga los permisos necesarios necesarios y que no tenga un rol superior al mio")
-                                    .queue()
-                            })
-                        })
-            }, {
+                }, {
+                    member.ban(0, TimeUnit.SECONDS).reason(reason).queue({
+                        infraction.save()
+                        event.message.reply(
+                            "${Emojis.success}  Has baneado al usuario ${user.asMention} con la razón: `$reason` hasta el ${
+                                TimeFormat.DEFAULT.format(
+                                    time + System.currentTimeMillis()
+                                )
+                            } (${TimeFormat.RELATIVE.format(time + System.currentTimeMillis())}), pero no ha podido ser notificado"
+                        ).queue()
+                    }, {
+                        infraction.succeeded = false
+                        infraction.save()
+                        event.message.reply("${Emojis.warning}  No se ha podido banear al usuario ${user.asMention}, comprueba que tenga los permisos necesarios necesarios y que no tenga un rol superior al mio")
+                            .queue()
+                    })
+                })
+            } else {
                 member.ban(0, TimeUnit.SECONDS).reason(reason).queue({
                     infraction.save()
                     event.message.reply(
@@ -144,7 +163,7 @@ class Tempban: Command {
                             TimeFormat.DEFAULT.format(
                                 time + System.currentTimeMillis()
                             )
-                        } (${TimeFormat.RELATIVE.format(time + System.currentTimeMillis())}), pero no ha podido ser notificado"
+                        } (${TimeFormat.RELATIVE.format(time + System.currentTimeMillis())})"
                     ).queue()
                 }, {
                     infraction.succeeded = false
@@ -152,7 +171,7 @@ class Tempban: Command {
                     event.message.reply("${Emojis.warning}  No se ha podido banear al usuario ${user.asMention}, comprueba que tenga los permisos necesarios necesarios y que no tenga un rol superior al mio")
                         .queue()
                 })
-            })
+            }
         }
 
         InfractionLogger(event.guild, Guild.get(event.guild.id) ?: DefaultConfig.get()).log(infraction)

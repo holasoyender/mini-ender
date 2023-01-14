@@ -1,5 +1,6 @@
 package commands.message.bot
 
+import database.schema.Guild
 import interfaces.Command
 import interfaces.CommandResponse
 import net.dv8tion.jda.api.Permission
@@ -8,7 +9,7 @@ import utils.Emojis
 import utils.Emojis.f
 
 class Ping: Command {
-    override fun execute(event: MessageReceivedEvent, args: List<String>): CommandResponse {
+    override fun execute(event: MessageReceivedEvent, args: List<String>, config: Guild): CommandResponse {
         event.message.reply("${f(Emojis.ping)}  Mi ping es de `${event.jda.gatewayPing}ms`!").queue()
 
         return CommandResponse.success()

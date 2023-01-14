@@ -75,6 +75,11 @@ object GuildConfigImporter {
                     twitchLiveChannelId = (config["twitch"] as Map<*, *>)["live_channel_id"] as String,
                     twitchLiveMessage = (config["twitch"] as Map<*, *>)["live_message"] as String,
 
+                    sanctionMessage = (config["messages"] as Map<*, *>)["sanction"] as String,
+                    antiLinksNewLinkMessage = (config["messages"] as Map<*, *>)["anti_links_new_link"] as String,
+                    antiLinksUnderRevisionMessage = (config["messages"] as Map<*, *>)["anti_links_under_revision"] as String,
+                    antiLinksSanctionMessage = (config["messages"] as Map<*, *>)["anti_links_sanction"] as String,
+
                     customCommands = try {
                         (config["custom_commands"] as Map<*, *>).map {
                             val values = it.value as Map<*, *>
@@ -134,6 +139,11 @@ object GuildConfigImporter {
                 guildConfig.twitchAnnounceMessage = (config["twitch"] as Map<*, *>)["message"] as String
                 guildConfig.twitchLiveChannelId = (config["twitch"] as Map<*, *>)["live_channel_id"] as String
                 guildConfig.twitchLiveMessage = (config["twitch"] as Map<*, *>)["live_message"] as String
+
+                guildConfig.sanctionMessage = (config["messages"] as Map<*, *>)["sanction"] as String
+                guildConfig.antiLinksNewLinkMessage = (config["messages"] as Map<*, *>)["anti_links_new_link"] as String
+                guildConfig.antiLinksUnderRevisionMessage = (config["messages"] as Map<*, *>)["anti_links_under_revision"] as String
+                guildConfig.antiLinksSanctionMessage = (config["messages"] as Map<*, *>)["anti_links_sanction"] as String
 
                 guildConfig.customCommands = try {
                     (config["custom_commands"] as Map<*, *>).map {

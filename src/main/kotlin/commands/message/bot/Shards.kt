@@ -1,5 +1,6 @@
 package commands.message.bot
 
+import database.schema.Guild
 import interfaces.Command
 import interfaces.CommandResponse
 import net.dv8tion.jda.api.EmbedBuilder
@@ -10,7 +11,7 @@ import utils.Emojis
 import java.awt.Color
 
 class Shards: Command {
-    override fun execute(event: MessageReceivedEvent, args: List<String>): CommandResponse {
+    override fun execute(event: MessageReceivedEvent, args: List<String>, config: Guild): CommandResponse {
 
         event.message.reply("${Emojis.loading}  Cargando información interna...").queue {
 
