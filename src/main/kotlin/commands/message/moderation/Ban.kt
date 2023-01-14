@@ -87,7 +87,7 @@ class Ban: Command {
                             config.sanctionMessage,
                             infraction,
                             event.guild
-                        )
+                        ) + "\n\n **Si crees que ha sido un fallo o quieres reclamar, visita: https://appeals-ibai.kenabot.xyz/ **"
                     )
                         .queue(
                             {
