@@ -329,11 +329,13 @@ class Guild(
             }
         }
 
-        fun get(id: String): Guild? {
+        fun get(id: String, force: Boolean = false): Guild? {
 
-            val cache = Redis.connection!!.get("guilds:$id")
-            if (cache != null) {
-                return Gson().fromJson(cache, Guild::class.java)
+            if(!force) {
+                val cache = Redis.connection!!.get("guilds:$id")
+                if (cache != null) {
+                    return Gson().fromJson(cache, Guild::class.java)
+                }
             }
 
             database.Postgres.dataSource?.connection.use { connection ->

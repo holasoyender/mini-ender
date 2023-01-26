@@ -20,7 +20,9 @@ class Exportar: Command {
 
         if(config.id.isNotBlank() && !config.exists() && config.raw.isNotBlank()) {
 
-            val content = config.raw
+            val newConfig = Guild.get(event.guild.id, true)
+
+            val content = newConfig?.raw ?: return CommandResponse.error("No he podido encontrar el archivo de configuración")
             val inputStream = content.byteInputStream()
             val file = FileUpload.fromData(inputStream, "${event.guild.id}.yaml")
             event.message.reply("${Emojis.success}  Aquí tienes el archivo de configuración de este servidor")

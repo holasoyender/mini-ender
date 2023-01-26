@@ -17,9 +17,9 @@ import java.io.InputStreamReader
 class Exportar: SlashCommand {
     override fun execute(event: SlashCommandInteractionEvent): CommandResponse {
 
-        val config = Guild.get(event.guild!!.id)
         Redis.connection!!.del("guilds:${event.guild!!.id}")
 
+        val config = Guild.get(event.guild!!.id, true)
         if(config != null) {
 
             val content = config.raw
