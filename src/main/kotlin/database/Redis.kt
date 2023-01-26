@@ -14,8 +14,8 @@ object Redis {
 
         try {
 
-            val host = Env.REDIS_HOST!!.split(":")[0]
-            val port = try { Env.REDIS_HOST!!.split(":")[1].toInt() } catch (e: Exception) { 6379 }
+            val host = Env.REDIS_HOST?.split(":")?.getOrNull(0) ?: "localhost"
+            val port = try { Env.REDIS_HOST?.split(":")?.getOrNull(1)?.toInt() ?: 6379 } catch (e: Exception) { 6379 }
 
             val conn = if(Env.REDIS_USER == null || Env.REDIS_USER!!.isBlank())
                 JedisPool(host,port)

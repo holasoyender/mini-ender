@@ -19,7 +19,7 @@ object ServiceManager {
 
         Thread {
             Thread.sleep(1000 * 5)
-            TwitchManager.doInitialChecks()
+            TwitchManager.doChecks(true)
         }.start()
 
     }
