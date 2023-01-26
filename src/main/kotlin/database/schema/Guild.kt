@@ -391,7 +391,7 @@ class Guild(
 
                     )
 
-                    Redis.connection!!.setex("guild:$id", 3600, Gson().toJson(config))
+                    Redis.connection!!.setex("guilds:$id", 3600, Gson().toJson(config))
                     return config
                 }
             }
