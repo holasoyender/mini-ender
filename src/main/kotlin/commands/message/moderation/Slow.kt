@@ -13,11 +13,20 @@ import java.util.concurrent.TimeUnit
 class Slow: Command {
     override fun execute(event: MessageReceivedEvent, args: List<String>, config: Guild): CommandResponse {
 
-        var rawTime = args.getOrNull(1)
-            ?: return CommandResponse.error("Debes de especificar un tiempo valido")
+        var time: Long
+        var rawTime: String
+        val pre = args[0].split("slow")[1].toIntOrNull()
 
-        var time = Time.ms(rawTime)
+        time = if(pre != null) {
+            rawTime = pre.toString() + "s"
+            pre * 1000L
+        } else {
 
+            rawTime = args.getOrNull(1)
+                ?: return CommandResponse.error("Debes de especificar un tiempo valido")
+
+            Time.ms(rawTime)
+        }
 
         if(time < 0 || rawTime.lowercase() == "min") {
             rawTime = "min"
@@ -53,7 +62,7 @@ class Slow: Command {
     override val description: String
         get() = "Establece un intervalo de tiempo entre mensajes"
     override val aliases: List<String>
-        get() = listOf("slowmode", "slowmo", "limit", "limitar", "limitarmensajes")
+        get() = listOf("slowmode", "slowmo", "limit", "limitar", "limitarmensajes", "slow0", "slow5", "slow10", "slow15", "slow20", "slow30", "slow45")
     override val usage: String
         get() = "<tiempo>"
     override val category: String
