@@ -234,7 +234,7 @@ object TwitchManager {
         }
     }
 
-    fun doInitialChecks() {
+    fun doChecks(debug: Boolean = false) {
 
         val activeSubscriptions = TwitchSubscriptionManager.getActiveSubscriptions()
         val guildsWithSubscriptions = Guild.getGuildsWithTwitchSubscriptions()
@@ -246,14 +246,17 @@ object TwitchManager {
         }.map { it.twitchChannel }
 
         if(notSubscribedChannels.isNotEmpty()) {
-            logger.info("Se han encontrado ${notSubscribedChannels.size} canales de Twitch sin suscripción activa. Se procederá a suscribirlos.")
+            if(debug)
+                logger.info("Se han encontrado ${notSubscribedChannels.size} canales de Twitch sin suscripción activa. Se procederá a suscribirlos.")
             notSubscribedChannels.forEach { channel ->
                 val (isOk, error) = TwitchSubscriptionManager.subscribeToChannel(channel)
                 if(!isOk)
                     logger.error("Error al suscribirse al canal $channel: $error")
             }
-        } else
-            logger.info("No se han encontrado canales de Twitch sin suscripción activa.")
+        } else {
+            if(debug)
+                logger.info("No se han encontrado canales de Twitch sin suscripción activa.")
+        }
 
         val inactiveSubscriptions = activeSubscriptions.filter { subscription ->
             guildsWithSubscriptions.none { guild ->
@@ -262,14 +265,17 @@ object TwitchManager {
         }
 
         if(inactiveSubscriptions.isNotEmpty()) {
-            logger.info("Se han encontrado ${inactiveSubscriptions.size} canales de Twitch con suscripción activa pero sin suscripción en la base de datos. Se procederá a des-suscribirlos.")
+            if(debug)
+                logger.info("Se han encontrado ${inactiveSubscriptions.size} canales de Twitch con suscripción activa pero sin suscripción en la base de datos. Se procederá a des-suscribirlos.")
             inactiveSubscriptions.forEach { channel ->
                 val (isOk, error) = TwitchSubscriptionManager.unsubscribeFromChannel(channel.first)
                 if(!isOk)
                     logger.error("Error al des-suscribirse del canal $channel: $error")
             }
-        } else
-            logger.info("No se han encontrado canales de Twitch inactivos.")
+        } else{
+            if(debug)
+                logger.info("No se han encontrado canales de Twitch con suscripción activa pero sin suscripción en la base de datos.")
+        }
     }
     /*
     * Gracias a Marcock por la ayuda a la hora de implementar el sistema de suscripciones de Twitch.

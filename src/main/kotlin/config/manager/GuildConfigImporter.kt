@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.entities.Message.Attachment
 import org.json.JSONObject
 import org.yaml.snakeyaml.Yaml
 import org.yaml.snakeyaml.error.YAMLException
+import plugins.twitch.TwitchManager
 
 object GuildConfigImporter {
 
@@ -164,6 +165,9 @@ object GuildConfigImporter {
 
                 guildConfig.save()
             }
+
+            if (guildConfig?.twitchChannel?.isNotEmpty() == true)
+                TwitchManager.doChecks()
             return CommandResponse.success()
 
         } catch (e: Exception) {
