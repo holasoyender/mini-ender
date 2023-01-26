@@ -10,7 +10,9 @@ import utils.Emojis.f
 
 class Ping: Command {
     override fun execute(event: MessageReceivedEvent, args: List<String>, config: Guild): CommandResponse {
-        event.message.reply("${f(Emojis.ping)}  Mi ping es de `${event.jda.gatewayPing}ms`!").queue()
+
+        val ping = utils.PingCalc.end()
+        event.message.reply("${f(Emojis.ping)}  Mi ping es de `API: ${event.jda.gatewayPing}ms PRT: ${ping}ms`!").queue()
 
         return CommandResponse.success()
     }

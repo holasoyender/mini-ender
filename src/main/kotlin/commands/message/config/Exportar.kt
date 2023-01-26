@@ -1,5 +1,6 @@
 package commands.message.config
 
+import database.Redis
 import database.schema.Guild
 import interfaces.Command
 import interfaces.CommandResponse
@@ -15,7 +16,9 @@ import java.io.InputStreamReader
 class Exportar: Command {
     override fun execute(event: MessageReceivedEvent, args: List<String>, config: Guild): CommandResponse {
 
-        if(config.id.isNotBlank() || !config.exists()) {
+        Redis.connection!!.del("guilds:${event.guild.id}")
+
+        if(config.id.isNotBlank() && !config.exists() && config.raw.isNotBlank()) {
 
             val content = config.raw
             val inputStream = content.byteInputStream()

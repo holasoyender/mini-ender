@@ -35,7 +35,8 @@ object DefaultConfig {
             twitchAnnounceChannelId = "",
             twitchAnnounceMessage = "",
             twitchLiveChannelId = "",
-            twitchLiveMessage = "",
+            twitchOpenLiveMessage = "",
+            twitchCloseLiveMessage = "",
 
             sanctionMessage = "",
             antiLinksNewLinkMessage = "",

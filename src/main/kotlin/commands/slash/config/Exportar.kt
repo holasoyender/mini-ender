@@ -1,5 +1,6 @@
 package commands.slash.config
 
+import database.Redis
 import database.schema.Guild
 import interfaces.CommandResponse
 import interfaces.SlashCommand
@@ -17,6 +18,7 @@ class Exportar: SlashCommand {
     override fun execute(event: SlashCommandInteractionEvent): CommandResponse {
 
         val config = Guild.get(event.guild!!.id)
+        Redis.connection!!.del("guilds:${event.guild!!.id}")
 
         if(config != null) {
 

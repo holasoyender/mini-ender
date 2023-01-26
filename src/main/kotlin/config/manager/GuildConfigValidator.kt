@@ -164,7 +164,8 @@ class GuildConfigValidator(
         if(twitch["live_channel_id"] !is String) return Pair(false, "El canal de live de twitch no está bien definido")
         if(!isIdOrEmpty(twitch["live_channel_id"] as String)) return Pair(false, "El canal de live de twitch no es un ID válido")
         if((twitch["live_channel_id"] as String).isNotEmpty() && !isValidChannel(twitch["live_channel_id"] as String)) return Pair(false, "El canal de live de twitch no existe en el servidor")
-        if(twitch["live_message"] !is String) return Pair(false, "El mensaje de live de twitch no está bien definido")
+        if(twitch["live_open_message"] !is String) return Pair(false, "El mensaje de live_open de twitch no está bien definido")
+        if(twitch["live_close_message"] !is String) return Pair(false, "El mensaje de live_close de twitch no está bien definido")
 
         return Pair(true, "")
     }

@@ -43,7 +43,7 @@ object GuildConfigImporter {
                     muteRoleId = (config["roles"] as Map<*, *>)["mute_role_id"] as String,
 
                     moderationSilent = (config["moderation"] as Map<*, *>)["silent"] as Boolean,
-                    moderationChannelId = (config["moderation"] as Map<*, *>)["channel_id"] as String,
+                    moderationChannelId = (config["moderation"] as Map<*, *>)["moderation_channel_id"] as String,
                     permissions = (config["permissions"] as Map<Long, Int>).map { it.key.toString() to it.value }.toMap(),
 
                     logsChannelId = (config["logs"] as Map<*, *>)["channel_id"] as String,
@@ -73,7 +73,8 @@ object GuildConfigImporter {
                     twitchAnnounceChannelId = (config["twitch"] as Map<*, *>)["announce_channel_id"] as String,
                     twitchAnnounceMessage = (config["twitch"] as Map<*, *>)["message"] as String,
                     twitchLiveChannelId = (config["twitch"] as Map<*, *>)["live_channel_id"] as String,
-                    twitchLiveMessage = (config["twitch"] as Map<*, *>)["live_message"] as String,
+                    twitchOpenLiveMessage = (config["twitch"] as Map<*, *>)["live_open_message"] as String,
+                    twitchCloseLiveMessage = (config["twitch"] as Map<*, *>)["live_close_message"] as String,
 
                     sanctionMessage = (config["messages"] as Map<*, *>)["sanction"] as String,
                     antiLinksNewLinkMessage = (config["messages"] as Map<*, *>)["anti_links_new_link"] as String,
@@ -138,7 +139,8 @@ object GuildConfigImporter {
                 guildConfig.twitchAnnounceChannelId = (config["twitch"] as Map<*, *>)["announce_channel_id"] as String
                 guildConfig.twitchAnnounceMessage = (config["twitch"] as Map<*, *>)["message"] as String
                 guildConfig.twitchLiveChannelId = (config["twitch"] as Map<*, *>)["live_channel_id"] as String
-                guildConfig.twitchLiveMessage = (config["twitch"] as Map<*, *>)["live_message"] as String
+                guildConfig.twitchOpenLiveMessage = (config["twitch"] as Map<*, *>)["live_open_message"] as String
+                guildConfig.twitchCloseLiveMessage = (config["twitch"] as Map<*, *>)["live_close_message"] as String
 
                 guildConfig.sanctionMessage = (config["messages"] as Map<*, *>)["sanction"] as String
                 guildConfig.antiLinksNewLinkMessage = (config["messages"] as Map<*, *>)["anti_links_new_link"] as String

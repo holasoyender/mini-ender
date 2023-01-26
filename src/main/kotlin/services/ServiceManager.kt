@@ -9,7 +9,9 @@ import plugins.twitch.TwitchSubscriptionManager
 object ServiceManager {
 
     fun load (shardManager: ShardManager) {
+
         database.Postgres.load()
+        database.Redis.load()
         GiveawayService(shardManager)
         InfractionsService(shardManager)
         //ws.WebSocket.load("mini-ender", Env.API_TOKEN!!)
