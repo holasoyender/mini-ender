@@ -34,14 +34,12 @@ class Twitch {
         val key = "sha256=$hmacHex"
 
         if (key.equals(request.getHeader("Twitch-Eventsub-Message-Signature".lowercase()), ignoreCase = true)) {
-
             if (request.getHeader("Twitch-Eventsub-Message-Type".lowercase()) == "webhook_callback_verification")
                 return ResponseEntity.ok()
                     .body(body["challenge"] as String? ?: "No se ha podido obtener el challenge")
             else
                 if (request.getHeader("Twitch-Eventsub-Message-Type".lowercase()) == "notification")
                     return TwitchManager.handleEvent(body, request.getHeader("Twitch-Eventsub-Message-Id".lowercase()), request.getHeader("Twitch-Eventsub-Message-Timestamp".lowercase()))
-
             return ResponseEntity.ok("OK")
 
         } else

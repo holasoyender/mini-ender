@@ -230,7 +230,8 @@ object TwitchSubscriptionManager {
             val json = JSONObject(body)
             val data = json["data"] as JSONArray
 
-            val streams = data.filter { (it as JSONObject)["status"] == "enabled" && it["type"] == "stream.online" }
+            val streams = data.filter {
+                (it as JSONObject)["status"] == "enabled" && (it["type"] == "stream.online" || it["type"] == "stream.offline") }
                 .map { Pair(((it as JSONObject)["condition"] as JSONObject)["broadcaster_user_id"] as String, it["id"] as String) }
 
             val streamers = getStreamers(streams.map { it.first })
@@ -256,27 +257,46 @@ object TwitchSubscriptionManager {
             (getStreamer(channel) ?: return Pair(false, "Streamer not found")).id
         else channel
 
-        val requestBody = JSONObject()
+        val onlineRequestBody = JSONObject()
             .put("type", "stream.online")
             .put("version", "1")
             .put("condition", JSONObject().put("broadcaster_user_id", streamerId))
             .put("transport", JSONObject().put("method", "webhook").put("callback", "${Env.API_URL}/twitch/gateway").put("secret", Env.TWITCH_CLIENT_SECRET!!))
 
-        val request: Request = Request.Builder()
+        val offlineRequestBody = JSONObject()
+            .put("type", "stream.offline")
+            .put("version", "1")
+            .put("condition", JSONObject().put("broadcaster_user_id", streamerId))
+            .put("transport", JSONObject().put("method", "webhook").put("callback", "${Env.API_URL}/twitch/gateway").put("secret", Env.TWITCH_CLIENT_SECRET!!))
+
+        val onlineRequest: Request = Request.Builder()
             .url("https://api.twitch.tv/helix/eventsub/subscriptions")
             .addHeader("Authorization", "Bearer ${this.accessToken}")
             .addHeader("Client-Id", Env.TWITCH_CLIENT_ID!!)
             .addHeader("content-type", "application/json")
-            .post(requestBody.toString().toRequestBody("application/json".toMediaTypeOrNull()))
+            .post(onlineRequestBody.toString().toRequestBody("application/json".toMediaTypeOrNull()))
+            .build()
+
+        val offlineRequest: Request = Request.Builder()
+            .url("https://api.twitch.tv/helix/eventsub/subscriptions")
+            .addHeader("Authorization", "Bearer ${this.accessToken}")
+            .addHeader("Client-Id", Env.TWITCH_CLIENT_ID!!)
+            .addHeader("content-type", "application/json")
+            .post(offlineRequestBody.toString().toRequestBody("application/json".toMediaTypeOrNull()))
             .build()
 
         return try {
-            val response = httpClient.newCall(request).execute()
-            val isSuccessful = response.isSuccessful
-            val body = response.body!!.string()
-            response.body!!.close()
+            val onlineResponse = httpClient.newCall(onlineRequest).execute()
+            val onlineIsSuccessful = onlineResponse.isSuccessful
+            val onlineBody = onlineResponse.body!!.string()
+            onlineResponse.body!!.close()
 
-            Pair(isSuccessful, body)
+            val offlineResponse = httpClient.newCall(offlineRequest).execute()
+            val offlineIsSuccessful = offlineResponse.isSuccessful
+            offlineResponse.body!!.close()
+
+
+            Pair(onlineIsSuccessful && offlineIsSuccessful, onlineBody)
         } catch (e: Exception) {
             Pair(false, e.message!!)
         }

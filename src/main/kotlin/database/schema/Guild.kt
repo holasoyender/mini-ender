@@ -1,5 +1,7 @@
 package database.schema
 
+import com.google.gson.Gson
+import database.Redis
 import interfaces.Schema
 import org.json.JSONObject
 
@@ -34,7 +36,8 @@ class Guild(
     twitchAnnounceChannelId: String,
     twitchAnnounceMessage: String,
     twitchLiveChannelId: String,
-    twitchLiveMessage: String,
+    twitchOpenLiveMessage: String,
+    twitchCloseLiveMessage: String,
 
     sanctionMessage: String,
     antiLinksNewLinkMessage: String,
@@ -74,7 +77,8 @@ class Guild(
     var twitchAnnounceChannelId: String
     var twitchAnnounceMessage: String
     var twitchLiveChannelId: String
-    var twitchLiveMessage: String
+    var twitchOpenLiveMessage: String
+    var twitchCloseLiveMessage: String
 
     var sanctionMessage: String
     var antiLinksNewLinkMessage: String
@@ -118,7 +122,8 @@ class Guild(
         this.twitchAnnounceChannelId = twitchAnnounceChannelId
         this.twitchAnnounceMessage = twitchAnnounceMessage
         this.twitchLiveChannelId = twitchLiveChannelId
-        this.twitchLiveMessage = twitchLiveMessage
+        this.twitchOpenLiveMessage = twitchOpenLiveMessage
+        this.twitchCloseLiveMessage = twitchCloseLiveMessage
 
         this.sanctionMessage = sanctionMessage
         this.antiLinksNewLinkMessage = antiLinksNewLinkMessage
@@ -146,7 +151,7 @@ class Guild(
 
         if (exists()) {
             database.Postgres.dataSource?.connection.use { connection ->
-                val statement = connection!!.prepareStatement("UPDATE guilds SET prefix = ?, welcome_role_id = ?, welcome_channel_id = ?, welcome_message = ?, mute_role_id = ?, moderation_silent = ?, moderation_channel_id = ?, permissions = ?, logs_channel_id = ?, moderation_logs_channel_id = ?, anti_links_enabled = ?, anti_links_allowed_links = ?, anti_links_channel_id = ?, anti_links_ignored_roles = ?, anti_links_ignored_channels = ?, anti_phishing_enabled = ?, custom_commands = ?, twitch_channel = ?, twitch_announce_channel_id = ?, twitch_announce_message = ?, twitch_live_channel_id = ?, twitch_live_message = ?, sanction_message = ?, anti_links_new_link_message = ?, anti_links_under_revision_message = ?, anti_links_sanction_message = ?, raw = ? WHERE id = ?")
+                val statement = connection!!.prepareStatement("UPDATE guilds SET prefix = ?, welcome_role_id = ?, welcome_channel_id = ?, welcome_message = ?, mute_role_id = ?, moderation_silent = ?, moderation_channel_id = ?, permissions = ?, logs_channel_id = ?, moderation_logs_channel_id = ?, anti_links_enabled = ?, anti_links_allowed_links = ?, anti_links_channel_id = ?, anti_links_ignored_roles = ?, anti_links_ignored_channels = ?, anti_phishing_enabled = ?, custom_commands = ?, twitch_channel = ?, twitch_announce_channel_id = ?, twitch_announce_message = ?, twitch_live_channel_id = ?, twitch_open_live_message = ?, twitch_close_live_message = ?, sanction_message = ?, anti_links_new_link_message = ?, anti_links_under_revision_message = ?, anti_links_sanction_message = ?, raw = ? WHERE id = ?")
                 statement.setString(1, prefix)
 
                 statement.setString(2, welcomeRoleId)
@@ -180,23 +185,24 @@ class Guild(
                 statement.setString(19, twitchAnnounceChannelId)
                 statement.setString(20, twitchAnnounceMessage)
                 statement.setString(21, twitchLiveChannelId)
-                statement.setString(22, twitchLiveMessage)
+                statement.setString(22, twitchOpenLiveMessage)
+                statement.setString(23, twitchCloseLiveMessage)
 
-                statement.setString(23, sanctionMessage)
-                statement.setString(24, antiLinksNewLinkMessage)
-                statement.setString(25, antiLinksUnderRevisionMessage)
-                statement.setString(26, antiLinksSanctionMessage)
+                statement.setString(24, sanctionMessage)
+                statement.setString(25, antiLinksNewLinkMessage)
+                statement.setString(26, antiLinksUnderRevisionMessage)
+                statement.setString(27, antiLinksSanctionMessage)
 
-                statement.setString(27, raw)
+                statement.setString(28, raw)
 
-                statement.setString(28, id)
+                statement.setString(29, id)
 
                 statement.execute()
             }
         } else {
             database.Postgres.dataSource?.connection.use { connection ->
                 val statement =
-                    connection!!.prepareStatement("INSERT INTO guilds (id, prefix, welcome_role_id, welcome_channel_id, welcome_message, mute_role_id, moderation_silent, moderation_channel_id, permissions, logs_channel_id, moderation_logs_channel_id, anti_links_enabled, anti_links_allowed_links, anti_links_channel_id, anti_links_ignored_roles, anti_links_ignored_channels, anti_phishing_enabled, custom_commands, twitch_channel, twitch_announce_channel_id, twitch_announce_message, twitch_live_channel_id, twitch_live_message, sanction_message, anti_links_new_link_message, anti_links_under_revision_message, anti_links_sanction_message, raw) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+                    connection!!.prepareStatement("INSERT INTO guilds (id, prefix, welcome_role_id, welcome_channel_id, welcome_message, mute_role_id, moderation_silent, moderation_channel_id, permissions, logs_channel_id, moderation_logs_channel_id, anti_links_enabled, anti_links_allowed_links, anti_links_channel_id, anti_links_ignored_roles, anti_links_ignored_channels, anti_phishing_enabled, custom_commands, twitch_channel, twitch_announce_channel_id, twitch_announce_message, twitch_live_channel_id, twitch_open_live_message, twitch_close_live_message, sanction_message, anti_links_new_link_message, anti_links_under_revision_message, anti_links_sanction_message, raw) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
                 statement.setString(1, id)
                 statement.setString(2, prefix)
 
@@ -231,20 +237,24 @@ class Guild(
                 statement.setString(20, twitchAnnounceChannelId)
                 statement.setString(21, twitchAnnounceMessage)
                 statement.setString(22, twitchLiveChannelId)
-                statement.setString(23, twitchLiveMessage)
+                statement.setString(23, twitchOpenLiveMessage)
+                statement.setString(24, twitchCloseLiveMessage)
 
-                statement.setString(24, sanctionMessage)
-                statement.setString(25, antiLinksNewLinkMessage)
-                statement.setString(26, antiLinksUnderRevisionMessage)
-                statement.setString(27, antiLinksSanctionMessage)
+                statement.setString(25, sanctionMessage)
+                statement.setString(26, antiLinksNewLinkMessage)
+                statement.setString(27, antiLinksUnderRevisionMessage)
+                statement.setString(28, antiLinksSanctionMessage)
 
-                statement.setString(28, raw)
+                statement.setString(29, raw)
 
                 statement.execute()
             }
         }
 
         isSaved = true
+
+        Redis.connection!!.setex("guilds:${id}", 3600, Gson().toJson(this))
+
         return this
     }
 
@@ -305,7 +315,8 @@ class Guild(
                 twitch_announce_channel_id TEXT NOT NULL,
                 twitch_announce_message TEXT NOT NULL,
                 twitch_live_channel_id TEXT NOT NULL,
-                twitch_live_message TEXT NOT NULL,
+                twitch_open_live_message TEXT NOT NULL,
+                twitch_close_live_message TEXT NOT NULL,
                 sanction_message TEXT NOT NULL,
                 anti_links_new_link_message TEXT NOT NULL,
                 anti_links_under_revision_message TEXT NOT NULL,
@@ -319,12 +330,19 @@ class Guild(
         }
 
         fun get(id: String): Guild? {
+
+            val cache = Redis.connection!!.get("guilds:$id")
+            if (cache != null) {
+                return Gson().fromJson(cache, Guild::class.java)
+            }
+
             database.Postgres.dataSource?.connection.use { connection ->
                 val statement = connection!!.prepareStatement("SELECT * FROM guilds WHERE id = ?")
                 statement.setString(1, id)
                 val result = statement.executeQuery()
                 if (result.next()) {
-                    return Guild(
+
+                    val config = Guild(
                         result.getString("id"),
                         result.getString("prefix"),
 
@@ -361,7 +379,8 @@ class Guild(
                         result.getString("twitch_announce_channel_id"),
                         result.getString("twitch_announce_message"),
                         result.getString("twitch_live_channel_id"),
-                        result.getString("twitch_live_message"),
+                        result.getString("twitch_open_live_message"),
+                        result.getString("twitch_close_live_message"),
 
                         result.getString("sanction_message"),
                         result.getString("anti_links_new_link_message"),
@@ -371,6 +390,9 @@ class Guild(
                         result.getString("raw")
 
                     )
+
+                    Redis.connection!!.setex("guild:$id", 3600, Gson().toJson(config))
+                    return config
                 }
             }
             return null
@@ -422,7 +444,8 @@ class Guild(
                             result.getString("twitch_announce_channel_id"),
                             result.getString("twitch_announce_message"),
                             result.getString("twitch_live_channel_id"),
-                            result.getString("twitch_live_message"),
+                            result.getString("twitch_open_live_message"),
+                            result.getString("twitch_close_live_message"),
 
                             result.getString("sanction_message"),
                             result.getString("anti_links_new_link_message"),
@@ -482,7 +505,8 @@ class Guild(
                             result.getString("twitch_announce_channel_id"),
                             result.getString("twitch_announce_message"),
                             result.getString("twitch_live_channel_id"),
-                            result.getString("twitch_live_message"),
+                            result.getString("twitch_open_live_message"),
+                            result.getString("twitch_close_live_message"),
 
                             result.getString("sanction_message"),
                             result.getString("anti_links_new_link_message"),
@@ -543,7 +567,8 @@ class Guild(
                             result.getString("twitch_announce_channel_id"),
                             result.getString("twitch_announce_message"),
                             result.getString("twitch_live_channel_id"),
-                            result.getString("twitch_live_message"),
+                            result.getString("twitch_open_live_message"),
+                            result.getString("twitch_close_live_message"),
 
                             result.getString("sanction_message"),
                             result.getString("anti_links_new_link_message"),

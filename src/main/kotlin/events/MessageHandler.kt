@@ -19,12 +19,14 @@ import org.json.JSONArray
 import plugins.antilink.LinkManager
 import plugins.antilink.Phishing
 import plugins.modchannel.ModChannel
+import utils.PingCalc
 import java.awt.Color
 
 class MessageHandler: ListenerAdapter() {
 
     override fun onMessageReceived(event: MessageReceivedEvent) {
 
+        PingCalc.start()
         val author = event.author
         val message = event.message
         val content = message.contentRaw

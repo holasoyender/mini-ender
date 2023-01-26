@@ -16,12 +16,13 @@ class Event(
     val type: String
 
     init {
+
         broadcasterUserId = body["broadcaster_user_id"] as String? ?: ""
         broadcasterUserLogin = body["broadcaster_user_login"] as String? ?: ""
         broadcasterUserName = body["broadcaster_user_name"] as String? ?: ""
-        startedAt = body["started_at"] as String? ?: ""
+        startedAt = try { body["started_at"] as String? ?: "" } catch (e: Exception) { "" }
 
-        id = body["id"] as String? ?: ""
-        type = body["type"] as String? ?: ""
+        id = try { body["id"] as String? ?: "" } catch (e: Exception) { "" }
+        type = try { body["type"] as String? ?: "" } catch (e: Exception) { "" }
     }
 }

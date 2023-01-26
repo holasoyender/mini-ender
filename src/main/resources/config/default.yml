@@ -42,7 +42,8 @@ twitch:
     announce_channel_id: "" # ID del canal de texto donde se notificará a los usuarios del inicio del directo
     message: "" # Mensaje que se enviará al canal de texto al iniciar el directo, puedes ver las variables en https://miniender.kenabot.xyz
     live_channel_id: "" # ID del canal de texto que se abrirá o cerrará cuando inicie el directo, dejar en blanco para desactivar
-    live_message: "" # Mensaje que se enviará al canal de texto abierto al iniciar el directo, puedes ver las variables en https://miniender.kenabot.xyz
+    live_open_message: "" # Mensaje que se enviará al canal de texto abierto al iniciar el directo, puedes ver las variables en https://miniender.kenabot.xyz
+    live_close_message: "" # Mensaje que se enviará al canal de texto abierto al finalizar el directo, puedes ver las variables en https://miniender.kenabot.xyz
 
 messages:
   sanction: "<:idle:983837896287092796>  Has sido {sanction} en el servidor **{server}** con la razón: `{reason}`" # Mensaje que se enviará al usuario al ser sancionado, si se deja vacío nunca se mandará un MD al usuario, puedes ver las variables en https://miniender.kenabot.xyz
