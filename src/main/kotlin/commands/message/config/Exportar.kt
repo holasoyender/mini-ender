@@ -17,12 +17,11 @@ class Exportar: Command {
     override fun execute(event: MessageReceivedEvent, args: List<String>, config: Guild): CommandResponse {
 
         Redis.connection!!.del("guilds:${event.guild.id}")
+        val newConfig = Guild.get(event.guild.id, true)
 
-        if(config.id.isNotBlank() && !config.exists() && config.raw.isNotBlank()) {
+        if(newConfig != null) {
 
-            val newConfig = Guild.get(event.guild.id, true)
-
-            val content = newConfig?.raw ?: return CommandResponse.error("No he podido encontrar el archivo de configuración")
+            val content = newConfig.raw
             val inputStream = content.byteInputStream()
             val file = FileUpload.fromData(inputStream, "${event.guild.id}.yaml")
             event.message.reply("${Emojis.success}  Aquí tienes el archivo de configuración de este servidor")
