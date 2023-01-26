@@ -25,7 +25,7 @@ object ActionRouter {
                         guild,
                         user,
                         link.domain
-                    )
+                    ) + "\n\n **Si crees que ha sido un fallo o quieres reclamar, visita: https://appeals-ibai.kenabot.xyz/ **"
                 )
                     .queue({
                         guild.ban(user, 60, TimeUnit.SECONDS).reason("Sistema de anti-links").queue({ run {} },
@@ -90,7 +90,7 @@ object ActionRouter {
                         guild,
                         user,
                         checker.domain
-                    )
+                    ) + "\n\n **Si crees que ha sido un fallo o quieres reclamar, visita: https://appeals-ibai.kenabot.xyz/ **"
                 )
                     .queue({
                         guild.ban(user, 60, TimeUnit.SECONDS).reason("Sistema de anti-phishing").queue({ run {} },

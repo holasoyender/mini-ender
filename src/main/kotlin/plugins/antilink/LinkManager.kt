@@ -20,8 +20,19 @@ object LinkManager {
             if (message.contentRaw.length > 1024) message.contentRaw.substring(0, 1020) + "..." else message.contentRaw
         val checker = Checker(message.contentRaw)
 
-
         return if (checker.isLink || checker.isDiscordInvite) {
+
+            if (!message.member!!.roles.map { it.id }.contains("703321891833774090")) {
+                message.delete().queue()
+                message.member!!.user.openPrivateChannel().queue({
+                    it.sendMessage("**¡Hey ${message.member!!.user.asTag}!**\n" +
+                            "Parece que has intentado enviar un link por el canal **${message.channel.name}**, pero solo los usuarios de más de nivel 10 pueden enviar links!\n" +
+                            "Puedes subir de nivel participando activamente en el servidor enviando mensajes a los canales de texto\n" +
+                            "¿Por que no pruebas a mandar un mensaje por el <#701444109667270660>?"
+                    ).queue({}, {})
+                }, {})
+
+            }
 
             if (config.antiLinksAllowedLinks.isNotEmpty()) {
                 val allowedLinks = config.antiLinksAllowedLinks.map { it.lowercase() }
@@ -37,6 +48,18 @@ object LinkManager {
                 }
             }
 
+            if(message.channel.id == "701448577456799845") {
+                val allowed = listOf(
+                    "open.spotify.com",
+                    "spotify.com",
+                    "soundcloud.com",
+                    "deezer.com",
+                    "music.apple.com",
+                )
+                if(allowed.any { checker.link.contains(it) })
+                    return false
+            }
+
             handleFoundLink(content, message.guild, message.channel.id, message, checker)
             true
         } else {
@@ -44,7 +67,13 @@ object LinkManager {
         }
     }
 
-    private fun handleFoundLink(content: String, guild: Guild, channelId: String, message: Message, checker: Checker) {
+    private fun handleFoundLink(
+        content: String,
+        guild: Guild,
+        channelId: String,
+        message: Message,
+        checker: Checker,
+    ) {
 
         if (message.member?.hasPermission(Permission.MESSAGE_MANAGE) == true) return
 
