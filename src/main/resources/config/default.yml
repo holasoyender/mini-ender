@@ -11,10 +11,10 @@ welcomes:
 
 roles:
   mute_role_id: ""  # ID del rol que se le dará a los usuarios silenciados, dejar en blanco para desactivar
-  moderation_channel_id: "" # ID del canal por el que el bot recibirá las acciones de moderación sin prefixjo, más información en https://miniender.kenabot.xyz
 
 moderation:
   silent: false  # Si está activado, los comandos ejecutados de manera incorrecta no mostrarán ningún mensaje de error
+  moderation_channel_id: "" # ID del canal por el que el bot recibirá las acciones de moderación sin prefixjo, más información en https://miniender.kenabot.xyz
 
 permissions:
   {everyoneRoleId}: 1 # Permisos del rol @everyone (0 = Ninguno, 1 = Comandos básicos, 2 = Comandos de moderación, 3 = Comandos de administración, 4 = Comandos de configuración, 5 = Todos los comandos)
