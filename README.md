@@ -15,4 +15,5 @@ Puedes acceder al código fuente de este proyecto en el [**repositorio de GitHub
 
 **Servidor de soporte**
 
-{% embed url="https://discord.gg/WgRBDFk63s" %}
+{% embed url="https://discord.gg/jqHa2bUbVn" %}
+

@@ -34,6 +34,7 @@ El bot requiere un archivo de entorno para iniciarse, este debe de llamarse `.en
 TOKEN=
 PREFIX=
 API_TOKEN=
+API_URL=
 
 POSTGRES_PASSWORD=
 POSTGRES_USER=
@@ -41,10 +42,17 @@ POSTGRES_DB=
 POSTGRES_HOST=
 POSTGRES_SSL=
 
+REDIS_PASSWORD=
+REDIS_USER=
+REDIS_HOST=
+
 OAUTH2_CLIENT_ID=
 OAUTH2_CLIENT_SECRET=
 
 ERROR_CHANNEL_ID=
+
+TWITCH_CLIENT_ID=
+TWITCH_CLIENT_SECRET=
 ```
 
 #### TOKEN
@@ -63,6 +71,10 @@ Este es el token de la API de KenaBot, actualmente es de uso privado, por lo que
 
 Esta es la configuración de la base de datos de postgres, en el apartado `PASSWORD` se debe de establecer la contraseña del usuario especificado en el apartado `USER`. El apartado `DB` será el nombre de la base de datos que usará el bot del host especificado en el apartado `HOST`. Por ultimo, el apartado `SSL` será `true` o `false` si la base de datos remota cuenta con un certificado SSL.&#x20;
 
+#### REDIS
+
+Esta configuración es opcional pero recomendable, Redis es una base de datos de caché que hará que el bot sea mucho más rápido, en caso de usar un servidor de Redis remoto se debe de rellenar el apartado `USER` y `PASSWORD`
+
 #### OAUTH2
 
 Estos campos serán la ID del cliente de Discord y su secret para iniciar sesión en la API interna
@@ -70,6 +82,10 @@ Estos campos serán la ID del cliente de Discord y su secret para iniciar sesió
 #### ERROR\_CHANNEL\_ID
 
 Esta será la ID del canal de texto en la que se enviaran los errores reportados con el comando `error`
+
+#### TWITCH
+
+Esta es la configuración del sistema de notificaciones de **Twitch**, junto al apartado `API_URL`, que servirá para los webhooks en el caso de que la API sea expuesta a internet
 
 ### Iniciar el bot
 
