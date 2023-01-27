@@ -16,7 +16,8 @@ import java.io.InputStreamReader
 class Exportar: Command {
     override fun execute(event: MessageReceivedEvent, args: List<String>, config: Guild): CommandResponse {
 
-        Redis.connection!!.del("guilds:${event.guild.id}")
+        if(Redis.usingRedis)
+            Redis.connection!!.del("guilds:${event.guild.id}")
         val newConfig = Guild.get(event.guild.id, true)
 
         if(newConfig != null) {
