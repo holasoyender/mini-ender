@@ -58,15 +58,18 @@ object TwitchManager {
 
                                 val message =
                                     rawMessage.ifEmpty { "¡**${event.event.broadcasterUserName}** ha iniciado un directo en **Twitch**!" }
-                                        .replace("{streamer}", event.event.broadcasterUserName)
-                                        .replace("{title}", stream?.title ?: "Sin título")
-                                        .replace("{game}", stream?.gameName ?: "Sin juego")
+                                        .replace("{streamer}", if(streamer?.displayName?.isBlank() == true) {
+                                            event.event.broadcasterUserName.ifBlank { "Sin nombre" }
+                                        } else streamer?.displayName ?: "Sin nombre")
+                                        .replace("{title}", if(stream?.title?.isBlank() == true) "Sin título" else stream?.title ?: "Sin título")
+                                        .replace("{game}", if(stream?.gameName?.isBlank() == true) "Nada" else stream?.gameName ?: "Nada")
                                         .replace("{url}", "https://twitch.tv/${event.event.broadcasterUserLogin}")
                                         .replace(
                                             "{thumbnail}",
-                                            stream?.thumbnailUrl?.replace("{width}", "1920")
+                                            (stream?.thumbnailUrl?.replace("{width}", "1920")
                                                 ?.replace("{height}", "1080")
                                                 ?: "https://static-cdn.jtvnw.net/ttv-static/404_preview-1920x1080.jpg"
+                                                    ).replace("jpg", "png")
                                         )
 
                                 val name = if(streamer?.displayName?.isBlank() == true) {
@@ -119,15 +122,18 @@ object TwitchManager {
 
                                 val message =
                                     liveMessage.ifEmpty { "¡**${event.event.broadcasterUserName}** ha iniciado un directo en **Twitch**!\nPodéis usar este chat para hablar hasta que el directo finalize" }
-                                        .replace("{streamer}", event.event.broadcasterUserName)
-                                        .replace("{title}", stream?.title ?: "Sin título")
-                                        .replace("{game}", stream?.gameName ?: "Sin juego")
+                                        .replace("{streamer}", if(streamer?.displayName?.isBlank() == true) {
+                                            event.event.broadcasterUserName.ifBlank { "Sin nombre" }
+                                        } else streamer?.displayName ?: "Sin nombre")
+                                        .replace("{title}", if(stream?.title?.isBlank() == true) "Sin título" else stream?.title ?: "Sin título")
+                                        .replace("{game}", if(stream?.gameName?.isBlank() == true) "Nada" else stream?.gameName ?: "Nada")
                                         .replace("{url}", "https://twitch.tv/${event.event.broadcasterUserLogin}")
                                         .replace(
                                             "{thumbnail}",
-                                            stream?.thumbnailUrl?.replace("{width}", "1920")
+                                            (stream?.thumbnailUrl?.replace("{width}", "1920")
                                                 ?.replace("{height}", "1080")
                                                 ?: "https://static-cdn.jtvnw.net/ttv-static/404_preview-1920x1080.jpg"
+                                                    ).replace("jpg", "png")
                                         )
 
                                 val allowedPermissions =
@@ -183,16 +189,20 @@ object TwitchManager {
 
                             val message =
                                 liveMessage.ifEmpty { "¡**${event.event.broadcasterUserName}** acabado el directo en **Twitch**!\nCuando vuelva a iniciar se abrirá el canal de nuevo" }
-                                    .replace("{streamer}", event.event.broadcasterUserName)
-                                    .replace("{title}", stream?.title ?: "Sin título")
-                                    .replace("{game}", stream?.gameName ?: "Sin juego")
+                                    .replace("{streamer}", if(streamer?.displayName?.isBlank() == true) {
+                                        event.event.broadcasterUserName.ifBlank { "Sin nombre" }
+                                    } else streamer?.displayName ?: "Sin nombre")
+                                    .replace("{title}", if(stream?.title?.isBlank() == true) "Sin título" else stream?.title ?: "Sin título")
+                                    .replace("{game}", if(stream?.gameName?.isBlank() == true) "Nada" else stream?.gameName ?: "Nada")
                                     .replace("{url}", "https://twitch.tv/${event.event.broadcasterUserLogin}")
                                     .replace(
                                         "{thumbnail}",
-                                        stream?.thumbnailUrl?.replace("{width}", "1920")
+                                        (stream?.thumbnailUrl?.replace("{width}", "1920")
                                             ?.replace("{height}", "1080")
                                             ?: "https://static-cdn.jtvnw.net/ttv-static/404_preview-1920x1080.jpg"
+                                                ).replace("jpg", "png")
                                     )
+
                             val allowedPermissions =
                                 channel.getPermissionOverride(guild.publicRole)?.allowed ?: mutableListOf()
                             val deniedPermissions =
