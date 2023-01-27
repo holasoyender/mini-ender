@@ -19,8 +19,9 @@
 ## 🛡 Sentinel
 
 * [Información básica](sentinel/informacion-basica.md)
-* [Antilinks](sentinel/antilinks.md)
-* [Canal de moderación](sentinel/canal-de-moderacion.md)
+* [🔗 Antilinks](sentinel/antilinks.md)
+* [📜 Canal de moderación](sentinel/canal-de-moderacion.md)
+* [📑 Mensajes de sanciones](sentinel/mensajes-de-sanciones.md)
 
 ## 🎉 Sorteos
 

@@ -1,2 +1,2 @@
-# Canal de moderación
+# 📜 Canal de moderación
 

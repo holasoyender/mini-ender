@@ -15,3 +15,12 @@ Todos los sub-módulos de este proyecto están en constante desarrollo y sujetos
 {% content-ref url="antilinks.md" %}
 [antilinks.md](antilinks.md)
 {% endcontent-ref %}
+
+{% content-ref url="canal-de-moderacion.md" %}
+[canal-de-moderacion.md](canal-de-moderacion.md)
+{% endcontent-ref %}
+
+{% content-ref url="mensajes-de-sanciones.md" %}
+[mensajes-de-sanciones.md](mensajes-de-sanciones.md)
+{% endcontent-ref %}
+

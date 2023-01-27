@@ -1,0 +1,2 @@
+# 📑 Mensajes de sanciones
+
