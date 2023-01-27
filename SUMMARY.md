@@ -9,7 +9,7 @@
 
 ## ⚙ config
 
-* [Page 1](config/page-1.md)
+* [Archivo de configuración](config/archivo-de-configuracion.md)
 
 ## 🤖 internal
 

@@ -1,0 +1,71 @@
+---
+cover: ../.gitbook/assets/banners config.png
+coverY: 0
+---
+
+# Archivo de configuración
+
+El bot se configura con un archivo `YAML` (`.yaml`), que debe de ser exportado e importado.
+
+{% hint style="success" %}
+Recomendamos usar un editor de texto compatible con el lenguaje YAML, como Visual Studio Code
+{% endhint %}
+
+### Obtener el archivo de configuración
+
+Para obtener el archivo de configuración primero debes de exportarlo, por defecto el prefijo del bot es `-`, por lo que para exportar el archivo de configuración se debe de usar el comando `-exportar` (o `/exportar` si quieres usar slash commands).
+
+El nombre del archivo es la ID del servidor más la extensión `.yaml`, por ejemplo: `910907192989843548.yaml`
+
+Por defecto, el archivo de configuración se verá algo asi: (puede estar desactualizado, ultima modificación: **27/01/23**)
+
+````yaml
+prefix: "-"
+
+welcomes:
+  role_id: ""  # ID del rol que se dará a los usuarios al entrar al servidor, dejar en blanco para desactivar
+  channel_id: ""  # ID del canal donde se enviará el banner de bienvenida, dejar en blanco para desactivar
+  message: ""  # El mensaje de bienvenida que se enviará por MD al usuario, puedes ver las variables en https://miniender.kenabot.xyz
+
+roles:
+  mute_role_id: ""  # ID del rol que se le dará a los usuarios silenciados, dejar en blanco para desactivar
+
+moderation:
+  silent: false  # Si está activado, los comandos ejecutados de manera incorrecta no mostrarán ningún mensaje de error
+  moderation_channel_id: "" # ID del canal por el que el bot recibirá las acciones de moderación sin prefixjo, más información en https://miniender.kenabot.xyz
+
+permissions:
+  910965586622816326: 1 # Permisos del rol @everyone (0 = Ninguno, 1 = Comandos básicos, 2 = Comandos de moderación, 3 = Comandos de administración, 4 = Comandos de configuración, 5 = Todos los comandos)
+
+logs:
+  channel_id: "" # ID del canal donde se enviarán todos los logs del servidor, dejar en blanco para desactivar
+  moderation_channel_id: "" # ID del canal donde se enviarán los logs de moderación, dejar en blanco para desactivar
+
+anti_links:
+    enabled: false # Si está activado o no el sistema de anti-links
+    allowed_links: [] # Lista de enlaces permitidos, entre comillas y separados por comas. El link debe de estar sin el protocolo (http:// o https://)
+    channel_id: "" # El canal donde se enviarán los logs del sistema anti-links, si se activa el sistema, pero no se pone el canal, se enviarán los logs al canal de logs
+    ignore_roles: [] # IDs de los roles que no serán afectados por el sistema anti-links, separados por comas y entre comillas
+    ignore_channels: [] # IDs de los canales donde no se aplicará el sistema anti-links, separados por comas y entre comillas
+    anti_phishing: false # Si está activado o no el sistema de anti-phishing, más información en https://miniender.kenabot.xyz
+
+custom_commands:
+  buenas: # Nombre del comando (comando a ejecutar: -buenas)
+    response: "Hola, ¿cómo estás?" # La respuesta que dará el bot al ejecutar el comando, si se pone un comando existente se creará un alias
+    description: "Un comando de prueba" # La descripción del comando, se mostrará en el comando help
+    aliases: ["hola", "holi"] # Los alias del comando, se pueden poner varios separados por comas y entre comillas
+
+twitch:
+    channel: "" # Canal de Twitch al que suscribirse, dejar en blanco para desactivar
+    announce_channel_id: "" # ID del canal de texto donde se notificará a los usuarios del inicio del directo
+    message: "" # Mensaje que se enviará al canal de texto al iniciar el directo, puedes ver las variables en https://miniender.kenabot.xyz
+    live_channel_id: "" # ID del canal de texto que se abrirá o cerrará cuando inicie el directo, dejar en blanco para desactivar
+    live_open_message: "" # Mensaje que se enviará al canal de texto abierto al iniciar el directo, puedes ver las variables en https://miniender.kenabot.xyz
+    live_close_message: "" # Mensaje que se enviará al canal de texto abierto al finalizar el directo, puedes ver las variables en https://miniender.kenabot.xyz
+
+messages:
+  sanction: "<:idle:983837896287092796>  Has sido {sanction} en el servidor **{server}** con la razón: `{reason}`" # Mensaje que se enviará al usuario al ser sancionado, si se deja vacío nunca se mandará un MD al usuario, puedes ver las variables en https://miniender.kenabot.xyz
+  anti_links_new_link: "Tu mensaje del canal **{channel}** ha sido eliminado debido a que el link que has enviado no se encuentra en la lista de links permitidos\n\nLos moderadores del servidor revisarán este enlace y, en caso de ser aprobado podrás enviarlo otra vez.\n`Si crees que esto es un error, por favor, contacta con un el soporte del servidor.`\n\n```{message}```" # Mensaje que se enviará al usuario al enviar un enlace desconocido, si se deja vacío nunca se mandará un MD al usuario, puedes ver las variables en https://miniender.kenabot.xyz
+  anti_links_under_revision: "Tu mensaje del canal *{channel}** ha sido eliminado debido a que el link que has enviado se encuentra bajo revisión por parte del equipo de moderación.\n`Si crees que esto es un error, por favor, contacta con un el soporte del servidor.`\n\n```{message}```" # Mensaje que se enviará al usuario al enviar un enlace pendiente por revisar, si se deja vacío nunca se mandará un MD al usuario, puedes ver las variables en https://miniender.kenabot.xyz
+  anti_links_sanction: "**Hola {user}! :wave:**\n\nHas sido {sanction} en el servidor **{server}** debido a que has enviado un link que ha sido considerado como spam.\n`Si crees que esto es un error, por favor, contacta con un el soporte del servidor.`\nDominio identificado como spam:```{domain}```" # Mensaje que se enviará al usuario al enviar un enlace no permitido, si se deja vacío nunca se mandará un MD al usuario, puedes ver las variables en https://miniender.kenabot.xyza
+````
