@@ -21,3 +21,7 @@
 * [Información básica](sentinel/informacion-basica.md)
 * [Antilinks](sentinel/antilinks.md)
 * [Canal de moderación](sentinel/canal-de-moderacion.md)
+
+## 🎉 Sorteos
+
+* [Sistema de sorteos](sorteos/sistema-de-sorteos.md)
