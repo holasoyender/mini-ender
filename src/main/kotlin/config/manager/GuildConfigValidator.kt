@@ -213,6 +213,6 @@ class GuildConfigValidator(
     }
 
     private fun isValidRole(roleId: String): Boolean = try { guild.getRoleById(roleId) != null } catch (e: Exception) { false }
-    private fun isValidChannel(channelId: String): Boolean = try { guild.getTextChannelById(channelId) != null } catch (e: Exception) { false }
+    private fun isValidChannel(channelId: String): Boolean = try { guild.getTextChannelById(channelId) != null || guild.getNewsChannelById(channelId) != null } catch (e: Exception) { false }
     private fun isValidCommand(command: String): Boolean = commandManager!!.getCommands().find { it.name == command || it.aliases.contains(command) } != null
 }
