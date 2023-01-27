@@ -6,7 +6,7 @@ coverY: 0
 # Sistema de sorteos
 
 {% hint style="warning" %}
-Todos los sub-modulos de este proyecto están en constante desarrollo y sujetos a cambios
+Todos los sub-módulos de este proyecto están en constante desarrollo y sujetos a cambios
 {% endhint %}
 
 Por comodidad, los comandos para crear y gestionar sorteos son exclusivos de slash commands (`/`)
