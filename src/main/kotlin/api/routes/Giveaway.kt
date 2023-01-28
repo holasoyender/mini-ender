@@ -1,5 +1,6 @@
 package api.routes
 
+import com.google.gson.Gson
 import database.schema.Sorteo
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -17,11 +18,8 @@ class Giveaway {
             response["status"] = "200"
             response["message"] = "OK"
 
-            Sorteo::class.members.forEach {
-                val content = giveaway.get(it.name)
-                if (content != null)
-                    response[it.name] = content
-            }
+            val json = Gson().toJson(giveaway)
+            response["data"] = Gson().fromJson(json, HashMap::class.java)
             return response
 
         } else {
