@@ -8,6 +8,7 @@ import kotlin.system.exitProcess
 object Redis {
 
     var connection: redis.clients.jedis.Jedis? = null
+    var usingRedis = false
     private val logger = LoggerFactory.getLogger(Redis::class.java)
 
     init {
@@ -30,14 +31,14 @@ object Redis {
             if (conn.resource.ping() == "PONG") {
                 logger.info("Conectado con éxito a la base de datos")
                 connection = conn.resource
+                usingRedis = true
             } else {
                 logger.error("Error al conectar con la base de datos")
                 exitProcess(1)
             }
 
         } catch (e: Exception) {
-            logger.error("Error al conectar con la base de datos", e)
-            exitProcess(1)
+            logger.error("Error al conectar con la base de datos de Redis, no se utilizará un servidor de cache.")
         }
     }
 

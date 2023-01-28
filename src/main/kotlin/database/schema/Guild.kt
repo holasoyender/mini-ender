@@ -253,7 +253,8 @@ class Guild(
 
         isSaved = true
 
-        Redis.connection!!.setex("guilds:${id}", 3600, Gson().toJson(this))
+        if(Redis.usingRedis)
+            Redis.connection!!.setex("guilds:${id}", 3600, Gson().toJson(this))
 
         return this
     }
@@ -331,12 +332,13 @@ class Guild(
 
         fun get(id: String, force: Boolean = false): Guild? {
 
-            if (!force) {
-                val cache = Redis.connection!!.get("guilds:$id")
-                if (cache != null) {
-                    return Gson().fromJson(cache, Guild::class.java)
+            if (Redis.usingRedis)
+                if (!force) {
+                    val cache = Redis.connection!!.get("guilds:$id")
+                    if (cache != null) {
+                        return Gson().fromJson(cache, Guild::class.java)
+                    }
                 }
-            }
 
             database.Postgres.dataSource?.connection.use { connection ->
                 val statement = connection!!.prepareStatement("SELECT * FROM guilds WHERE id = ?")
@@ -375,7 +377,8 @@ class Guild(
                         result.getBoolean("anti_phishing_enabled"),
 
                         //esta linea ha causado un daño permanente en mi cerebro
-                        (result.getArray("custom_commands")?.array as Array<String>?)?.map { JSONObject(it) }?.toTypedArray() ?: arrayOf(),
+                        (result.getArray("custom_commands")?.array as Array<String>?)?.map { JSONObject(it) }
+                            ?.toTypedArray() ?: arrayOf(),
 
                         result.getString("twitch_channel"),
                         result.getString("twitch_announce_channel_id"),
@@ -393,7 +396,8 @@ class Guild(
 
                     )
 
-                    Redis.connection!!.setex("guilds:$id", 3600, Gson().toJson(config))
+                    if (Redis.usingRedis)
+                        Redis.connection!!.setex("guilds:$id", 3600, Gson().toJson(config))
                     return config
                 }
             }
