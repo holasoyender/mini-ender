@@ -1,5 +1,6 @@
 package api.routes
 
+import database.Redis
 import jda
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
@@ -11,6 +12,7 @@ class Status {
     fun status(): HashMap<String, Any> {
         val response = HashMap<String, Any>()
         response["status"] = "200"
+        response ["using_redis"] = Redis.usingRedis
         response["health"] = HashMap<String, Any>().apply {
             this["api"] = HashMap<String, Any>().apply {
                 this["status"] = "ok"

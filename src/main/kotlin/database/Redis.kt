@@ -3,7 +3,6 @@ package database
 import config.Env
 import org.slf4j.LoggerFactory
 import redis.clients.jedis.JedisPool
-import kotlin.system.exitProcess
 
 object Redis {
 
@@ -33,8 +32,7 @@ object Redis {
                 connection = conn.resource
                 usingRedis = true
             } else {
-                logger.error("Error al conectar con la base de datos")
-                exitProcess(1)
+                logger.error("Error al conectar con la base de datos de Redis, no se utilizará un servidor de cache.")
             }
 
         } catch (e: Exception) {

@@ -1,5 +1,6 @@
 package api.routes
 
+import com.google.gson.Gson
 import database.schema.Infraction
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -17,11 +18,9 @@ class Infractions {
             response["status"] = "200"
             response["message"] = "OK"
 
-            Infraction::class.members.forEach {
-                val content = inf.get(it.name)
-                if (content != null)
-                    response[it.name] = content
-            }
+            val json = Gson().toJson(inf)
+            response["data"] = Gson().fromJson(json, HashMap::class.java)
+
             return response
 
         } else {
@@ -30,6 +29,5 @@ class Infractions {
             response["message"] = "Infraction not found"
             response
         }
-
     }
 }
