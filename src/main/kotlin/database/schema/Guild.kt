@@ -3,6 +3,7 @@ package database.schema
 import com.google.gson.Gson
 import database.Redis
 import interfaces.Schema
+import jda
 import org.json.JSONObject
 
 class Guild(
@@ -254,7 +255,7 @@ class Guild(
         isSaved = true
 
         if(Redis.usingRedis)
-            Redis.connection!!.setex("guilds:${id}", 3600, Gson().toJson(this))
+            Redis.connection!!.setex("${jda!!.selfUser.id}:guilds:${id}", 3600, Gson().toJson(this))
 
         return this
     }
@@ -334,7 +335,7 @@ class Guild(
 
             if (Redis.usingRedis)
                 if (!force) {
-                    val cache = Redis.connection!!.get("guilds:$id")
+                    val cache = Redis.connection!!.get("${jda!!.selfUser.id}:guilds:$id")
                     if (cache != null) {
                         return Gson().fromJson(cache, Guild::class.java)
                     }
@@ -397,7 +398,7 @@ class Guild(
                     )
 
                     if (Redis.usingRedis)
-                        Redis.connection!!.setex("guilds:$id", 3600, Gson().toJson(config))
+                        Redis.connection!!.setex("${jda!!.selfUser.id}:guilds:$id", 3600, Gson().toJson(config))
                     return config
                 }
             }
