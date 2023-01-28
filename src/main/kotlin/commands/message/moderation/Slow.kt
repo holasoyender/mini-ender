@@ -16,9 +16,11 @@ class Slow: Command {
         var time: Long
         var rawTime: String
         val pre = args[0].split("slow")[1].toIntOrNull()
+        var silent = false
 
-        time = if(pre != null) {
+        time = if (pre != null) {
             rawTime = pre.toString() + "s"
+            silent = true
             pre * 1000L
         } else {
 
@@ -28,11 +30,11 @@ class Slow: Command {
             Time.ms(rawTime)
         }
 
-        if(time < 0 || rawTime.lowercase() == "min") {
+        if (time < 0 || rawTime.lowercase() == "min") {
             rawTime = "min"
             time = 0
         }
-        if(time > TimeUnit.HOURS.toMillis(6)  || rawTime.lowercase() == "max") {
+        if (time > TimeUnit.HOURS.toMillis(6) || rawTime.lowercase() == "max") {
             rawTime = "max"
             time = TimeUnit.HOURS.toMillis(6)
         }
@@ -42,12 +44,13 @@ class Slow: Command {
         } else {
             val channel = event.channel.asTextChannel()
 
-            if(channel.slowmode == time.toInt() / 1000)
+            if (channel.slowmode == time.toInt() / 1000)
                 return CommandResponse.error("El canal ya tiene ese tiempo de slowmode")
 
             channel.manager.setSlowmode(time.toInt() / 1000).queue({
-                event.message.reply("${Emojis.success}  El slowmode del canal ha sido cambiado a **$rawTime**")
-                    .setAllowedMentions(listOf()).queue()
+                if (!silent)
+                    event.message.reply("${Emojis.success}  El slowmode del canal ha sido cambiado a **$rawTime**")
+                        .setAllowedMentions(listOf()).queue()
             }, {
                 event.message.reply("${Emojis.warning}  No he podido cambiar el slowmode del canal, comprueba que tengo los permisos necesarios")
                     .queue()
