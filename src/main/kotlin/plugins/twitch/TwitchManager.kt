@@ -53,7 +53,7 @@ object TwitchManager {
                         val liveMessage = it.twitchOpenLiveMessage
 
                         if (channelId.isNotEmpty()) {
-                            val channel = guild.getTextChannelById(channelId)
+                            val channel = guild.getTextChannelById(channelId) ?: guild.getNewsChannelById(channelId)
                             if (channel != null) {
 
                                 val message =
