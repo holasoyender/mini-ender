@@ -94,3 +94,9 @@ Para iniciar el bot se debe de ejecutar el siguiente comando dentro de la carpet
 ```shell
 $ java -jar mini-ender.jar
 ```
+
+### API Interna
+
+El bot abrirá una API en el puerto `6690`, por la que se podrán acceder a la información de sorteos, infracciones y estado del bot.
+
+No es necesario usarla para el bot, pero si se quiere usar el [módulo de Twitch ](../twitch/integracion-con-twitch.md)es obligatorio tener abierta a internet esta API, y establecer su URL en la variable de entorno `API_URL`&#x20;
