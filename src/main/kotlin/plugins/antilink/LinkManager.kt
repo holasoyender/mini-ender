@@ -20,7 +20,6 @@ object LinkManager {
             if (message.contentRaw.length > 1024) message.contentRaw.substring(0, 1020) + "..." else message.contentRaw
         val checker = Checker(message.contentRaw)
 
-
         return if (checker.isLink || checker.isDiscordInvite) {
 
             if (config.antiLinksAllowedLinks.isNotEmpty()) {

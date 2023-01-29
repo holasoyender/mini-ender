@@ -38,7 +38,7 @@ fun main(args: Array<String>) {
     )
 
     builder.setBulkDeleteSplittingEnabled(true)
-    builder.setCompression(Compression.NONE)
+    builder.setCompression(Compression.ZLIB)
     builder.setActivity(Activity.watching("kenabot.xyz"))
 
     builder.setToken(Env.TOKEN ?: throw LoginException("No token provided"))

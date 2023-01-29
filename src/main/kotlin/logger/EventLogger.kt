@@ -70,7 +70,7 @@ class EventLogger(
             .setColor(Color.decode("#FEE75C"))
             .setAuthor("${message.authorTag} - Mensaje eliminado", null, message.authorAvatar)
             .addField("Autor", "<@!${message.authorId}> (`${message.authorId}`)", true)
-            .addField("Canal", "${message.channelId} (`${message.channelId}`)", true)
+            .addField("Canal", "<#${message.channelId}> (`${message.channelId}`)", true)
             .addField(
                 "Fecha",
                 "${TimeFormat.DEFAULT.format(System.currentTimeMillis())} (${TimeFormat.RELATIVE.format(System.currentTimeMillis())})",
@@ -91,7 +91,7 @@ class EventLogger(
             .setColor(Color.decode("#FEE75C"))
             .setAuthor("${message.authorTag} - Mensaje editado", null, message.authorAvatar)
             .addField("Autor", "<@!${message.authorId}> (`${message.authorId}`)", true)
-            .addField("Canal", "${message.channelId} (`${message.channelId}`)", true)
+            .addField("Canal", "<#${message.channelId}> (`${message.channelId}`)", true)
             .addField(
                 "Fecha",
                 "${TimeFormat.DEFAULT.format(System.currentTimeMillis())} (${TimeFormat.RELATIVE.format(System.currentTimeMillis())})",
