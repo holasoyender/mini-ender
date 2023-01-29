@@ -205,6 +205,9 @@ class MessageHandler: ListenerAdapter() {
     }
 
     override fun onMessageUpdate(event: MessageUpdateEvent) {
+
+        if(event.author.isBot) return
+
         if (event.isFromGuild)
             EventLogger(event.guild, Guild.get(event.guild.id) ?: DefaultConfig.get()).log(event)
 
