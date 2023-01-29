@@ -13,6 +13,8 @@ import net.dv8tion.jda.api.utils.Compression
 import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import net.dv8tion.jda.api.utils.messages.MessageRequest
+import okhttp3.OkHttpClient
+import java.util.logging.Logger
 import javax.security.auth.login.LoginException
 
 var commandManager: CommandManager? = null
@@ -21,7 +23,7 @@ var jda:JDA? = null
 fun main(args: Array<String>) {
 
     val builder = DefaultShardManagerBuilder.createDefault(null)
-
+    Logger.getLogger(OkHttpClient::class.java.name).level = java.util.logging.Level.FINE
     MessageRequest.setDefaultMentionRepliedUser(false)
     builder.disableCache(
         CacheFlag.EMOJI,

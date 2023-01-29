@@ -85,102 +85,151 @@ class Tempmute: Command {
             date = System.currentTimeMillis()
         )
 
-        if (isNoMd) {
+        event.message.reply("${Emojis.loading}  Aplicando sanción...").queue({ message ->
 
-            event.message.reply("${Emojis.success}  Has silenciado al usuario ${user.asMention} con la razón: `$reason` hasta el ${
-                TimeFormat.DEFAULT.format(
-                    time + System.currentTimeMillis()
-                )
-            } (${TimeFormat.RELATIVE.format(time + System.currentTimeMillis())})")
-                .queue()
+            if (isNoMd) {
 
-            if (time >= 7 * 24 * 60 * 60 * 1000) {
-                event.guild.addRoleToMember(member, muteRole).queue({
-                    infraction.save()
-                }, {
-                    infraction.succeeded = false
-                    infraction.save()
-                })
-            } else {
-                event.guild.timeoutFor(member, time, TimeUnit.MILLISECONDS).queue({
-                    infraction.save()
-                }, {
-                    infraction.succeeded = false
-                    infraction.save()
-                })
-            }
-
-
-        } else {
-            if (config.sanctionMessage.isNotEmpty() && config.sanctionMessage.isNotBlank()) {
-                user.openPrivateChannel().queue({ channel ->
-                    channel.sendMessage(
-                        Formatter.formatSanctionMessage(
-                            config.sanctionMessage,
-                            infraction,
-                            event.guild
+                if (time >= 7 * 24 * 60 * 60 * 1000) {
+                    event.guild.addRoleToMember(member, muteRole).queue({
+                        infraction.save()
+                        message.editMessage(
+                            "${Emojis.success}  Has silenciado al usuario ${user.asMention} con la razón: `$reason` hasta el ${
+                                TimeFormat.DEFAULT.format(
+                                    time + System.currentTimeMillis()
+                                )
+                            } (${TimeFormat.RELATIVE.format(time + System.currentTimeMillis())})"
                         )
-                    )
-                        .queue(
-                            {
-                                event.message.reply(
-                                    "${Emojis.success}  Has silenciado al usuario ${user.asMention} con la razón: `$reason` hasta el ${
-                                        TimeFormat.DEFAULT.format(
-                                            time + System.currentTimeMillis()
-                                        )
-                                    } (${TimeFormat.RELATIVE.format(time + System.currentTimeMillis())})"
+                            .setAllowedMentions(emptyList())
+                            .queue()
+                    }, {
+                        infraction.succeeded = false
+                        infraction.save()
+                        message.editMessage("${Emojis.error}  No se ha podido silenciar al usuario ${user.asMention}")
+                            .setAllowedMentions(emptyList())
+                            .queue()
+                    })
+                } else {
+                    event.guild.timeoutFor(member, time, TimeUnit.MILLISECONDS).queue({
+                        infraction.save()
+                        message.editMessage(
+                            "${Emojis.success}  Has silenciado al usuario ${user.asMention} con la razón: `$reason` hasta el ${
+                                TimeFormat.DEFAULT.format(
+                                    time + System.currentTimeMillis()
                                 )
-                                    .queue()
+                            } (${TimeFormat.RELATIVE.format(time + System.currentTimeMillis())})"
+                        )
+                            .setAllowedMentions(emptyList())
+                            .queue()
+                    }, {
+                        infraction.succeeded = false
+                        infraction.save()
+                        message.editMessage("${Emojis.error}  No se ha podido silenciar al usuario ${user.asMention}")
+                            .setAllowedMentions(emptyList())
+                            .queue()
+                    })
+                }
 
-                                if (time >= 7 * 24 * 60 * 60 * 1000) {
-                                    event.guild.addRoleToMember(member, muteRole).queue({
-                                        infraction.save()
-                                    }, {
-                                        infraction.succeeded = false
-                                        infraction.save()
-                                    })
-                                } else {
-                                    event.guild.timeoutFor(member, time, TimeUnit.MILLISECONDS).queue({
-                                        infraction.save()
-                                    }, {
-                                        infraction.succeeded = false
-                                        infraction.save()
-                                    })
-                                }
+
+            } else {
+                if (config.sanctionMessage.isNotEmpty() && config.sanctionMessage.isNotBlank()) {
+                    user.openPrivateChannel().queue({ channel ->
+                        channel.sendMessage(
+                            Formatter.formatSanctionMessage(
+                                config.sanctionMessage,
+                                infraction,
+                                event.guild
+                            )
+                        )
+                            .queue(
+                                {
+                                    message.editMessage(
+                                        "${Emojis.success}  Has silenciado al usuario ${user.asMention} con la razón: `$reason` hasta el ${
+                                            TimeFormat.DEFAULT.format(
+                                                time + System.currentTimeMillis()
+                                            )
+                                        } (${TimeFormat.RELATIVE.format(time + System.currentTimeMillis())})"
+                                    )
+                                        .setAllowedMentions(emptyList())
+                                        .queue()
+
+                                    if (time >= 7 * 24 * 60 * 60 * 1000) {
+                                        event.guild.addRoleToMember(member, muteRole).queue({
+                                            infraction.save()
+                                        }, {
+                                            infraction.succeeded = false
+                                            infraction.save()
+                                        })
+                                    } else {
+                                        event.guild.timeoutFor(member, time, TimeUnit.MILLISECONDS).queue({
+                                            infraction.save()
+                                        }, {
+                                            infraction.succeeded = false
+                                            infraction.save()
+                                        })
+                                    }
+                                }, {
+                                    message.editMessage(
+                                        "${Emojis.success}  Has silenciado al usuario ${user.asMention} con la razón: `$reason` hasta el ${
+                                            TimeFormat.DEFAULT.format(
+                                                time + System.currentTimeMillis()
+                                            )
+                                        } (${TimeFormat.RELATIVE.format(time + System.currentTimeMillis())}) pero no ha podido ser notificado"
+                                    )
+                                        .setAllowedMentions(emptyList())
+                                        .queue()
+
+                                    if (time >= 7 * 24 * 60 * 60 * 1000) {
+                                        event.guild.addRoleToMember(member, muteRole).queue({
+                                            infraction.save()
+                                        }, {
+                                            infraction.succeeded = false
+                                            infraction.save()
+                                        })
+                                    } else {
+                                        event.guild.timeoutFor(member, time, TimeUnit.MILLISECONDS).queue({
+                                            infraction.save()
+                                        }, {
+                                            infraction.succeeded = false
+                                            infraction.save()
+                                        })
+                                    }
+                                })
+                    }, {
+                        message.editMessage(
+                            "${Emojis.success}  Has silenciado al usuario ${user.asMention} con la razón: `$reason` hasta el ${
+                                TimeFormat.DEFAULT.format(
+                                    time + System.currentTimeMillis()
+                                )
+                            } (${TimeFormat.RELATIVE.format(time + System.currentTimeMillis())}) pero no ha podido ser notificado"
+                        )
+                            .setAllowedMentions(emptyList())
+                            .queue()
+
+                        if (time >= 7 * 24 * 60 * 60 * 1000) {
+                            event.guild.addRoleToMember(member, muteRole).queue({
+                                infraction.save()
                             }, {
-                                event.message.reply(
-                                    "${Emojis.success}  Has silenciado al usuario ${user.asMention} con la razón: `$reason` hasta el ${
-                                        TimeFormat.DEFAULT.format(
-                                            time + System.currentTimeMillis()
-                                        )
-                                    } (${TimeFormat.RELATIVE.format(time + System.currentTimeMillis())}) pero no ha podido ser notificado"
-                                )
-                                    .queue()
-
-                                if (time >= 7 * 24 * 60 * 60 * 1000) {
-                                    event.guild.addRoleToMember(member, muteRole).queue({
-                                        infraction.save()
-                                    }, {
-                                        infraction.succeeded = false
-                                        infraction.save()
-                                    })
-                                } else {
-                                    event.guild.timeoutFor(member, time, TimeUnit.MILLISECONDS).queue({
-                                        infraction.save()
-                                    }, {
-                                        infraction.succeeded = false
-                                        infraction.save()
-                                    })
-                                }
+                                infraction.succeeded = false
+                                infraction.save()
                             })
-                }, {
-                    event.message.reply(
+                        } else {
+                            event.guild.timeoutFor(member, time, TimeUnit.MILLISECONDS).queue({
+                                infraction.save()
+                            }, {
+                                infraction.succeeded = false
+                                infraction.save()
+                            })
+                        }
+                    })
+                } else {
+                    message.editMessage(
                         "${Emojis.success}  Has silenciado al usuario ${user.asMention} con la razón: `$reason` hasta el ${
                             TimeFormat.DEFAULT.format(
                                 time + System.currentTimeMillis()
                             )
-                        } (${TimeFormat.RELATIVE.format(time + System.currentTimeMillis())}) pero no ha podido ser notificado"
+                        } (${TimeFormat.RELATIVE.format(time + System.currentTimeMillis())})"
                     )
+                        .setAllowedMentions(emptyList())
                         .queue()
 
                     if (time >= 7 * 24 * 60 * 60 * 1000) {
@@ -198,34 +247,9 @@ class Tempmute: Command {
                             infraction.save()
                         })
                     }
-                })
-            } else {
-                event.message.reply(
-                    "${Emojis.success}  Has silenciado al usuario ${user.asMention} con la razón: `$reason` hasta el ${
-                        TimeFormat.DEFAULT.format(
-                            time + System.currentTimeMillis()
-                        )
-                    } (${TimeFormat.RELATIVE.format(time + System.currentTimeMillis())})"
-                )
-                    .queue()
-
-                if (time >= 7 * 24 * 60 * 60 * 1000) {
-                    event.guild.addRoleToMember(member, muteRole).queue({
-                        infraction.save()
-                    }, {
-                        infraction.succeeded = false
-                        infraction.save()
-                    })
-                } else {
-                    event.guild.timeoutFor(member, time, TimeUnit.MILLISECONDS).queue({
-                        infraction.save()
-                    }, {
-                        infraction.succeeded = false
-                        infraction.save()
-                    })
                 }
             }
-        }
+        }, {})
 
         InfractionLogger(event.guild, Guild.get(event.guild.id) ?: DefaultConfig.get()).log(infraction)
         return CommandResponse.success()
