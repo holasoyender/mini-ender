@@ -102,7 +102,7 @@ class EventLogger(
                 "```${
                     if (message.contentDisplay.length > 1024) message.contentDisplay.substring(
                         0,
-                        1024
+                        1000
                     ) else message.contentDisplay
                 }```",
                 false
@@ -112,7 +112,7 @@ class EventLogger(
                 "```${
                     if (event.message.contentDisplay.length > 1024) event.message.contentDisplay.substring(
                         0,
-                        1024
+                        1000
                     ) else event.message.contentDisplay
                 }```",
                 false
