@@ -28,7 +28,7 @@ dependencies {
     implementation("io.github.cdimascio:dotenv-kotlin:6.4.1")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.10")
     implementation("org.openjdk.nashorn:nashorn-core:15.4")
-    implementation("org.json:json:20220924")
+    implementation("org.json:json:20230227")
 
     implementation("com.zaxxer:HikariCP:5.0.1")
     implementation("org.postgresql:postgresql:42.5.4")
