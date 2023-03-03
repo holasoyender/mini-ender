@@ -1,6 +1,6 @@
 package events
 
-//import cache.MessageCache
+import cache.MessageCache
 import commandManager
 import config.DefaultConfig
 import database.schema.Guild
@@ -42,7 +42,7 @@ class MessageHandler: ListenerAdapter() {
 
         if (event.isFromGuild) {
 
-            //MessageCache.addMessage(message)
+            MessageCache.addMessage(message)
 
             if (
                 !guild.antiLinksIgnoredChannels.contains(message.channel.id) &&
