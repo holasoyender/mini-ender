@@ -31,6 +31,7 @@ class MessageHandler: ListenerAdapter() {
 
         if (author.isBot) return
         if (message.isWebhookMessage) return
+        //if(ChannelType.VOICE == event.channelType) return
         val guild = if (event.isFromGuild) Guild.get(event.guild.id) ?: DefaultConfig.get() else DefaultConfig.get()
 
         val args = content.slice(guild.prefix.length until content.length).split(" ")
@@ -203,6 +204,9 @@ class MessageHandler: ListenerAdapter() {
     }
 
     override fun onMessageUpdate(event: MessageUpdateEvent) {
+
+        if(event.author.isBot) return
+
         if (event.isFromGuild)
             EventLogger(event.guild, Guild.get(event.guild.id) ?: DefaultConfig.get()).log(event)
 

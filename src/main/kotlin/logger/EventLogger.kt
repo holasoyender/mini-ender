@@ -65,40 +65,63 @@ class EventLogger(
 
     fun log(event: MessageDeleteEvent) {
 
-        val message = MessageCache.getMessage(event.channel.id, event.messageId)
-        if (message != null) {
+        val message = MessageCache.getMessage(event.channel.id, event.messageId) ?: return
+        val embed = EmbedBuilder()
+            .setColor(Color.decode("#FEE75C"))
+            .setAuthor("${message.authorTag} - Mensaje eliminado", null, message.authorAvatar)
+            .addField("Autor", "<@!${message.authorId}> (`${message.authorId}`)", true)
+            .addField("Canal", "<#${message.channelId}> (`${message.channelId}`)", true)
+            .addField(
+                "Fecha",
+                "${TimeFormat.DEFAULT.format(System.currentTimeMillis())} (${TimeFormat.RELATIVE.format(System.currentTimeMillis())})",
+                true
+            )
+            .setDescription("Contenido del mensaje: ```${message.contentDisplay}```")
+            .setThumbnail("https://cdn.discordapp.com/attachments/839400943517827092/1045076556093071370/trash.png")
 
-            val embed = EmbedBuilder()
-                .setColor(Color.decode("#FEE75C"))
-                .setAuthor("${message.author.asTag} - Mensaje eliminado", null, message.author.effectiveAvatarUrl)
-                .addField("Autor", "${message.author.asMention} (`${message.author.id}`)", true)
-                .addField("Canal", "${message.channel.asMention} (`${message.channel.id}`)", true)
-                .addField("Fecha", "${TimeFormat.DEFAULT.format(System.currentTimeMillis())} (${TimeFormat.RELATIVE.format(System.currentTimeMillis())})", true)
-                .setDescription("Contenido del mensaje: ```${message.contentDisplay}```")
-                .setThumbnail("https://cdn.discordapp.com/attachments/839400943517827092/1045076556093071370/trash.png")
+        log(embed)
+        MessageCache.removeMessage(event.channel.id, event.messageId)
 
-            log(embed)
-            MessageCache.removeMessage(event.channel.id, event.messageId)
-        }
     }
 
     fun log(event: MessageUpdateEvent) {
 
-        val message = MessageCache.getMessage(event.channel.id, event.messageId)
-        if (message != null) {
-            val embed = EmbedBuilder()
-                .setColor(Color.decode("#FEE75C"))
-                .setAuthor("${message.author.asTag} - Mensaje editado", null, message.author.effectiveAvatarUrl)
-                .addField("Autor", "${message.author.asMention} (`${message.author.id}`)", true)
-                .addField("Canal", "${message.channel.asMention} (`${message.channel.id}`)", true)
-                .addField("Fecha", "${TimeFormat.DEFAULT.format(System.currentTimeMillis())} (${TimeFormat.RELATIVE.format(System.currentTimeMillis())})", true)
-                .addField("Antes", "```${if(message.contentDisplay.length > 1024) message.contentDisplay.substring(0, 1024) else message.contentDisplay}```", false)
-                .addField("Después", "```${if(event.message.contentDisplay.length > 1024) event.message.contentDisplay.substring(0, 1024) else event.message.contentDisplay}```", false)
-                .setThumbnail("https://cdn.discordapp.com/attachments/839400943517827092/1045076638532108419/emoji.png")
+        val message = MessageCache.getMessage(event.channel.id, event.messageId) ?: return
+        val embed = EmbedBuilder()
+            .setColor(Color.decode("#FEE75C"))
+            .setAuthor("${message.authorTag} - Mensaje editado", null, message.authorAvatar)
+            .addField("Autor", "<@!${message.authorId}> (`${message.authorId}`)", true)
+            .addField("Canal", "<#${message.channelId}> (`${message.channelId}`)", true)
+            .addField(
+                "Fecha",
+                "${TimeFormat.DEFAULT.format(System.currentTimeMillis())} (${TimeFormat.RELATIVE.format(System.currentTimeMillis())})",
+                true
+            )
+            .addField(
+                "Antes",
+                "```${
+                    if (message.contentDisplay.length > 1024) message.contentDisplay.substring(
+                        0,
+                        1000
+                    ) else message.contentDisplay
+                }```",
+                false
+            )
+            .addField(
+                "Después",
+                "```${
+                    if (event.message.contentDisplay.length > 1024) event.message.contentDisplay.substring(
+                        0,
+                        1000
+                    ) else event.message.contentDisplay
+                }```",
+                false
+            )
+            .setThumbnail("https://cdn.discordapp.com/attachments/839400943517827092/1045076638532108419/emoji.png")
 
-            log(embed)
-            MessageCache.editMessage(event.channel.id, event.messageId, event.message)
-        }
+        log(embed)
+        MessageCache.editMessage(event.channel.id, event.messageId, event.message)
+
     }
 
     fun log(event: GuildBanEvent) {

@@ -67,37 +67,45 @@ class Warn: Command {
             date = System.currentTimeMillis()
         )
 
-        infraction.save()
-        if (isNoMd) {
-            event.message.reply("${Emojis.success}  Has avisado al usuario ${user.asMention} con la razón: `$reason`")
-                .queue()
-        } else {
-            if (config.sanctionMessage.isNotEmpty() && config.sanctionMessage.isNotBlank()) {
-                user.openPrivateChannel().queue({ channel ->
-                    channel.sendMessage(
-                        Formatter.formatSanctionMessage(
-                            config.sanctionMessage,
-                            infraction,
-                            event.guild
-                        )
-                    )
-                        .queue(
-                            {
-                                event.message.reply("${Emojis.success}  Has avisado al usuario ${user.asMention} con la razón: `$reason`")
-                                    .queue()
-                            }, {
-                                event.message.reply("${Emojis.success}  Has avisado al usuario ${user.asMention} con la razón: `$reason` pero no ha podido ser notificado")
-                                    .queue()
-                            })
-                }, {
-                    event.message.reply("${Emojis.success}  Has avisado al usuario ${user.asMention} con la razón: `$reason` pero no ha podido ser notificado")
-                        .queue()
-                })
-            } else {
-                event.message.reply("${Emojis.success}  Has avisado al usuario ${user.asMention} con la razón: `$reason`")
+        event.message.reply("${Emojis.loading}  Aplicando sanción...").queue({ message ->
+
+            infraction.save()
+            if (isNoMd) {
+                message.editMessage("${Emojis.success}  Has avisado al usuario ${user.asMention} con la razón: `$reason`")
+                    .setAllowedMentions(emptyList())
                     .queue()
+            } else {
+                if (config.sanctionMessage.isNotEmpty() && config.sanctionMessage.isNotBlank()) {
+                    user.openPrivateChannel().queue({ channel ->
+                        channel.sendMessage(
+                            Formatter.formatSanctionMessage(
+                                config.sanctionMessage,
+                                infraction,
+                                event.guild
+                            )
+                        )
+                            .queue(
+                                {
+                                    message.editMessage("${Emojis.success}  Has avisado al usuario ${user.asMention} con la razón: `$reason`")
+                                        .setAllowedMentions(emptyList())
+                                        .queue()
+                                }, {
+                                    message.editMessage("${Emojis.success}  Has avisado al usuario ${user.asMention} con la razón: `$reason` pero no ha podido ser notificado")
+                                        .setAllowedMentions(emptyList())
+                                        .queue()
+                                })
+                    }, {
+                        message.editMessage("${Emojis.success}  Has avisado al usuario ${user.asMention} con la razón: `$reason` pero no ha podido ser notificado")
+                            .setAllowedMentions(emptyList())
+                            .queue()
+                    })
+                } else {
+                    message.editMessage("${Emojis.success}  Has avisado al usuario ${user.asMention} con la razón: `$reason`")
+                        .setAllowedMentions(emptyList())
+                        .queue()
+                }
             }
-        }
+        }, {})
 
         InfractionLogger(event.guild, Guild.get(event.guild.id) ?: DefaultConfig.get()).log(infraction)
         return CommandResponse.success()

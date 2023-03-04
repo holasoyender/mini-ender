@@ -48,8 +48,10 @@ object TwitchSubscriptionManager {
         return try {
             val response = httpClient.newCall(request).execute()
 
-            if(!response.isSuccessful)
+            if(!response.isSuccessful) {
+                response.body!!.close()
                 return Pair("", -1)
+            }
 
             val body = response.body!!.string()
             response.body!!.close()
@@ -84,8 +86,10 @@ object TwitchSubscriptionManager {
         return try {
             val response = httpClient.newCall(request).execute()
 
-            if(!response.isSuccessful)
+            if(!response.isSuccessful) {
+                response.body!!.close()
                 return null
+            }
 
             val body = response.body!!.string()
             response.body!!.close()
@@ -129,8 +133,10 @@ object TwitchSubscriptionManager {
         return try {
             val response = httpClient.newCall(request).execute()
 
-            if(!response.isSuccessful)
+            if(!response.isSuccessful) {
+                response.body!!.close()
                 return emptyList()
+            }
 
             val body = response.body!!.string()
             response.body!!.close()
@@ -174,8 +180,10 @@ object TwitchSubscriptionManager {
         return try {
             val response = httpClient.newCall(request).execute()
 
-            if(!response.isSuccessful)
+            if(!response.isSuccessful) {
+                response.body!!.close()
                 return null
+            }
 
             val body = response.body!!.string()
             response.body!!.close()
@@ -220,11 +228,12 @@ object TwitchSubscriptionManager {
         return try {
             val response = httpClient.newCall(request).execute()
 
-            if(!response.isSuccessful)
+            if(!response.isSuccessful) {
+                response.body!!.close()
                 return emptyList()
+            }
 
             val body = response.body!!.string()
-
             response.body!!.close()
 
             val json = JSONObject(body)

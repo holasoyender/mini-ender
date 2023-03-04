@@ -3,12 +3,12 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.8.0"
+    kotlin("jvm") version "1.8.10"
     application
-    id("com.github.johnrengelman.shadow") version "7.1.2"
-    id("org.springframework.boot") version "3.0.2"
+    id("com.github.johnrengelman.shadow") version "8.1.0"
+    id("org.springframework.boot") version "3.0.3"
     id("io.spring.dependency-management") version "1.1.0"
-    kotlin("plugin.spring") version "1.8.0"
+    kotlin("plugin.spring") version "1.8.10"
 }
 
 group = "miniender"
@@ -20,18 +20,18 @@ repositories {
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-web:3.0.2")
+    implementation("org.springframework.boot:spring-boot-starter-web:3.0.3")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
 
-    implementation("net.dv8tion:JDA:5.0.0-beta.3")
+    implementation("net.dv8tion:JDA:5.0.0-beta.5")
     //implementation("ch.qos.logback:logback-classic:1.4.4")
     implementation("io.github.cdimascio:dotenv-kotlin:6.4.1")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.0")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.10")
     implementation("org.openjdk.nashorn:nashorn-core:15.4")
-    implementation("org.json:json:20220924")
+    implementation("org.json:json:20230227")
 
     implementation("com.zaxxer:HikariCP:5.0.1")
-    implementation("org.postgresql:postgresql:42.5.1")
+    implementation("org.postgresql:postgresql:42.5.4")
     implementation("redis.clients:jedis:4.3.1")
 
     implementation(kotlin("reflect"))
