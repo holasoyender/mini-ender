@@ -6,15 +6,12 @@ import config.DefaultConfig
 import database.schema.Guild
 import logger.EventLogger
 import managers.GlobalCommandManager
-import net.dv8tion.jda.api.EmbedBuilder
-//import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.events.message.MessageUpdateEvent
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
-import net.dv8tion.jda.api.interactions.components.buttons.Button
 import net.dv8tion.jda.internal.entities.emoji.CustomEmojiImpl
 import org.json.JSONArray
 import plugins.antilink.LinkManager
@@ -72,7 +69,7 @@ class MessageHandler: ListenerAdapter() {
 
         val prefix = guild.prefix
 
-        if (content == "<@!${event.jda.selfUser.id}>" || content == "<@${event.jda.selfUser.id}>") {
+        /*if (content == "<@!${event.jda.selfUser.id}>" || content == "<@${event.jda.selfUser.id}>") {
             val mentioned = message.mentions.getMentions().first()
             if (mentioned.id == event.jda.selfUser.id) {
                 val embed = EmbedBuilder()
@@ -109,7 +106,7 @@ class MessageHandler: ListenerAdapter() {
                 ).queue()
                 return
             }
-        }
+        }*/
 
         if (!content.startsWith(prefix)) {
 
