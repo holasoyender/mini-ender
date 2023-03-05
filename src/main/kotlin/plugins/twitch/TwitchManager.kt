@@ -7,12 +7,19 @@ import jda
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.interactions.components.buttons.Button
+import net.dv8tion.jda.api.utils.FileUpload
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
 import plugins.warnings.WarningsManager
 import java.awt.Color
+import java.awt.image.BufferedImage
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import java.io.InputStream
+import java.net.URL
 import java.time.Instant
+import javax.imageio.ImageIO
 
 object TwitchManager {
 
@@ -76,6 +83,24 @@ object TwitchManager {
                                     event.event.broadcasterUserName.ifBlank { "Sin nombre" }
                                 } else streamer?.displayName
 
+                                val thumbnailURL = (stream?.thumbnailUrl?.replace("{width}", "1920")
+                                    ?.replace("{height}", "1080")
+                                    ?: "https://static-cdn.jtvnw.net/ttv-static/404_preview-1920x1080.jpg"
+                                        ).replace("jpg", "png")
+
+                                val thumbnail: InputStream? = try {
+                                    val url = URL(thumbnailURL)
+                                    val image: BufferedImage = ImageIO.read(url)
+
+                                    val os = ByteArrayOutputStream()
+
+                                    ImageIO.write(image, "png", os)
+
+                                    ByteArrayInputStream(os.toByteArray())
+                                } catch (e: Exception) {
+                                    null
+                                }
+
                                 channel.sendMessage(message).addEmbeds(
                                     EmbedBuilder()
                                         .setColor(Color.decode("#9146FF"))
@@ -88,10 +113,11 @@ object TwitchManager {
                                             streamer?.profileImageUrl ?: guild.iconUrl ?: jda!!.selfUser.avatarUrl
                                         )
                                         .setImage(
-                                            (stream?.thumbnailUrl?.replace("{width}", "1920")
-                                                ?.replace("{height}", "1080")
-                                                ?: "https://static-cdn.jtvnw.net/ttv-static/404_preview-1920x1080.jpg"
-                                                    ).replace("jpg", "png")
+                                            if(thumbnail != null) {
+                                                "attachment://thumbnail.png"
+                                            } else {
+                                                thumbnailURL
+                                            }
                                         )
                                         .setTitle(
                                             if(stream?.title?.isBlank() == true) "Sin título" else stream?.title ?: "Sin título",
@@ -105,7 +131,11 @@ object TwitchManager {
                                         "https://twitch.tv/${event.event.broadcasterUserLogin}",
                                         "Ir al directo"
                                     )
-                                ).queue()
+                                ).apply {
+                                    if(thumbnail != null) {
+                                        this.setFiles(FileUpload.fromData(thumbnail, "thumbnail.png",))
+                                    }
+                                }.queue()
 
                             } else {
                                 WarningsManager.createWarning(
