@@ -48,6 +48,9 @@ class GuildConfigValidator(
         val (messages, messagesError) = messages()
         if (!messages) return Pair(false, messagesError)
 
+        val (suggestions, suggestionsError) = suggestions()
+        if (!suggestions) return Pair(false, suggestionsError)
+
         return Pair(true, "")
     }
 
@@ -201,6 +204,18 @@ class GuildConfigValidator(
         if(messages["anti_links_new_link"] !is String) return Pair(false, "El mensaje de nuevo link no está bien definido")
         if(messages["anti_links_under_revision"] !is String) return Pair(false, "El mensaje de links bajo revisión no está bien definido")
         if(messages["anti_links_sanction"] !is String) return Pair(false, "El mensaje de sanción por links no está bien definido")
+
+        return Pair(true, "")
+    }
+
+    private fun suggestions(): Pair<Boolean, String> {
+        val suggestions = config["suggestions"] ?: return Pair(false, "El modulo de sugerencias no está definido")
+        if(suggestions !is Map<*, *>) return Pair(false, "El modulo de sugerencias no está bien definido")
+
+        if(suggestions["channel_id"] !is String) return Pair(false, "El canal de sugerencias no está bien definido")
+        if(!isIdOrEmpty(suggestions["channel_id"] as String)) return Pair(false, "El canal de sugerencias no es un ID válido")
+        if((suggestions["channel_id"] as String).isNotEmpty() && !isValidChannel(suggestions["channel_id"] as String)) return Pair(false, "El canal de sugerencias no existe en el servidor")
+        if(suggestions["create_thread"] !is Boolean) return Pair(false, "El valor de create_thread de sugerencias no está bien definido")
 
         return Pair(true, "")
     }

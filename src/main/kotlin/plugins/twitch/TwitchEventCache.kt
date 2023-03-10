@@ -1,6 +1,4 @@
-package cache
-
-import plugins.twitch.TwitchEventBody
+package plugins.twitch
 
 object TwitchEventCache {
 

@@ -29,7 +29,8 @@ class Eval: Command {
             script.put("member", event.member)
             script.put("config", config)
         }
-        script.put("msgcache", cache.MessageCache)
+        if(database.Redis.connection != null)
+            script.put("redis", database.Redis)
 
         try {
             val res = script.eval("with (imports) { $toEval }")

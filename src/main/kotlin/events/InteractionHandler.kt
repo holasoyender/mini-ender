@@ -12,7 +12,6 @@ import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent
 import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
-import net.dv8tion.jda.api.interactions.components.ActionRow
 import net.dv8tion.jda.api.interactions.components.selections.SelectOption
 import net.dv8tion.jda.api.interactions.components.selections.StringSelectMenu
 import net.dv8tion.jda.api.interactions.components.text.TextInput
@@ -23,6 +22,7 @@ import net.dv8tion.jda.internal.entities.emoji.CustomEmojiImpl
 import plugins.antilink.LinksInteractions
 import plugins.giveaway.GiveawayInteractions
 import plugins.modchannel.ModInteractions
+import plugins.suggest.SuggestionButton
 import slashCommandManager
 import utils.Constants.OWNER_IDS
 import utils.Emojis
@@ -192,7 +192,7 @@ class InteractionHandler: ListenerAdapter() {
                             .build()
 
                         val modal: Modal = Modal.create("error", "Reportar un error - KenaBot")
-                            .addActionRows(ActionRow.of(body))
+                            .addActionRow(body)
                             .build()
 
                         event.replyModal(modal).queue()
@@ -291,6 +291,26 @@ class InteractionHandler: ListenerAdapter() {
                             .queue()
 
                     }
+                    "suggest" -> {
+
+                        val suggestion = try { event.message.contentRaw.substring(event.message.contentRaw.indexOf("`") + 1, event.message.contentRaw.lastIndexOf("`")) } catch (e: Exception) { "" }
+
+                        event.replyModal(
+                            Modal.create("cmd::suggest:${event.user.id}", "Crear sugerencia")
+                                .addActionRow(
+                                    TextInput.create("body", "Sugerencia", TextInputStyle.PARAGRAPH)
+                                        .setPlaceholder("Escribe tu sugerencia aquí...")
+                                        .setRequired(true)
+                                        .setMinLength(10)
+                                        .setMaxLength(1000)
+                                        .let {
+                                            if(suggestion.isNotBlank()) it.setValue(suggestion) else it
+                                        }
+                                        .build()
+                                ).build()
+                        ).queue()
+
+                    }
                     "cancel" -> {
                         event.editMessage("${Emojis.warning}  Operación cancelada").setEmbeds().setComponents().queue()
                     }
@@ -302,6 +322,23 @@ class InteractionHandler: ListenerAdapter() {
                     "acknowledge" -> ErrorReporter.acknowledgeError(event)
                     "solve" -> ErrorReporter.solveError(event)
                     "delete" -> ErrorReporter.deleteError(event)
+                }
+            }
+            "suggestion" -> {
+
+                when (command) {
+                    "accept" -> SuggestionButton.accept(event)
+                    "deny" -> SuggestionButton.deny(event)
+                    "end" -> {
+                        if (event.member?.hasPermission(Permission.MANAGE_SERVER) == false && !OWNER_IDS.contains(event.user.id)) {
+                            event.reply("No tienes permisos para finalizar la sugerencia").setEphemeral(true).queue()
+                            return
+                        }
+
+                        SuggestionButton.end(event)
+                        event.reply("${Emojis.success}  La sugerencia ha sido finalizada").setEphemeral(true).queue()
+                    }
+                    else -> event.reply("Comando no encontrado").setEphemeral(true).queue()
                 }
             }
         }

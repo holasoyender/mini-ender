@@ -1,6 +1,5 @@
 package plugins.twitch
 
-import cache.TwitchEventCache
 import database.schema.Guild
 import enums.Severity
 import jda
