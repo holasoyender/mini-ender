@@ -65,7 +65,7 @@ class Message(
     }
 
     companion object {
-        const val databaseName = "messages"
+        private const val databaseName = "messages"
 
         fun get(id: String): Message? {
             Redis.connection.use { connection ->

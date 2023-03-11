@@ -45,6 +45,11 @@ twitch:
     live_open_message: "" # Mensaje que se enviará al canal de texto abierto al iniciar el directo, puedes ver las variables en https://miniender.kenabot.xyz
     live_close_message: "" # Mensaje que se enviará al canal de texto abierto al finalizar el directo, puedes ver las variables en https://miniender.kenabot.xyz
 
+youtube:
+    channel: "" # ID del canal de YouTube al que suscribirse, dejar en blanco para desactivar. Si no sabes como sacar la ID del canal, puedes usar https://www.streamweasels.com/tools/youtube-channel-id-and-user-id-convertor/ (no afiliado)
+    announce_channel_id: "" # ID del canal de texto donde se notificará a los usuarios de la publicación de un vídeo
+    message: "" # Mensaje que se enviará al canal de texto al publicar un vídeo, puedes ver las variables en https://miniender.kenabot.xyz
+
 messages:
   sanction: "<:idle:983837896287092796>  Has sido {sanction} en el servidor **{server}** con la razón: `{reason}`" # Mensaje que se enviará al usuario al ser sancionado, si se deja vacío nunca se mandará un MD al usuario, puedes ver las variables en https://miniender.kenabot.xyz
   anti_links_new_link: "Tu mensaje del canal **{channel}** ha sido eliminado debido a que el link que has enviado no se encuentra en la lista de links permitidos\n\nLos moderadores del servidor revisarán este enlace y, en caso de ser aprobado podrás enviarlo otra vez.\n`Si crees que esto es un error, por favor, contacta con un el soporte del servidor.`\n\n```{message}```" # Mensaje que se enviará al usuario al enviar un enlace desconocido, si se deja vacío nunca se mandará un MD al usuario, puedes ver las variables en https://miniender.kenabot.xyz

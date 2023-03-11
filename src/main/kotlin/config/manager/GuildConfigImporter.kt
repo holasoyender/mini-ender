@@ -77,6 +77,10 @@ object GuildConfigImporter {
                     twitchOpenLiveMessage = (config["twitch"] as Map<*, *>)["live_open_message"] as String,
                     twitchCloseLiveMessage = (config["twitch"] as Map<*, *>)["live_close_message"] as String,
 
+                    youtubeChannel = (config["youtube"] as Map<*, *>)["channel"] as String,
+                    youtubeAnnounceChannelId = (config["youtube"] as Map<*, *>)["announce_channel_id"] as String,
+                    youtubeAnnounceMessage = (config["youtube"] as Map<*, *>)["message"] as String,
+
                     sanctionMessage = (config["messages"] as Map<*, *>)["sanction"] as String,
                     antiLinksNewLinkMessage = (config["messages"] as Map<*, *>)["anti_links_new_link"] as String,
                     antiLinksUnderRevisionMessage = (config["messages"] as Map<*, *>)["anti_links_under_revision"] as String,
@@ -145,6 +149,10 @@ object GuildConfigImporter {
                 guildConfig.twitchLiveChannelId = (config["twitch"] as Map<*, *>)["live_channel_id"] as String
                 guildConfig.twitchOpenLiveMessage = (config["twitch"] as Map<*, *>)["live_open_message"] as String
                 guildConfig.twitchCloseLiveMessage = (config["twitch"] as Map<*, *>)["live_close_message"] as String
+
+                guildConfig.youtubeChannel = (config["youtube"] as Map<*, *>)["channel"] as String
+                guildConfig.youtubeAnnounceChannelId = (config["youtube"] as Map<*, *>)["announce_channel_id"] as String
+                guildConfig.youtubeAnnounceMessage = (config["youtube"] as Map<*, *>)["message"] as String
 
                 guildConfig.sanctionMessage = (config["messages"] as Map<*, *>)["sanction"] as String
                 guildConfig.antiLinksNewLinkMessage = (config["messages"] as Map<*, *>)["anti_links_new_link"] as String
