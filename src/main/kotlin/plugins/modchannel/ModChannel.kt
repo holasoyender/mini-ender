@@ -40,7 +40,7 @@ object ModChannel {
                 continue
             }
 
-            if (Time.ms(c) > 0 && duration == null) {
+            if (!isNumber(c) && Time.ms(c) > 0 && duration == null) {
                 duration = c
                 continue
             }
@@ -59,6 +59,8 @@ object ModChannel {
 
     private fun isId(input: String): Boolean =
         input.matches(Regex("[0-9]{18}")) || input.matches(Regex("[0-9]{17}")) || input.matches(Regex("[0-9]{19}"))
+
+    private fun isNumber(input: String): Boolean = input.matches(Regex("[0-9]+"))
 
     fun doAction(parsedMessage: ParsedMessage, message: Message) {
 
