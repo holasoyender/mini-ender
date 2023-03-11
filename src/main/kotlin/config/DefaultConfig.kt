@@ -38,6 +38,10 @@ object DefaultConfig {
             twitchOpenLiveMessage = "",
             twitchCloseLiveMessage = "",
 
+            youtubeChannel = "",
+            youtubeAnnounceChannelId = "",
+            youtubeAnnounceMessage = "",
+
             sanctionMessage = "",
             antiLinksNewLinkMessage = "",
             antiLinksSanctionMessage = "",

@@ -3,6 +3,7 @@ package services
 import net.dv8tion.jda.api.sharding.ShardManager
 import plugins.twitch.TwitchManager
 import plugins.twitch.TwitchSubscriptionManager
+import plugins.youtube.YouTubeManager
 
 //import config.Env
 
@@ -20,6 +21,7 @@ object ServiceManager {
         Thread {
             Thread.sleep(1000 * 5)
             TwitchManager.doChecks(true)
+            YouTubeManager.start()
         }.start()
 
     }

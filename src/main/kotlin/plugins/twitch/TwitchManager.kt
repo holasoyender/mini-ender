@@ -145,7 +145,7 @@ object TwitchManager {
                             }
                         }
                         if (liveChannelId.isNotEmpty()) {
-                            val channel = guild.getTextChannelById(liveChannelId)
+                            val channel = guild.getTextChannelById(liveChannelId) ?: guild.getNewsChannelById(liveChannelId)
 
                             if (channel != null) {
 
@@ -212,7 +212,7 @@ object TwitchManager {
                     val liveMessage = it.twitchCloseLiveMessage
 
                     if (guild != null) {
-                        val channel = guild.getTextChannelById(liveChannelId)
+                        val channel = guild.getTextChannelById(liveChannelId) ?: guild.getNewsChannelById(liveChannelId)
 
                         if (channel != null) {
 

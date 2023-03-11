@@ -42,6 +42,9 @@ class GuildConfigValidator(
         val (twitch, twitchError) = twitch()
         if (!twitch) return Pair(false, twitchError)
 
+        val (youtube, youtubeError) = youtube()
+        if (!youtube) return Pair(false, youtubeError)
+
         val (customCommands, customCommandsError) = customCommands()
         if (!customCommands) return Pair(false, customCommandsError)
 
@@ -156,7 +159,7 @@ class GuildConfigValidator(
         return Pair(true, "")
     }
 
-    fun twitch(): Pair<Boolean, String> {
+    private fun twitch(): Pair<Boolean, String> {
         val twitch = config["twitch"] ?: return Pair(false, "El modulo de twitch no está definido")
         if(twitch !is Map<*, *>) return Pair(false, "El modulo de twitch no está bien definido")
         if(twitch["channel"] !is String) return Pair(false, "El canal de twitch del streamer no está bien definido")
@@ -169,6 +172,18 @@ class GuildConfigValidator(
         if((twitch["live_channel_id"] as String).isNotEmpty() && !isValidChannel(twitch["live_channel_id"] as String)) return Pair(false, "El canal de live de twitch no existe en el servidor")
         if(twitch["live_open_message"] !is String) return Pair(false, "El mensaje de live_open de twitch no está bien definido")
         if(twitch["live_close_message"] !is String) return Pair(false, "El mensaje de live_close de twitch no está bien definido")
+
+        return Pair(true, "")
+    }
+
+    private fun youtube(): Pair<Boolean, String> {
+        val youtube = config["youtube"] ?: return Pair(false, "El modulo de youtube no está definido")
+        if(youtube !is Map<*, *>) return Pair(false, "El modulo de youtube no está bien definido")
+        if(youtube["channel"] !is String) return Pair(false, "El canal de youtube no está bien definido")
+        if(youtube["announce_channel_id"] !is String) return Pair(false, "El canal de anuncios de youtube no está bien definido")
+        if(!isIdOrEmpty(youtube["announce_channel_id"] as String)) return Pair(false, "El canal de anuncios de youtube no es un ID válido")
+        if((youtube["announce_channel_id"] as String).isNotEmpty() && !isValidChannel(youtube["announce_channel_id"] as String)) return Pair(false, "El canal de anuncios de youtube no existe en el servidor")
+        if(youtube["message"] !is String) return Pair(false, "El mensaje de anuncios de youtube no está bien definido")
 
         return Pair(true, "")
     }
