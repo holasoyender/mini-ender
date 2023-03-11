@@ -3,8 +3,8 @@ package database.schema
 import com.google.gson.Gson
 import database.Redis
 import interfaces.Schema
-import jda
 import org.json.JSONObject
+import java.sql.ResultSet
 
 class Guild(
     id: String,
@@ -44,6 +44,9 @@ class Guild(
     antiLinksNewLinkMessage: String,
     antiLinksUnderRevisionMessage: String,
     antiLinksSanctionMessage: String,
+
+    suggestChannel: String,
+    suggestCreateThread: Boolean,
 
     raw: String
 ): Schema {
@@ -85,6 +88,9 @@ class Guild(
     var antiLinksNewLinkMessage: String
     var antiLinksUnderRevisionMessage: String
     var antiLinksSanctionMessage: String
+
+    var suggestChannel: String
+    var suggestCreateThread: Boolean
 
     var raw: String
 
@@ -131,6 +137,9 @@ class Guild(
         this.antiLinksUnderRevisionMessage = antiLinksUnderRevisionMessage
         this.antiLinksSanctionMessage = antiLinksSanctionMessage
 
+        this.suggestChannel = suggestChannel
+        this.suggestCreateThread = suggestCreateThread
+
         this.raw = raw
 
         if (exists()) {
@@ -152,7 +161,7 @@ class Guild(
 
         if (exists()) {
             database.Postgres.dataSource?.connection.use { connection ->
-                val statement = connection!!.prepareStatement("UPDATE guilds SET prefix = ?, welcome_role_id = ?, welcome_channel_id = ?, welcome_message = ?, mute_role_id = ?, moderation_silent = ?, moderation_channel_id = ?, permissions = ?, logs_channel_id = ?, moderation_logs_channel_id = ?, anti_links_enabled = ?, anti_links_allowed_links = ?, anti_links_channel_id = ?, anti_links_ignored_roles = ?, anti_links_ignored_channels = ?, anti_phishing_enabled = ?, custom_commands = ?, twitch_channel = ?, twitch_announce_channel_id = ?, twitch_announce_message = ?, twitch_live_channel_id = ?, twitch_open_live_message = ?, twitch_close_live_message = ?, sanction_message = ?, anti_links_new_link_message = ?, anti_links_under_revision_message = ?, anti_links_sanction_message = ?, raw = ? WHERE id = ?")
+                val statement = connection!!.prepareStatement("UPDATE guilds SET prefix = ?, welcome_role_id = ?, welcome_channel_id = ?, welcome_message = ?, mute_role_id = ?, moderation_silent = ?, moderation_channel_id = ?, permissions = ?, logs_channel_id = ?, moderation_logs_channel_id = ?, anti_links_enabled = ?, anti_links_allowed_links = ?, anti_links_channel_id = ?, anti_links_ignored_roles = ?, anti_links_ignored_channels = ?, anti_phishing_enabled = ?, custom_commands = ?, twitch_channel = ?, twitch_announce_channel_id = ?, twitch_announce_message = ?, twitch_live_channel_id = ?, twitch_open_live_message = ?, twitch_close_live_message = ?, sanction_message = ?, anti_links_new_link_message = ?, anti_links_under_revision_message = ?, anti_links_sanction_message = ?, suggest_channel = ?, suggest_create_thread = ?, raw = ? WHERE id = ?")
                 statement.setString(1, prefix)
 
                 statement.setString(2, welcomeRoleId)
@@ -194,16 +203,18 @@ class Guild(
                 statement.setString(26, antiLinksUnderRevisionMessage)
                 statement.setString(27, antiLinksSanctionMessage)
 
-                statement.setString(28, raw)
+                statement.setString(28, suggestChannel)
+                statement.setBoolean(29, suggestCreateThread)
 
-                statement.setString(29, id)
+                statement.setString(30, raw)
+                statement.setString(31, id)
 
                 statement.execute()
             }
         } else {
             database.Postgres.dataSource?.connection.use { connection ->
                 val statement =
-                    connection!!.prepareStatement("INSERT INTO guilds (id, prefix, welcome_role_id, welcome_channel_id, welcome_message, mute_role_id, moderation_silent, moderation_channel_id, permissions, logs_channel_id, moderation_logs_channel_id, anti_links_enabled, anti_links_allowed_links, anti_links_channel_id, anti_links_ignored_roles, anti_links_ignored_channels, anti_phishing_enabled, custom_commands, twitch_channel, twitch_announce_channel_id, twitch_announce_message, twitch_live_channel_id, twitch_open_live_message, twitch_close_live_message, sanction_message, anti_links_new_link_message, anti_links_under_revision_message, anti_links_sanction_message, raw) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+                    connection!!.prepareStatement("INSERT INTO guilds (id, prefix, welcome_role_id, welcome_channel_id, welcome_message, mute_role_id, moderation_silent, moderation_channel_id, permissions, logs_channel_id, moderation_logs_channel_id, anti_links_enabled, anti_links_allowed_links, anti_links_channel_id, anti_links_ignored_roles, anti_links_ignored_channels, anti_phishing_enabled, custom_commands, twitch_channel, twitch_announce_channel_id, twitch_announce_message, twitch_live_channel_id, twitch_open_live_message, twitch_close_live_message, sanction_message, anti_links_new_link_message, anti_links_under_revision_message, anti_links_sanction_message, suggest_channel, suggest_create_thread, raw) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
                 statement.setString(1, id)
                 statement.setString(2, prefix)
 
@@ -246,7 +257,10 @@ class Guild(
                 statement.setString(27, antiLinksUnderRevisionMessage)
                 statement.setString(28, antiLinksSanctionMessage)
 
-                statement.setString(29, raw)
+                statement.setString(29, suggestChannel)
+                statement.setBoolean(30, suggestCreateThread)
+
+                statement.setString(31, raw)
 
                 statement.execute()
             }
@@ -255,7 +269,7 @@ class Guild(
         isSaved = true
 
         if(Redis.usingRedis)
-            Redis.connection!!.setex("${jda!!.selfUser.id}:guilds:${id}", 3600, Gson().toJson(this))
+            Redis.connection!!.setex("guilds:${id}", 3600, Gson().toJson(this))
 
         return this
     }
@@ -323,6 +337,8 @@ class Guild(
                 anti_links_new_link_message TEXT NOT NULL,
                 anti_links_under_revision_message TEXT NOT NULL,
                 anti_links_sanction_message TEXT NOT NULL,
+                suggest_channel TEXT NOT NULL,
+                suggest_create_thread BOOLEAN NOT NULL,
                 raw TEXT NOT NULL
             );"""
                 )
@@ -335,7 +351,7 @@ class Guild(
 
             if (Redis.usingRedis)
                 if (!force) {
-                    val cache = Redis.connection!!.get("${jda!!.selfUser.id}:guilds:$id")
+                    val cache = Redis.connection!!.get("guilds:$id")
                     if (cache != null) {
                         return Gson().fromJson(cache, Guild::class.java)
                     }
@@ -347,58 +363,10 @@ class Guild(
                 val result = statement.executeQuery()
                 if (result.next()) {
 
-                    val config = Guild(
-                        result.getString("id"),
-                        result.getString("prefix"),
-
-                        result.getString("welcome_role_id"),
-                        result.getString("welcome_channel_id"),
-                        result.getString("welcome_message"),
-
-                        result.getString("mute_role_id"),
-
-                        result.getBoolean("moderation_silent"),
-                        result.getString("moderation_channel_id"),
-                        result.getObject("permissions").toString().let {
-                            val map = mutableMapOf<String, Int>()
-                            JSONObject(it).keys().forEach { key ->
-                                map[key] = JSONObject(it).getInt(key)
-                            }
-                            map
-                        },
-
-                        result.getString("logs_channel_id"),
-                        result.getString("moderation_logs_channel_id"),
-
-                        result.getBoolean("anti_links_enabled"),
-                        result.getArray("anti_links_allowed_links").array as Array<String>,
-                        result.getString("anti_links_channel_id"),
-                        result.getArray("anti_links_ignored_roles").array as Array<String>,
-                        result.getArray("anti_links_ignored_channels").array as Array<String>,
-                        result.getBoolean("anti_phishing_enabled"),
-
-                        //esta linea ha causado un daño permanente en mi cerebro
-                        (result.getArray("custom_commands")?.array as Array<String>?)?.map { JSONObject(it) }
-                            ?.toTypedArray() ?: arrayOf(),
-
-                        result.getString("twitch_channel"),
-                        result.getString("twitch_announce_channel_id"),
-                        result.getString("twitch_announce_message"),
-                        result.getString("twitch_live_channel_id"),
-                        result.getString("twitch_open_live_message"),
-                        result.getString("twitch_close_live_message"),
-
-                        result.getString("sanction_message"),
-                        result.getString("anti_links_new_link_message"),
-                        result.getString("anti_links_under_revision_message"),
-                        result.getString("anti_links_sanction_message"),
-
-                        result.getString("raw")
-
-                    )
+                    val config = formatGuild(result)
 
                     if (Redis.usingRedis)
-                        Redis.connection!!.setex("${jda!!.selfUser.id}:guilds:$id", 3600, Gson().toJson(config))
+                        Redis.connection!!.setex("guilds:$id", 3600, Gson().toJson(config))
                     return config
                 }
             }
@@ -413,55 +381,7 @@ class Guild(
 
                 val guilds = mutableListOf<Guild>()
                 while (result.next()) {
-                    guilds.add(
-                        Guild(
-                            result.getString("id"),
-                            result.getString("prefix"),
-
-                            result.getString("welcome_role_id"),
-                            result.getString("welcome_channel_id"),
-                            result.getString("welcome_message"),
-
-                            result.getString("mute_role_id"),
-
-                            result.getBoolean("moderation_silent"),
-                            result.getString("moderation_channel_id"),
-                            result.getObject("permissions").toString().let {
-                                val map = mutableMapOf<String, Int>()
-                                JSONObject(it).keys().forEach { key ->
-                                    map[key] = JSONObject(it).getInt(key)
-                                }
-                                map
-                            },
-
-                            result.getString("logs_channel_id"),
-                            result.getString("moderation_logs_channel_id"),
-
-                            result.getBoolean("anti_links_enabled"),
-                            result.getArray("anti_links_allowed_links").array as Array<String>,
-                            result.getString("anti_links_channel_id"),
-                            result.getArray("anti_links_ignored_roles").array as Array<String>,
-                            result.getArray("anti_links_ignored_channels").array as Array<String>,
-                            result.getBoolean("anti_phishing_enabled"),
-
-                            //esta linea ha causado un daño permanente en mi cerebro
-                            (result.getArray("custom_commands")?.array as Array<String>?)?.map { JSONObject(it) }?.toTypedArray() ?: arrayOf(),
-
-                            result.getString("twitch_channel"),
-                            result.getString("twitch_announce_channel_id"),
-                            result.getString("twitch_announce_message"),
-                            result.getString("twitch_live_channel_id"),
-                            result.getString("twitch_open_live_message"),
-                            result.getString("twitch_close_live_message"),
-
-                            result.getString("sanction_message"),
-                            result.getString("anti_links_new_link_message"),
-                            result.getString("anti_links_under_revision_message"),
-                            result.getString("anti_links_sanction_message"),
-
-                            result.getString("raw")
-                        )
-                    )
+                    guilds.add(formatGuild(result))
                 }
                 return guilds
             }
@@ -474,55 +394,7 @@ class Guild(
 
                 val guilds = mutableListOf<Guild>()
                 while (result.next()) {
-                    guilds.add(
-                        Guild(
-                            result.getString("id"),
-                            result.getString("prefix"),
-
-                            result.getString("welcome_role_id"),
-                            result.getString("welcome_channel_id"),
-                            result.getString("welcome_message"),
-
-                            result.getString("mute_role_id"),
-
-                            result.getBoolean("moderation_silent"),
-                            result.getString("moderation_channel_id"),
-                            result.getObject("permissions").toString().let {
-                                val map = mutableMapOf<String, Int>()
-                                JSONObject(it).keys().forEach { key ->
-                                    map[key] = JSONObject(it).getInt(key)
-                                }
-                                map
-                            },
-
-                            result.getString("logs_channel_id"),
-                            result.getString("moderation_logs_channel_id"),
-
-                            result.getBoolean("anti_links_enabled"),
-                            result.getArray("anti_links_allowed_links").array as Array<String>,
-                            result.getString("anti_links_channel_id"),
-                            result.getArray("anti_links_ignored_roles").array as Array<String>,
-                            result.getArray("anti_links_ignored_channels").array as Array<String>,
-                            result.getBoolean("anti_phishing_enabled"),
-
-                            //esta linea ha causado un daño permanente en mi cerebro
-                            (result.getArray("custom_commands")?.array as Array<String>?)?.map { JSONObject(it) }?.toTypedArray() ?: arrayOf(),
-
-                            result.getString("twitch_channel"),
-                            result.getString("twitch_announce_channel_id"),
-                            result.getString("twitch_announce_message"),
-                            result.getString("twitch_live_channel_id"),
-                            result.getString("twitch_open_live_message"),
-                            result.getString("twitch_close_live_message"),
-
-                            result.getString("sanction_message"),
-                            result.getString("anti_links_new_link_message"),
-                            result.getString("anti_links_under_revision_message"),
-                            result.getString("anti_links_sanction_message"),
-
-                            result.getString("raw")
-                        )
-                    )
+                    guilds.add(formatGuild(result))
                 }
                 return guilds
             }
@@ -536,58 +408,63 @@ class Guild(
 
                 val guilds = mutableListOf<Guild>()
                 while (result.next()) {
-                    guilds.add(
-                        Guild(
-                            result.getString("id"),
-                            result.getString("prefix"),
-
-                            result.getString("welcome_role_id"),
-                            result.getString("welcome_channel_id"),
-                            result.getString("welcome_message"),
-
-                            result.getString("mute_role_id"),
-
-                            result.getBoolean("moderation_silent"),
-                            result.getString("moderation_channel_id"),
-                            result.getObject("permissions").toString().let {
-                                val map = mutableMapOf<String, Int>()
-                                JSONObject(it).keys().forEach { key ->
-                                    map[key] = JSONObject(it).getInt(key)
-                                }
-                                map
-                            },
-
-                            result.getString("logs_channel_id"),
-                            result.getString("moderation_logs_channel_id"),
-
-                            result.getBoolean("anti_links_enabled"),
-                            result.getArray("anti_links_allowed_links").array as Array<String>,
-                            result.getString("anti_links_channel_id"),
-                            result.getArray("anti_links_ignored_roles").array as Array<String>,
-                            result.getArray("anti_links_ignored_channels").array as Array<String>,
-                            result.getBoolean("anti_phishing_enabled"),
-
-                            //esta linea ha causado un daño permanente en mi cerebro
-                            (result.getArray("custom_commands")?.array as Array<String>?)?.map { JSONObject(it) }?.toTypedArray() ?: arrayOf(),
-
-                            result.getString("twitch_channel"),
-                            result.getString("twitch_announce_channel_id"),
-                            result.getString("twitch_announce_message"),
-                            result.getString("twitch_live_channel_id"),
-                            result.getString("twitch_open_live_message"),
-                            result.getString("twitch_close_live_message"),
-
-                            result.getString("sanction_message"),
-                            result.getString("anti_links_new_link_message"),
-                            result.getString("anti_links_under_revision_message"),
-                            result.getString("anti_links_sanction_message"),
-
-                            result.getString("raw")
-                        )
-                    )
+                    guilds.add(formatGuild(result))
                 }
                 return guilds
             }
+        }
+
+        private fun formatGuild(result: ResultSet): Guild {
+            return Guild(
+                result.getString("id"),
+                result.getString("prefix"),
+
+                result.getString("welcome_role_id"),
+                result.getString("welcome_channel_id"),
+                result.getString("welcome_message"),
+
+                result.getString("mute_role_id"),
+
+                result.getBoolean("moderation_silent"),
+                result.getString("moderation_channel_id"),
+                result.getObject("permissions").toString().let {
+                    val map = mutableMapOf<String, Int>()
+                    JSONObject(it).keys().forEach { key ->
+                        map[key] = JSONObject(it).getInt(key)
+                    }
+                    map
+                },
+
+                result.getString("logs_channel_id"),
+                result.getString("moderation_logs_channel_id"),
+
+                result.getBoolean("anti_links_enabled"),
+                result.getArray("anti_links_allowed_links").array as Array<String>,
+                result.getString("anti_links_channel_id"),
+                result.getArray("anti_links_ignored_roles").array as Array<String>,
+                result.getArray("anti_links_ignored_channels").array as Array<String>,
+                result.getBoolean("anti_phishing_enabled"),
+
+                //esta linea ha causado un daño permanente en mi cerebro
+                (result.getArray("custom_commands")?.array as Array<String>?)?.map { JSONObject(it) }?.toTypedArray() ?: arrayOf(),
+
+                result.getString("twitch_channel"),
+                result.getString("twitch_announce_channel_id"),
+                result.getString("twitch_announce_message"),
+                result.getString("twitch_live_channel_id"),
+                result.getString("twitch_open_live_message"),
+                result.getString("twitch_close_live_message"),
+
+                result.getString("sanction_message"),
+                result.getString("anti_links_new_link_message"),
+                result.getString("anti_links_under_revision_message"),
+                result.getString("anti_links_sanction_message"),
+
+                result.getString("suggest_channel"),
+                result.getBoolean("suggest_create_thread"),
+
+                result.getString("raw")
+            )
         }
     }
 }

@@ -1,9 +1,10 @@
 package events
 
-import cache.MessageCache
 import commandManager
 import config.DefaultConfig
+import database.Redis
 import database.schema.Guild
+import database.schema.Message
 import logger.EventLogger
 import managers.GlobalCommandManager
 import net.dv8tion.jda.api.entities.emoji.Emoji
@@ -31,7 +32,6 @@ class MessageHandler: ListenerAdapter() {
 
         if (author.isBot) return
         if (message.isWebhookMessage) return
-        //if(ChannelType.VOICE == event.channelType) return
         val guild = if (event.isFromGuild) Guild.get(event.guild.id) ?: DefaultConfig.get() else DefaultConfig.get()
 
         val args = content.slice(guild.prefix.length until content.length).split(" ")
@@ -39,7 +39,16 @@ class MessageHandler: ListenerAdapter() {
 
         if (event.isFromGuild) {
 
-            MessageCache.addMessage(message)
+            if (Redis.usingRedis)
+                Message(
+                    message.contentRaw,
+                    message.contentDisplay,
+                    message.id,
+                    message.author.asTag,
+                    message.author.id,
+                    message.author.effectiveAvatarUrl,
+                    message.channel.id
+                ).save()
 
             if (
                 !guild.antiLinksIgnoredChannels.contains(message.channel.id) &&
@@ -57,9 +66,9 @@ class MessageHandler: ListenerAdapter() {
                 }
             }
 
-            if(ModChannel.isModChannel(message, guild)) {
+            if (ModChannel.isModChannel(message, guild)) {
                 val parsed = ModChannel.parse(message)
-                if(parsed.users.isEmpty()) {
+                if (parsed.users.isEmpty()) {
                     message.addReaction(Emoji.fromUnicode("❌")).queue({}, {})
                 } else {
                     ModChannel.doAction(parsed, message)
@@ -205,7 +214,7 @@ class MessageHandler: ListenerAdapter() {
 
     override fun onMessageUpdate(event: MessageUpdateEvent) {
 
-        if(event.author.isBot) return
+        if (event.author.isBot) return
 
         if (event.isFromGuild)
             EventLogger(event.guild, Guild.get(event.guild.id) ?: DefaultConfig.get()).log(event)

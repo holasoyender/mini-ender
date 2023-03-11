@@ -35,6 +35,7 @@ class CommandInitializer(manager: CommandManager) {
         manager.registerCommand(Avatar())
         manager.registerCommand(Bot())
         manager.registerCommand(Emojis())
+        manager.registerCommand(Suggest())
 
         //Ocio
         manager.registerCommand(Perro())

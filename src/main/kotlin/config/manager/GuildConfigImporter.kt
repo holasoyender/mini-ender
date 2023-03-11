@@ -95,6 +95,9 @@ object GuildConfigImporter {
                         arrayOf()
                     },
 
+                    suggestChannel = (config["suggestions"] as Map<*, *>)["channel_id"] as String,
+                    suggestCreateThread = (config["suggestions"] as Map<*, *>)["create_thread"] as Boolean,
+
                     raw = content
                 ).save()
 
@@ -160,6 +163,9 @@ object GuildConfigImporter {
                 } catch (e: Exception) {
                     arrayOf()
                 }
+
+                guildConfig.suggestChannel = (config["suggestions"] as Map<*, *>)["channel_id"] as String
+                guildConfig.suggestCreateThread = (config["suggestions"] as Map<*, *>)["create_thread"] as Boolean
 
                 guildConfig.raw = content
 

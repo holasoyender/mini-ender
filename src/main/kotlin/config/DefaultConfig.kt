@@ -42,6 +42,10 @@ object DefaultConfig {
             antiLinksNewLinkMessage = "",
             antiLinksSanctionMessage = "",
             antiLinksUnderRevisionMessage = "",
+
+            suggestChannel = "",
+            suggestCreateThread = false,
+
             raw = ""
         )
     }

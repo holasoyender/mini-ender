@@ -17,7 +17,7 @@ class Exportar: Command {
     override fun execute(event: MessageReceivedEvent, args: List<String>, config: Guild): CommandResponse {
 
         if(Redis.usingRedis)
-            Redis.connection!!.del("${event.jda.selfUser.id}:guilds:${event.guild.id}")
+            Redis.connection!!.del("guilds:${event.guild.id}")
         val newConfig = Guild.get(event.guild.id, true)
 
         if(newConfig != null) {

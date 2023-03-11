@@ -1,6 +1,7 @@
 package logger
 
-import cache.MessageCache
+import database.Redis
+import database.schema.Message
 import enums.Severity
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Guild
@@ -65,7 +66,8 @@ class EventLogger(
 
     fun log(event: MessageDeleteEvent) {
 
-        val message = MessageCache.getMessage(event.channel.id, event.messageId) ?: return
+        if(!Redis.usingRedis) return
+        val message = Message.get(event.messageId) ?: return
         val embed = EmbedBuilder()
             .setColor(Color.decode("#FEE75C"))
             .setAuthor("${message.authorTag} - Mensaje eliminado", null, message.authorAvatar)
@@ -80,13 +82,14 @@ class EventLogger(
             .setThumbnail("https://cdn.discordapp.com/attachments/839400943517827092/1045076556093071370/trash.png")
 
         log(embed)
-        MessageCache.removeMessage(event.channel.id, event.messageId)
+        message.delete()
 
     }
 
     fun log(event: MessageUpdateEvent) {
 
-        val message = MessageCache.getMessage(event.channel.id, event.messageId) ?: return
+        if(!Redis.usingRedis) return
+        val message = Message.get(event.messageId) ?: return
         val embed = EmbedBuilder()
             .setColor(Color.decode("#FEE75C"))
             .setAuthor("${message.authorTag} - Mensaje editado", null, message.authorAvatar)
@@ -120,8 +123,9 @@ class EventLogger(
             .setThumbnail("https://cdn.discordapp.com/attachments/839400943517827092/1045076638532108419/emoji.png")
 
         log(embed)
-        MessageCache.editMessage(event.channel.id, event.messageId, event.message)
-
+        message.content = event.message.contentRaw
+        message.contentDisplay = event.message.contentDisplay
+        message.save()
     }
 
     fun log(event: GuildBanEvent) {

@@ -6,7 +6,7 @@ plugins {
     kotlin("jvm") version "1.8.10"
     application
     id("com.github.johnrengelman.shadow") version "8.1.0"
-    id("org.springframework.boot") version "3.0.3"
+    id("org.springframework.boot") version "3.0.4"
     id("io.spring.dependency-management") version "1.1.0"
     kotlin("plugin.spring") version "1.8.10"
 }
@@ -20,7 +20,7 @@ repositories {
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-web:3.0.3")
+    implementation("org.springframework.boot:spring-boot-starter-web:3.0.4")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
 
     implementation("net.dv8tion:JDA:5.0.0-beta.5")
