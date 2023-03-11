@@ -67,34 +67,49 @@ class Ban: Command {
             succeeded = true,
             date = System.currentTimeMillis()
         )
+        event.message.reply("${Emojis.loading}  Aplicando sanción...").queue({ message ->
 
-        if (isNoMd) {
-            event.message.reply("${Emojis.success}  Has baneado permanentemente al usuario ${user.asMention} con la razón: `$reason`")
-                .queue()
+            if (isNoMd) {
+                event.message.reply("${Emojis.success}  Has baneado permanentemente al usuario ${user.asMention} con la razón: `$reason`")
+                    .queue()
 
-            member.ban(0, TimeUnit.SECONDS).reason(reason).queue({
-                infraction.save()
-            }, {
-                infraction.succeeded = false
-                infraction.save()
-            })
+                member.ban(0, TimeUnit.SECONDS).reason(reason).queue({
+                    infraction.save()
+                }, {
+                    infraction.succeeded = false
+                    infraction.save()
+                })
 
-        } else {
-            if (config.sanctionMessage.isNotEmpty() && config.sanctionMessage.isNotBlank()) {
-                user.openPrivateChannel().queue({ channel ->
-                    channel.sendMessage(
-                        Formatter.formatSanctionMessage(
-                            config.sanctionMessage,
-                            infraction,
-                            event.guild
-                        ) + "\n\n **Si crees que ha sido un fallo o quieres reclamar, visita: https://appeals-ibai.kenabot.xyz/ **"
-                    )
-                        .queue(
-                            {
-                                member.ban(0, TimeUnit.SECONDS).reason(reason).queue({
-                                    infraction.save()
-                                    event.message.reply("${Emojis.success}  Has baneado permanentemente al usuario ${user.asMention} con la razón: `$reason`")
-                                        .queue()
+            } else {
+                if (config.sanctionMessage.isNotEmpty() && config.sanctionMessage.isNotBlank()) {
+                    user.openPrivateChannel().queue({ channel ->
+                        channel.sendMessage(
+                            Formatter.formatSanctionMessage(
+                                config.sanctionMessage,
+                                infraction,
+                                event.guild
+                            ) + "\n\n **Si crees que ha sido un fallo o quieres reclamar, visita: https://appeals-ibai.kenabot.xyz/ **"
+                        )
+                            .queue(
+                                {
+                                    member.ban(0, TimeUnit.SECONDS).reason(reason).queue({
+                                        infraction.save()
+                                        event.message.reply("${Emojis.success}  Has baneado permanentemente al usuario ${user.asMention} con la razón: `$reason`")
+                                            .queue()
+                                    }, {
+                                        member.ban(0, TimeUnit.SECONDS).reason(reason).queue({
+                                            infraction.save()
+                                            message.editMessage("${Emojis.success}  Has baneado permanentemente al usuario ${user.asMention} con la razón: `$reason` pero no ha podido ser notificado")
+                                                .setAllowedMentions(emptyList())
+                                                .queue()
+                                        }, {
+                                            infraction.succeeded = false
+                                            infraction.save()
+                                            message.editMessage("${Emojis.warning}  No se ha podido banear permanentemente al usuario ${user.asMention}, comprueba que tenga los permisos necesarios necesarios y que no tenga un rol superior al mio")
+                                                .setAllowedMentions(emptyList())
+                                                .queue()
+                                        })
+                                    })
                                 }, {
                                     member.ban(0, TimeUnit.SECONDS).reason(reason).queue({
                                         infraction.save()
@@ -109,20 +124,7 @@ class Ban: Command {
                                             .queue()
                                     })
                                 })
-                    }, {
-                        member.ban(0, TimeUnit.SECONDS).reason(reason).queue({
-                            infraction.save()
-                            message.editMessage("${Emojis.success}  Has baneado permanentemente al usuario ${user.asMention} con la razón: `$reason` pero no ha podido ser notificado")
-                                .setAllowedMentions(emptyList())
-                                .queue()
-                        }, {
-                            infraction.succeeded = false
-                            infraction.save()
-                            message.editMessage("${Emojis.warning}  No se ha podido banear permanentemente al usuario ${user.asMention}, comprueba que tenga los permisos necesarios necesarios y que no tenga un rol superior al mio")
-                                .setAllowedMentions(emptyList())
-                                .queue()
-                        })
-                    })
+                    }, {})
                 } else {
                     member.ban(0, TimeUnit.SECONDS).reason(reason).queue({
                         infraction.save()
