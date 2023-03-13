@@ -5,26 +5,25 @@ import interfaces.RedisSchema
 
 class YouTube(
     channelId: String,
-    links: List<String>
+    latestVideo: String
 ): RedisSchema {
 
     val channelId: String
-    val links: List<String>
+    val latestVideo: String
 
     init {
         this.channelId = channelId
-        this.links = links
+        this.latestVideo = latestVideo
     }
 
 
     override fun save(): YouTube {
         Redis.connection.use { connection ->
             connection!!.del("$databaseName:$channelId")
-            val res = connection.lpush("$databaseName:$channelId", *links.toTypedArray())
-            if (res != links.size.toLong()) {
-                throw Exception("Error al guardar los links")
+            val res = connection.setex("$databaseName:$channelId", 86400, latestVideo)
+            if (res != "OK") {
+                throw Exception("Error al guardar el ultimo video del canal $channelId")
             }
-            connection.expire("$databaseName:$channelId", 86400)
         }
         return this
     }
@@ -47,8 +46,8 @@ class YouTube(
 
         fun get(channelId: String): YouTube? {
             Redis.connection.use { connection ->
-                val links = connection!!.lrange("$databaseName:$channelId", 0, -1)
-                return if (links.isEmpty()) null else YouTube(channelId, links)
+                val res = connection!!.get("$databaseName:$channelId")
+                return if (res == null) null else YouTube(channelId, res)
             }
         }
     }

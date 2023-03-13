@@ -66,24 +66,32 @@ object YouTubeManager {
                         link.getString("href")
                     }
 
-                    val oldLinks = YouTube.get(channel)?.links ?: listOf()
-                    val newLinks = links.filter { !oldLinks.contains(it) }
+                    val latestVideo = links.firstOrNull() ?: continue
+                    val latestVideoInCache = YouTube.get(channel)?.latestVideo
 
-                    if (oldLinks != links) YouTube(channel, links).save()
-
-                    if (newLinks.isNotEmpty() && newLinks.size <= 2) {
-                        val newVideo = newLinks.first()
-
-                        for (guildData in guilds) {
-                            val guild = jda!!.shardManager!!.getGuildById(guildData.id) ?: continue
-                            val guildChannel = guild.getTextChannelById(guildData.youtubeAnnounceChannelId) ?: guild.getNewsChannelById(guildData.youtubeAnnounceChannelId) ?: continue
-
-                            val message = guildData.youtubeAnnounceMessage.ifEmpty { "Hay un nuevo video en el canal de YouTube!" } + "\n" + newVideo
-                            guildChannel.sendMessage(message).queue({}, {})
-                        }
+                    if (latestVideoInCache == null) {
+                        YouTube(channel, latestVideo).save()
+                        continue
                     }
+
+                    if (latestVideoInCache == latestVideo) continue
+
+                    YouTube(channel, latestVideo).save()
+
+                    for (guildData in guilds) {
+                        val guild = jda!!.shardManager!!.getGuildById(guildData.id) ?: continue
+                        val guildChannel =
+                            guild.getTextChannelById(guildData.youtubeAnnounceChannelId) ?: guild.getNewsChannelById(
+                                guildData.youtubeAnnounceChannelId
+                            ) ?: continue
+
+                        val message =
+                            guildData.youtubeAnnounceMessage.ifEmpty { "Hay un nuevo video en el canal de YouTube!" } + "\n" + latestVideo
+                        guildChannel.sendMessage(message).queue({}, {})
+                    }
+
+                    Thread.sleep(20000)
                 }
-                Thread.sleep(20000)
             }
         }
 
