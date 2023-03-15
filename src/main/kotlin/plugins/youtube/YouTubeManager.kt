@@ -42,6 +42,7 @@ object YouTubeManager {
                         val response = httpClient.newCall(request).execute()
                         val isSuccessful = response.isSuccessful
                         if (!isSuccessful) {
+                            logger.error("YouTube feed for channel $channel returned ${response.code}")
                             null
                         } else {
                             val body = response.body!!.string()
@@ -49,11 +50,12 @@ object YouTubeManager {
                             body
                         }
                     } catch (e: Exception) {
+                        logger.error("Error while fetching YouTube feed for channel $channel", e)
                         null
                     }
 
                     if (body == null) {
-                        logger.error("Error while fetching YouTube feed for channel $channel")
+                        Thread.sleep(20000)
                         continue
                     }
 
@@ -66,14 +68,24 @@ object YouTubeManager {
                         link.getString("href")
                     }
 
-                    val latestVideo = links.firstOrNull() ?: continue
+                    val latestVideo = links.firstOrNull()
+                    if (latestVideo == null) {
+                        Thread.sleep(20000)
+                        continue
+                    }
                     val latestVideoInCache = YouTube.get(channel)?.latestVideo
 
-                    if (latestVideoInCache == latestVideo) continue
+                    if (latestVideoInCache == latestVideo) {
+                        Thread.sleep(20000)
+                        continue
+                    }
 
                     YouTube(channel, latestVideo).save()
 
-                    if (latestVideoInCache == null) continue
+                    if (latestVideoInCache == null) {
+                        Thread.sleep(20000)
+                        continue
+                    }
 
                     for (guildData in guilds) {
                         val guild = jda!!.shardManager!!.getGuildById(guildData.id) ?: continue
@@ -85,6 +97,7 @@ object YouTubeManager {
                         val message =
                             guildData.youtubeAnnounceMessage.ifEmpty { "Hay un nuevo video en el canal de YouTube!" } + "\n" + latestVideo
                         guildChannel.sendMessage(message).queue({}, {})
+                        Thread.sleep(1000)
                     }
 
                     Thread.sleep(20000)
