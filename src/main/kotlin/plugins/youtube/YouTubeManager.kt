@@ -69,11 +69,6 @@ object YouTubeManager {
                     val latestVideo = links.firstOrNull() ?: continue
                     val latestVideoInCache = YouTube.get(channel)?.latestVideo
 
-                    if (latestVideoInCache == null) {
-                        YouTube(channel, latestVideo).save()
-                        continue
-                    }
-
                     if (latestVideoInCache == latestVideo) continue
 
                     YouTube(channel, latestVideo).save()
