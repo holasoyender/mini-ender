@@ -5,6 +5,7 @@ import database.schema.Guild
 import database.schema.YouTube
 import http.HttpManager
 import jda
+import net.dv8tion.jda.api.interactions.components.buttons.Button
 import org.json.XML
 import org.slf4j.LoggerFactory
 import java.net.URL
@@ -81,7 +82,12 @@ object YouTubeManager {
 
                         val message =
                             guildData.youtubeAnnounceMessage.ifEmpty { "Hay un nuevo video en el canal de YouTube!" } + "\n" + latestVideo
-                        guildChannel.sendMessage(message).queue({}, {})
+                        guildChannel.sendMessage(message).setActionRow(
+                            Button.link(
+                                latestVideo,
+                                "Ir al vídeo"
+                            )
+                        ).queue({}, {})
                         Thread.sleep(1000)
                     }
 
