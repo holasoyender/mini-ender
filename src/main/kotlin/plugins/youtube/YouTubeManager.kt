@@ -3,16 +3,15 @@ package plugins.youtube
 import database.Redis
 import database.schema.Guild
 import database.schema.YouTube
+import http.HttpManager
 import jda
-import okhttp3.OkHttpClient
-import okhttp3.Request
 import org.json.XML
 import org.slf4j.LoggerFactory
+import java.net.URL
 
 object YouTubeManager {
 
     private val logger = LoggerFactory.getLogger(YouTubeManager::class.java)
-    private val httpClient = OkHttpClient()
 
     fun start() {
 
@@ -33,22 +32,8 @@ object YouTubeManager {
 
                     val guilds = guildsWithSubscription.filter { it.youtubeChannel == channel }
 
-                    val request: Request = Request.Builder()
-                        .url("https://www.youtube.com/feeds/videos.xml?channel_id=$channel")
-                        .delete()
-                        .build()
-
                     val body = try {
-                        val response = httpClient.newCall(request).execute()
-                        val isSuccessful = response.isSuccessful
-                        if (!isSuccessful) {
-                            logger.error("YouTube feed for channel $channel returned ${response.code}")
-                            null
-                        } else {
-                            val body = response.body!!.string()
-                            response.body!!.close()
-                            body
-                        }
+                        HttpManager.request(URL("https://www.youtube.com/feeds/videos.xml?channel_id=$channel"))
                     } catch (e: Exception) {
                         logger.error("Error while fetching YouTube feed for channel $channel", e)
                         null
