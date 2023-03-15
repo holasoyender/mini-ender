@@ -73,6 +73,8 @@ object YouTubeManager {
 
                     YouTube(channel, latestVideo).save()
 
+                    if (latestVideoInCache == null) continue
+
                     for (guildData in guilds) {
                         val guild = jda!!.shardManager!!.getGuildById(guildData.id) ?: continue
                         val guildChannel =
