@@ -9,8 +9,9 @@ object HttpManager {
     fun request(uri: URL): String {
         val http = uri.openConnection() as HttpURLConnection
         http.requestMethod = "GET"
-        http.setRequestProperty("Accept", "application/json")
+        FakeChrome.fakeChrome(http)
         if (http.responseCode != 200) {
+            http.disconnect()
             throw RuntimeException("Failed : HTTP error code : " + http.responseCode)
         }
 
