@@ -368,7 +368,11 @@ class Guild(
         isSaved = true
 
         if (Redis.usingRedis)
+            try {
             Redis.connection!!.setex("guilds:${id}", 3600, Gson().toJson(this))
+        } catch (_: Exception) {
+            Redis.usingRedis = false
+        }
 
         return this
     }
@@ -453,9 +457,13 @@ class Guild(
 
             if (Redis.usingRedis)
                 if (!force) {
-                    val cache = Redis.connection!!.get("guilds:$id")
-                    if (cache != null) {
-                        return Gson().fromJson(cache, Guild::class.java)
+                    try {
+                        val cache = Redis.connection!!.get("guilds:$id")
+                        if (cache != null) {
+                            return Gson().fromJson(cache, Guild::class.java)
+                        }
+                    } catch (_: Exception) {
+                        Redis.usingRedis = false
                     }
                 }
 
@@ -468,7 +476,12 @@ class Guild(
                     val config = formatGuild(result)
 
                     if (Redis.usingRedis)
-                        Redis.connection!!.setex("guilds:$id", 3600, Gson().toJson(config))
+                        try {
+                            Redis.connection!!.setex("guilds:$id", 3600, Gson().toJson(config))
+                        }
+                        catch (_: Exception) {
+                            Redis.usingRedis = false
+                        }
                     return config
                 }
             }

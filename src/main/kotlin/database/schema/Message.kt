@@ -33,6 +33,7 @@ class Message(
     }
 
     override fun save(): Message {
+        try {
         Redis.connection.use { connection ->
             val json = Gson().toJson(this)
             val res = connection!!.setex("$databaseName:$id", 172800, json)
@@ -47,20 +48,33 @@ class Message(
                     connection.del(oldestMessage)
                 }
             }
+        } }
+        catch (_: Exception) {
+            Redis.usingRedis = false
         }
         return this
     }
 
     override fun delete(): Message? {
-        Redis.connection.use { connection ->
-            val res = connection!!.del("$databaseName:$id")
-            return if (res == 1L) this else null
+        try {
+            Redis.connection.use { connection ->
+                val res = connection!!.del("$databaseName:$id")
+                return if (res == 1L) this else null
+            }
+        } catch (_: Exception) {
+            Redis.usingRedis = false
+            return null
         }
     }
 
     override fun exists(): Boolean {
-        Redis.connection.use { connection ->
-            return connection!!.exists("$databaseName:$id")
+        try {
+            Redis.connection.use { connection ->
+                return connection!!.exists("$databaseName:$id")
+            }
+        } catch (_: Exception) {
+            Redis.usingRedis = false
+            return false
         }
     }
 
@@ -68,11 +82,16 @@ class Message(
         private const val databaseName = "messages"
 
         fun get(id: String): Message? {
-            Redis.connection.use { connection ->
-                val json = connection!!.get("$databaseName:$id")
-                return if (json != null) {
-                    Gson().fromJson(json, Message::class.java)
-                } else null
+            try {
+                Redis.connection.use { connection ->
+                    val json = connection!!.get("$databaseName:$id")
+                    return if (json != null) {
+                        Gson().fromJson(json, Message::class.java)
+                    } else null
+                }
+            } catch (_: Exception) {
+                Redis.usingRedis = false
+                return null
             }
         }
     }

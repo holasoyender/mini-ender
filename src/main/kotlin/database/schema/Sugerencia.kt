@@ -24,26 +24,40 @@ class Sugerencia(
     }
 
     override fun save(): Sugerencia {
-        Redis.connection.use { connection ->
-            val json = Gson().toJson(this)
-            val res = connection!!.setex("$databaseName:$id", 259200, json)
-            if (res != "OK") {
-                throw Exception("Error al guardar la sugerencia")
+        try {
+            Redis.connection.use { connection ->
+                val json = Gson().toJson(this)
+                val res = connection!!.setex("$databaseName:$id", 259200, json)
+                if (res != "OK") {
+                    throw Exception("Error al guardar la sugerencia")
+                }
             }
+        } catch (_: Exception) {
+            Redis.usingRedis = false
         }
         return this
     }
 
     override fun delete(): Sugerencia? {
-        Redis.connection.use { connection ->
-            val res = connection!!.del("$databaseName:$id")
-            return if (res == 1L) this else null
+        try {
+            Redis.connection.use { connection ->
+                val res = connection!!.del("$databaseName:$id")
+                return if (res == 1L) this else null
+            }
+        } catch (_: Exception) {
+            Redis.usingRedis = false
+            return null
         }
     }
 
     override fun exists(): Boolean {
-        Redis.connection.use { connection ->
-            return connection!!.exists("$databaseName:$id")
+        try {
+            Redis.connection.use { connection ->
+                return connection!!.exists("$databaseName:$id")
+            }
+        } catch (_: Exception) {
+            Redis.usingRedis = false
+            return false
         }
     }
 
@@ -52,11 +66,16 @@ class Sugerencia(
         const val databaseName = "suggestions"
 
         fun get(id: String): Sugerencia? {
-            Redis.connection.use { connection ->
-                val res = connection!!.get("$databaseName:$id")
-                return if (res != null) {
-                    Gson().fromJson(res, Sugerencia::class.java)
-                } else null
+            try {
+                Redis.connection.use { connection ->
+                    val res = connection!!.get("$databaseName:$id")
+                    return if (res != null) {
+                        Gson().fromJson(res, Sugerencia::class.java)
+                    } else null
+                }
+            } catch (_: Exception) {
+                Redis.usingRedis = false
+                return null
             }
         }
     }
