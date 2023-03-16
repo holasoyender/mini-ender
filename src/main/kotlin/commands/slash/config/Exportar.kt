@@ -18,7 +18,11 @@ class Exportar: SlashCommand {
     override fun execute(event: SlashCommandInteractionEvent): CommandResponse {
 
         if(Redis.usingRedis)
-            Redis.connection!!.del("guilds:${event.guild!!.id}")
+            try {
+                Redis.connection!!.del("guilds:${event.guild!!.id}")
+            } catch (_: Exception) {
+                Redis.usingRedis = false
+            }
         val config = Guild.get(event.guild!!.id, true)
 
         if(config != null) {
