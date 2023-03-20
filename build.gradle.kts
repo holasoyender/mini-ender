@@ -31,7 +31,7 @@ dependencies {
     implementation("org.json:json:20230227")
 
     implementation("com.zaxxer:HikariCP:5.0.1")
-    implementation("org.postgresql:postgresql:42.5.4")
+    implementation("org.postgresql:postgresql:42.6.0")
     implementation("redis.clients:jedis:4.3.1")
 
     implementation(kotlin("reflect"))
