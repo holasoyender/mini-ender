@@ -3,7 +3,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.8.10"
+    kotlin("jvm") version "1.8.20-RC2"
     application
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("org.springframework.boot") version "3.0.5"
@@ -20,13 +20,13 @@ repositories {
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-web:3.0.4")
+    implementation("org.springframework.boot:spring-boot-starter-web:3.0.5")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
 
     implementation("net.dv8tion:JDA:5.0.0-beta.6")
     //implementation("ch.qos.logback:logback-classic:1.4.4")
     implementation("io.github.cdimascio:dotenv-kotlin:6.4.1")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.10")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.20")
     implementation("org.openjdk.nashorn:nashorn-core:15.4")
     implementation("org.json:json:20230227")
 

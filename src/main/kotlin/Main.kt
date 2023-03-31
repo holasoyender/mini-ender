@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
-import net.dv8tion.jda.api.utils.ChunkingFilter
+//import net.dv8tion.jda.api.utils.ChunkingFilter
 import net.dv8tion.jda.api.utils.Compression
 import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.cache.CacheFlag
@@ -35,6 +35,8 @@ fun main(args: Array<String>) {
         CacheFlag.VOICE_STATE,
         CacheFlag.STICKER,
         CacheFlag.ROLE_TAGS,
+        CacheFlag.STICKER,
+        CacheFlag.SCHEDULED_EVENTS
     )
 
     builder.setBulkDeleteSplittingEnabled(true)
@@ -55,7 +57,7 @@ fun main(args: Array<String>) {
     )
 
     builder.setMemberCachePolicy(MemberCachePolicy.NONE)
-    builder.setChunkingFilter(ChunkingFilter.NONE)
+    //builder.setChunkingFilter(ChunkingFilter.NONE)
 
     builder.disableIntents(
         GatewayIntent.GUILD_MESSAGE_TYPING,
