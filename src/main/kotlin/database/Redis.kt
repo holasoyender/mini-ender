@@ -28,7 +28,7 @@ object Redis {
                 )
 
             if (conn.resource.ping() == "PONG") {
-                logger.info("Conectado con éxito a la base de datos")
+                logger.info("Conectado con éxito a la base de datos de cache")
                 connection = conn.resource
                 usingRedis = true
             } else {
