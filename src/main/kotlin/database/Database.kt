@@ -6,19 +6,19 @@ import config.Env
 import org.slf4j.LoggerFactory
 import kotlin.system.exitProcess
 
-object Postgres {
+object Database {
 
     var dataSource: HikariDataSource? = null
-    private val logger = LoggerFactory.getLogger(Postgres::class.java)
+    private val logger = LoggerFactory.getLogger(Database::class.java)
 
     init {
         try {
 
             val props = HikariConfig()
-            props.jdbcUrl = "jdbc:postgresql://${Env.POSTGRES_HOST}/${Env.POSTGRES_DB}"
-            props.username = Env.POSTGRES_USER
-            props.password = Env.POSTGRES_PASSWORD
-            props.addDataSourceProperty("ssl", Env.POSTGRES_SSL.toString())
+            props.jdbcUrl = "jdbc:${Env.DATABASE_HOST}"///${Env.POSTGRES_DB}"
+            props.username = Env.DATABASE_USER
+            props.password = Env.DATABASE_PASSWORD
+            props.addDataSourceProperty("ssl", Env.DATABASE_SSL.toString())
             props.addDataSourceProperty("ApplicationName", "Cliente de mini-ender")
             props.connectionTimeout = 3000
             props.maximumPoolSize = 4

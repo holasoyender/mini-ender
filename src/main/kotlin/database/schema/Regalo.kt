@@ -1,6 +1,7 @@
 package database.schema
 
 import interfaces.Schema
+import org.json.JSONArray
 import org.json.JSONObject
 
 class Regalo(
@@ -29,7 +30,7 @@ class Regalo(
         get() = "regalos"
 
     override fun dropTable() {
-        database.Postgres.dataSource?.connection.use { connection ->
+        database.Database.dataSource?.connection.use { connection ->
             val statement = connection!!.prepareStatement("DROP TABLE IF EXISTS regalos")
             statement.execute()
         }
@@ -37,21 +38,33 @@ class Regalo(
 
     override fun save(): Regalo {
         if (exists()) {
-            database.Postgres.dataSource?.connection.use { connection ->
+            database.Database.dataSource?.connection.use { connection ->
                 val statement =
                     connection!!.prepareStatement("UPDATE regalos SET last_throw = ?, gifts = ? WHERE user_id = ?")
                 statement.setLong(1, lastThrow)
-                statement.setArray(2, connection.createArrayOf("jsonb", gifts))
+                statement.setString(2, JSONArray().let {
+                    gifts.forEach { gift ->
+                        it.put(gift)
+                    }
+                    it.toString()
+                })
+                //statement.setArray(2, connection.createArrayOf("jsonb", gifts))
                 statement.setString(3, userId)
                 statement.execute()
             }
         } else {
-            database.Postgres.dataSource?.connection.use { connection ->
+            database.Database.dataSource?.connection.use { connection ->
                 val statement =
                     connection!!.prepareStatement("INSERT INTO regalos (user_id, last_throw, gifts) VALUES (?, ?, ?)")
                 statement.setString(1, userId)
                 statement.setLong(2, lastThrow)
-                statement.setArray(3, connection.createArrayOf("json", gifts))
+                statement.setString(3, JSONArray().let {
+                    gifts.forEach { gift ->
+                        it.put(gift)
+                    }
+                    it.toString()
+                })
+                //statement.setArray(3, connection.createArrayOf("json", gifts))
                 statement.execute()
             }
         }
@@ -67,7 +80,7 @@ class Regalo(
         if(!exists())
             return this
 
-        database.Postgres.dataSource?.connection.use { connection ->
+        database.Database.dataSource?.connection.use { connection ->
             val statement = connection!!.prepareStatement("DELETE FROM regalos WHERE user_id = ?")
             statement.setString(1, userId)
             statement.execute()
@@ -78,7 +91,7 @@ class Regalo(
     }
 
     override fun exists(): Boolean {
-        database.Postgres.dataSource?.connection.use { connection ->
+        database.Database.dataSource?.connection.use { connection ->
             val statement = connection!!.prepareStatement("SELECT * FROM regalos WHERE user_id = ?")
             statement.setString(1, userId)
             val result = statement.executeQuery()
@@ -86,17 +99,18 @@ class Regalo(
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
     companion object {
         fun createTable() {
 
-            database.Postgres.dataSource?.connection.use { connection ->
-                val statement = connection!!.prepareStatement(
+            database.Database.dataSource?.connection.use { connection ->
+
+                val isPostgres = connection!!.metaData.databaseProductName == "PostgreSQL"
+                val statement = connection.prepareStatement(
                     """
                     CREATE TABLE IF NOT EXISTS regalos (
-                        user_id TEXT NOT NULL,
+                        user_id ${if (isPostgres) "TEXT" else "VARCHAR(21)"} NOT NULL,
                         last_throw BIGINT NOT NULL,
-                        gifts JSON[] NOT NULL,
+                        gifts TEXT NOT NULL,
                         PRIMARY KEY (user_id)
                     )
                     """.trimIndent()
@@ -106,7 +120,7 @@ class Regalo(
         }
 
         fun get(userId: String): Regalo? {
-            database.Postgres.dataSource?.connection.use { connection ->
+            database.Database.dataSource?.connection.use { connection ->
                 val statement = connection!!.prepareStatement("SELECT * FROM regalos WHERE user_id = ?")
                 statement.setString(1, userId)
                 val result = statement.executeQuery()
@@ -114,7 +128,8 @@ class Regalo(
                     return Regalo(
                         result.getString("user_id"),
                         result.getLong("last_throw"),
-                        (result.getArray("gifts")?.array as Array<String>?)?.map { JSONObject(it) }?.toTypedArray() ?: arrayOf(),
+                        JSONArray(result.getString("gifts")).map { it as JSONObject }.toTypedArray(),
+                        //(result.getArray("gifts")?.array as Array<String>?)?.map { JSONObject(it) }?.toTypedArray() ?: arrayOf(),
                     )
                 }
             }
@@ -123,7 +138,7 @@ class Regalo(
 
         fun getAll(): List<Regalo> {
             val regalos = mutableListOf<Regalo>()
-            database.Postgres.dataSource?.connection.use { connection ->
+            database.Database.dataSource?.connection.use { connection ->
                 val statement = connection!!.prepareStatement("SELECT * FROM regalos")
                 val result = statement.executeQuery()
                 while (result.next()) {
@@ -131,7 +146,8 @@ class Regalo(
                         Regalo(
                             result.getString("user_id"),
                             result.getLong("last_throw"),
-                            (result.getArray("gifts")?.array as Array<String>?)?.map { JSONObject(it) }?.toTypedArray() ?: arrayOf(),
+                            JSONArray(result.getString("gifts")).map { it as JSONObject }.toTypedArray(),
+                            //(result.getArray("gifts")?.array as Array<String>?)?.map { JSONObject(it) }?.toTypedArray() ?: arrayOf(),
                         )
                     )
                 }

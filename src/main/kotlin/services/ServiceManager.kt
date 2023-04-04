@@ -11,7 +11,7 @@ object ServiceManager {
 
     fun load (shardManager: ShardManager) {
 
-        database.Postgres.load()
+        database.Database.load()
         database.Redis.load()
         GiveawayService(shardManager)
         InfractionsService(shardManager)

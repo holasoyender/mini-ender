@@ -49,7 +49,7 @@ class Warnings(
         get() = "warnings"
 
     override fun dropTable() {
-        database.Postgres.dataSource?.connection.use { connection ->
+        database.Database.dataSource?.connection.use { connection ->
             val statement = connection!!.prepareStatement("DROP TABLE IF EXISTS warnings")
             statement.execute()
         }
@@ -58,7 +58,7 @@ class Warnings(
     override fun save(): Warnings {
 
         if (exists()) {
-            database.Postgres.dataSource?.connection.use { connection ->
+            database.Database.dataSource?.connection.use { connection ->
                 val statement = connection!!.prepareStatement("UPDATE warnings SET guild_id = ?, id = ?, message = ?, resolved = ?, ignored = ?, severity = ?, repeats = ?, last_seen = ?, first_seen = ? WHERE guild_id = ? AND id = ?")
                 statement.setString(1, guildId)
                 statement.setString(2, id)
@@ -75,7 +75,7 @@ class Warnings(
                 statement.execute()
             }
         } else {
-            database.Postgres.dataSource?.connection.use { connection ->
+            database.Database.dataSource?.connection.use { connection ->
                 val statement =
                     connection!!.prepareStatement("INSERT INTO warnings (guild_id, id, message, resolved, ignored, severity, repeats, last_seen, first_seen) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
                 statement.setString(1, guildId)
@@ -103,7 +103,7 @@ class Warnings(
         if(!exists())
             return this
 
-        database.Postgres.dataSource?.connection.use { connection ->
+        database.Database.dataSource?.connection.use { connection ->
             val statement = connection!!.prepareStatement("DELETE FROM warnings WHERE guild_id = ? AND id = ?")
             statement.setString(1, guildId)
             statement.setString(2, id)
@@ -115,7 +115,7 @@ class Warnings(
     }
 
     override fun exists(): Boolean {
-        database.Postgres.dataSource?.connection.use { connection ->
+        database.Database.dataSource?.connection.use { connection ->
             val statement = connection!!.prepareStatement("SELECT * FROM warnings WHERE guild_id = ? AND id = ?")
             statement.setString(1, guildId)
             statement.setString(2, id)
@@ -127,12 +127,14 @@ class Warnings(
     companion object {
         fun createTable() {
 
-            database.Postgres.dataSource?.connection.use { connection ->
-                val statement = connection!!.prepareStatement(
+            database.Database.dataSource?.connection.use { connection ->
+
+                val isPostgres = connection!!.metaData.databaseProductName == "PostgreSQL"
+                val statement = connection.prepareStatement(
                     """
             CREATE TABLE IF NOT EXISTS warnings (
-                guild_id TEXT NOT NULL,
-                id TEXT NOT NULL,
+                guild_id ${if (isPostgres) "TEXT" else "VARCHAR(21)"} NOT NULL,
+                id ${if (isPostgres) "TEXT" else "VARCHAR(21)"} NOT NULL,
                 message TEXT NOT NULL,
                 resolved BOOLEAN NOT NULL,
                 ignored BOOLEAN NOT NULL,
@@ -147,7 +149,7 @@ class Warnings(
         }
 
         fun get(id: String, guildId: String): Warnings? {
-            database.Postgres.dataSource?.connection.use { connection ->
+            database.Database.dataSource?.connection.use { connection ->
                 val statement = connection!!.prepareStatement("SELECT * FROM warnings WHERE guild_id = ? AND id = ?")
                 statement.setString(1, guildId)
                 statement.setString(2, id)
@@ -170,7 +172,7 @@ class Warnings(
         }
 
         fun get(message: String, guildId: Long): Warnings? {
-            database.Postgres.dataSource?.connection.use { connection ->
+            database.Database.dataSource?.connection.use { connection ->
                 val statement = connection!!.prepareStatement("SELECT * FROM warnings WHERE guild_id = ? AND message = ?")
                 statement.setString(1, guildId.toString())
                 statement.setString(2, message)
@@ -195,7 +197,7 @@ class Warnings(
 
         @Suppress("unused")
         fun getAll(): List<Warnings> {
-            database.Postgres.dataSource?.connection.use {connection ->
+            database.Database.dataSource?.connection.use { connection ->
                 val statement = connection!!.prepareStatement("SELECT * FROM warnings")
                 val result = statement.executeQuery()
 
@@ -221,7 +223,7 @@ class Warnings(
 
         @Suppress("unused")
         fun getAll(guildId: String): List<Warnings> {
-            database.Postgres.dataSource?.connection.use {connection ->
+            database.Database.dataSource?.connection.use { connection ->
                 val statement = connection!!.prepareStatement("SELECT * FROM warnings WHERE guild_id = ?")
                 statement.setString(1, guildId)
                 val result = statement.executeQuery()

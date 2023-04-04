@@ -1,6 +1,7 @@
 package database.schema
 
 import interfaces.Schema
+import org.json.JSONArray
 
 class Sorteo(
     guildId: String,
@@ -65,7 +66,7 @@ class Sorteo(
         get() = "sorteos"
 
     override fun dropTable() {
-        database.Postgres.dataSource?.connection.use { connection ->
+        database.Database.dataSource?.connection.use { connection ->
             val statement = connection!!.prepareStatement("DROP TABLE IF EXISTS sorteos")
             statement.execute()
         }
@@ -74,7 +75,7 @@ class Sorteo(
     override fun save(): Sorteo {
 
         if (exists()) {
-            database.Postgres.dataSource?.connection.use { connection ->
+            database.Database.dataSource?.connection.use { connection ->
                 val statement = connection!!.prepareStatement("UPDATE sorteos SET guild_id = ?, channel_id = ?, message_id = ?, host_id = ?, end_after = ?, started_at = ?, prize = ?, winner_count = ?, ended = ?, winner_ids = ?, clickers = ?, style = ? WHERE message_id = ?")
                 statement.setString(1, guildId)
                 statement.setString(2, channelId)
@@ -85,14 +86,26 @@ class Sorteo(
                 statement.setString(7, prize)
                 statement.setInt(8, winnerCount)
                 statement.setBoolean(9, ended)
-                statement.setArray(10, connection.createArrayOf("text", winnerIds))
-                statement.setArray(11, connection.createArrayOf("text", clickers))
+                statement.setString(10, JSONArray().let {
+                    winnerIds.forEach { id ->
+                        it.put(id)
+                    }
+                    it
+                }.toString())
+                //statement.setArray(10, connection.createArrayOf("text", winnerIds))
+                statement.setString(11, JSONArray().let {
+                    clickers.forEach { id ->
+                        it.put(id)
+                    }
+                    it
+                }.toString())
+                //statement.setArray(11, connection.createArrayOf("text", clickers))
                 statement.setString(12, style)
                 statement.setString(13, messageId)
                 statement.execute()
             }
         } else {
-            database.Postgres.dataSource?.connection.use { connection ->
+            database.Database.dataSource?.connection.use { connection ->
                 val statement =
                     connection!!.prepareStatement("INSERT INTO sorteos (guild_id, channel_id, message_id, host_id, end_after, started_at, prize, winner_count, ended, winner_ids, clickers, style) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
                 statement.setString(1, guildId)
@@ -104,8 +117,20 @@ class Sorteo(
                 statement.setString(7, prize)
                 statement.setInt(8, winnerCount)
                 statement.setBoolean(9, ended)
-                statement.setArray(10, connection.createArrayOf("text", winnerIds))
-                statement.setArray(11, connection.createArrayOf("text", clickers))
+                statement.setString(10, JSONArray().let {
+                    winnerIds.forEach { id ->
+                        it.put(id)
+                    }
+                    it
+                }.toString())
+                //statement.setArray(10, connection.createArrayOf("text", winnerIds))
+                statement.setString(11, JSONArray().let {
+                    clickers.forEach { id ->
+                        it.put(id)
+                    }
+                    it
+                }.toString())
+                //statement.setArray(11, connection.createArrayOf("text", clickers))
                 statement.setString(12, style)
                 statement.execute()
             }
@@ -123,7 +148,7 @@ class Sorteo(
         if(!exists())
             return this
 
-        database.Postgres.dataSource?.connection.use { connection ->
+        database.Database.dataSource?.connection.use { connection ->
             val statement = connection!!.prepareStatement("DELETE FROM sorteos WHERE message_id = ?")
             statement.setString(1, messageId)
             statement.execute()
@@ -134,7 +159,7 @@ class Sorteo(
     }
 
     override fun exists(): Boolean {
-        database.Postgres.dataSource?.connection.use { connection ->
+        database.Database.dataSource?.connection.use { connection ->
             val statement = connection!!.prepareStatement("SELECT * FROM sorteos WHERE message_id = ?")
             statement.setString(1, messageId)
             val result = statement.executeQuery()
@@ -142,11 +167,10 @@ class Sorteo(
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
     companion object {
         fun createTable() {
 
-            database.Postgres.dataSource?.connection.use { connection ->
+            database.Database.dataSource?.connection.use { connection ->
                 val statement = connection!!.prepareStatement(
                     """
             CREATE TABLE IF NOT EXISTS sorteos ( 
@@ -159,8 +183,8 @@ class Sorteo(
                 prize TEXT NOT NULL,
                 winner_count INT NOT NULL,
                 ended BOOLEAN NOT NULL,
-                winner_ids TEXT[] NOT NULL,
-                clickers TEXT[] NOT NULL,
+                winner_ids TEXT NOT NULL,
+                clickers TEXT NOT NULL,
                 style TEXT NOT NULL
             );"""
                 )
@@ -170,7 +194,7 @@ class Sorteo(
         }
 
         fun get(messageId: String): Sorteo? {
-            database.Postgres.dataSource?.connection.use { connection ->
+            database.Database.dataSource?.connection.use { connection ->
                 val statement = connection!!.prepareStatement("SELECT * FROM sorteos WHERE message_id = ?")
                 statement.setString(1, messageId)
                 val result = statement.executeQuery()
@@ -185,8 +209,10 @@ class Sorteo(
                         result.getString("prize"),
                         result.getInt("winner_count"),
                         result.getBoolean("ended"),
-                        result.getArray("winner_ids").array as Array<String>,
-                        result.getArray("clickers").array as Array<String>,
+                        JSONArray(result.getString("winner_ids")).map { it as String }.toTypedArray(),
+                        //result.getArray("winner_ids").array as Array<String>,
+                        JSONArray(result.getString("clickers")).map { it as String }.toTypedArray(),
+                        //result.getArray("clickers").array as Array<String>,
                         result.getString("style")
                     )
                 }
@@ -196,7 +222,7 @@ class Sorteo(
 
         @Suppress("unused")
         fun getAll(): List<Sorteo> {
-            database.Postgres.dataSource?.connection.use {connection ->
+            database.Database.dataSource?.connection.use { connection ->
                 val statement = connection!!.prepareStatement("SELECT * FROM sorteos")
                 val result = statement.executeQuery()
 
@@ -213,8 +239,10 @@ class Sorteo(
                             result.getString("prize"),
                             result.getInt("winner_count"),
                             result.getBoolean("ended"),
-                            result.getArray("winner_ids").array as Array<String>,
-                            result.getArray("clickers").array as Array<String>,
+                            JSONArray(result.getString("winner_ids")).map { it as String }.toTypedArray(),
+                            //result.getArray("winner_ids").array as Array<String>,
+                            JSONArray(result.getString("clickers")).map { it as String }.toTypedArray(),
+                            //result.getArray("clickers").array as Array<String>,
                             result.getString("style")
                         )
                     )
