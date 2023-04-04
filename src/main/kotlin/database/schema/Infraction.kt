@@ -55,7 +55,7 @@ class Infraction(
         get() = "infractions"
 
     override fun dropTable() {
-        database.Postgres.dataSource?.connection.use { connection ->
+        database.Database.dataSource?.connection.use { connection ->
             val statement = connection!!.prepareStatement("DROP TABLE IF EXISTS infractions")
             statement.execute()
         }
@@ -64,7 +64,7 @@ class Infraction(
     override fun save(): Infraction {
 
         if (exists()) {
-            database.Postgres.dataSource?.connection.use { connection ->
+            database.Database.dataSource?.connection.use { connection ->
                 val statement = connection!!.prepareStatement("UPDATE infractions SET user_id = ?, user_name = ?, moderator_id = ?, type = ?, reason = ?, duration = ?, ended = ?, succeeded = ?, date = ? WHERE guild_id = ? AND id = ?")
                 statement.setString(1, userId)
                 statement.setString(2, userName)
@@ -81,7 +81,7 @@ class Infraction(
                 statement.execute()
             }
         } else {
-            database.Postgres.dataSource?.connection.use { connection ->
+            database.Database.dataSource?.connection.use { connection ->
                 val statement =
                     connection!!.prepareStatement("INSERT INTO infractions (user_id, user_name, guild_id, moderator_id, type, reason, duration, ended, succeeded, date, id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
                 statement.setString(1, userId)
@@ -112,7 +112,7 @@ class Infraction(
         if(!exists())
             return this
 
-        database.Postgres.dataSource?.connection.use { connection ->
+        database.Database.dataSource?.connection.use { connection ->
             val statement = connection!!.prepareStatement("DELETE FROM infractions WHERE guild_id = ? AND id = ?")
             statement.setString(1, guildId)
             statement.setLong(2, id)
@@ -124,7 +124,7 @@ class Infraction(
     }
 
     override fun exists(): Boolean {
-        database.Postgres.dataSource?.connection.use { connection ->
+        database.Database.dataSource?.connection.use { connection ->
             val statement = connection!!.prepareStatement("SELECT * FROM infractions WHERE guild_id = ? AND id = ?")
             statement.setString(1, guildId)
             statement.setLong(2, id)
@@ -136,13 +136,15 @@ class Infraction(
     companion object {
         fun createTable() {
 
-            database.Postgres.dataSource?.connection.use { connection ->
-                val statement = connection!!.prepareStatement(
+            database.Database.dataSource?.connection.use { connection ->
+
+                val isPostgres = connection!!.metaData.databaseProductName == "PostgreSQL"
+                val statement = connection.prepareStatement(
                     """
             CREATE TABLE IF NOT EXISTS infractions (
                 user_id TEXT NOT NULL,
                 user_name TEXT NOT NULL,
-                guild_id TEXT NOT NULL,
+                guild_id ${if (isPostgres) "TEXT" else "VARCHAR(21)"} NOT NULL,
                 moderator_id TEXT NOT NULL,
                 type TEXT NOT NULL,
                 reason TEXT NOT NULL,
@@ -158,7 +160,7 @@ class Infraction(
         }
 
         fun get(id: Long, guildId: String): Infraction? {
-            database.Postgres.dataSource?.connection.use { connection ->
+            database.Database.dataSource?.connection.use { connection ->
                 val statement = connection!!.prepareStatement("SELECT * FROM infractions WHERE guild_id = ? AND id = ?")
                 statement.setString(1, guildId)
                 statement.setLong(2, id)
@@ -184,7 +186,7 @@ class Infraction(
 
         @Suppress("unused")
         fun getAll(): List<Infraction> {
-            database.Postgres.dataSource?.connection.use {connection ->
+            database.Database.dataSource?.connection.use { connection ->
                 val statement = connection!!.prepareStatement("SELECT * FROM infractions")
                 val result = statement.executeQuery()
 
@@ -212,7 +214,7 @@ class Infraction(
 
         @Suppress("unused")
         fun getAll(guildId: String): List<Infraction> {
-            database.Postgres.dataSource?.connection.use {connection ->
+            database.Database.dataSource?.connection.use { connection ->
                 val statement = connection!!.prepareStatement("SELECT * FROM infractions WHERE guild_id = ?")
                 statement.setString(1, guildId)
                 val result = statement.executeQuery()
@@ -240,7 +242,7 @@ class Infraction(
         }
 
         fun getAll(ended: Boolean): List<Infraction> {
-            database.Postgres.dataSource?.connection.use {connection ->
+            database.Database.dataSource?.connection.use { connection ->
                 val statement = connection!!.prepareStatement("SELECT * FROM infractions WHERE ended = ?")
                 statement.setBoolean(1, ended)
                 val result = statement.executeQuery()
@@ -268,7 +270,7 @@ class Infraction(
         }
 
         fun getAllByUserId(guildId: String, userId: String): List<Infraction> {
-            database.Postgres.dataSource?.connection.use {connection ->
+            database.Database.dataSource?.connection.use { connection ->
                 val statement = connection!!.prepareStatement("SELECT * FROM infractions WHERE guild_id = ? AND user_id = ?")
                 statement.setString(1, guildId)
                 statement.setString(2, userId)
@@ -305,7 +307,7 @@ class Infraction(
         }
 
         private fun idExists(id: Long, guildId: String): Boolean {
-            database.Postgres.dataSource?.connection.use { connection ->
+            database.Database.dataSource?.connection.use { connection ->
                 val statement = connection!!.prepareStatement("SELECT * FROM infractions WHERE guild_id = ? AND id = ?")
                 statement.setString(1, guildId)
                 statement.setLong(2, id)

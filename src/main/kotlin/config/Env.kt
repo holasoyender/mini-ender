@@ -9,11 +9,10 @@ object Env {
     var API_TOKEN: String? = null
     var API_URL: String? = null
 
-    var POSTGRES_USER: String? = null
-    var POSTGRES_PASSWORD: String? = null
-    var POSTGRES_HOST: String? = null
-    var POSTGRES_DB: String? = null
-    var POSTGRES_SSL: Boolean? = null
+    var DATABASE_USER: String? = null
+    var DATABASE_PASSWORD: String? = null
+    var DATABASE_HOST: String? = null
+    var DATABASE_SSL: Boolean? = null
 
     var REDIS_USER: String? = null
     var REDIS_PASSWORD: String? = null
@@ -40,11 +39,10 @@ object Env {
         PREFIX = getEnv("PREFIX", dotenv)
         API_TOKEN = getEnv("API_TOKEN", dotenv)
         API_URL = getEnv("API_URL", dotenv)
-        POSTGRES_USER = getEnv("POSTGRES_USER", dotenv)
-        POSTGRES_PASSWORD = getEnv("POSTGRES_PASSWORD", dotenv)
-        POSTGRES_HOST = getEnv("POSTGRES_HOST", dotenv)
-        POSTGRES_DB = getEnv("POSTGRES_DB", dotenv)
-        POSTGRES_SSL = getEnv("POSTGRES_SSL", dotenv)?.toBoolean()
+        DATABASE_USER = getEnv("DATABASE_USER", dotenv)
+        DATABASE_PASSWORD = getEnv("DATABASE_PASSWORD", dotenv)
+        DATABASE_HOST = getEnv("DATABASE_HOST", dotenv)
+        DATABASE_SSL = getEnv("DATABASE_SSL", dotenv)?.toBoolean()
         REDIS_USER = getEnv("REDIS_USER", dotenv)
         REDIS_PASSWORD = getEnv("REDIS_PASSWORD", dotenv)
         REDIS_HOST = getEnv("REDIS_HOST", dotenv)

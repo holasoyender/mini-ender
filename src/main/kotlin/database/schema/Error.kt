@@ -39,7 +39,7 @@ class Error(
         get() = "errors"
 
     override fun dropTable() {
-        database.Postgres.dataSource?.connection.use { connection ->
+        database.Database.dataSource?.connection.use { connection ->
             val statement = connection!!.prepareStatement("DROP TABLE IF EXISTS errors")
             statement.execute()
         }
@@ -48,7 +48,7 @@ class Error(
     override fun save(): Error {
 
         if (exists()) {
-            database.Postgres.dataSource?.connection.use { connection ->
+            database.Database.dataSource?.connection.use { connection ->
                 val statement = connection!!.prepareStatement("UPDATE errors SET userid = ?, error = ?, date = ?, acknowledged = ?, solved = ? WHERE id = ?")
                 statement.setString(1, userid)
                 statement.setString(2, error)
@@ -60,7 +60,7 @@ class Error(
                 statement.execute()
             }
         } else {
-            database.Postgres.dataSource?.connection.use { connection ->
+            database.Database.dataSource?.connection.use { connection ->
                 val statement =
                     connection!!.prepareStatement("INSERT INTO errors (id, userid, error, date, acknowledged, solved) VALUES (?, ?, ?, ?, ?, ?)")
                 statement.setString(1, id)
@@ -86,7 +86,7 @@ class Error(
         if(!exists())
             return this
 
-        database.Postgres.dataSource?.connection.use { connection ->
+        database.Database.dataSource?.connection.use { connection ->
             val statement = connection!!.prepareStatement("DELETE FROM errors WHERE id = ?")
             statement.setString(1, id)
             statement.execute()
@@ -97,7 +97,7 @@ class Error(
     }
 
     override fun exists(): Boolean {
-        database.Postgres.dataSource?.connection.use { connection ->
+        database.Database.dataSource?.connection.use { connection ->
             val statement = connection!!.prepareStatement("SELECT * FROM errors WHERE id = ?")
             statement.setString(1, id)
             val result = statement.executeQuery()
@@ -108,11 +108,13 @@ class Error(
     companion object {
         fun createTable() {
 
-            database.Postgres.dataSource?.connection.use { connection ->
-                val statement = connection!!.prepareStatement(
+            database.Database.dataSource?.connection.use { connection ->
+
+                val isPostgres = connection!!.metaData.databaseProductName == "PostgreSQL"
+                val statement = connection.prepareStatement(
                     """
             CREATE TABLE IF NOT EXISTS errors (
-                id TEXT PRIMARY KEY,
+                id ${if (isPostgres) "TEXT" else "VARCHAR(21)"} PRIMARY KEY,
                 userid TEXT NOT NULL,
                 error TEXT NOT NULL,
                 date TEXT NOT NULL,
@@ -126,7 +128,7 @@ class Error(
         }
 
         fun get(id: String): Error? {
-            database.Postgres.dataSource?.connection.use { connection ->
+            database.Database.dataSource?.connection.use { connection ->
                 val statement = connection!!.prepareStatement("SELECT * FROM errors WHERE id = ?")
                 statement.setString(1, id)
                 val result = statement.executeQuery()
@@ -145,7 +147,7 @@ class Error(
         }
 
         fun getAll(): List<Error> {
-            database.Postgres.dataSource?.connection.use {connection ->
+            database.Database.dataSource?.connection.use { connection ->
                 val statement = connection!!.prepareStatement("SELECT * FROM errors")
                 val result = statement.executeQuery()
 

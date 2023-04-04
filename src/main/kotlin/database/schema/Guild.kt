@@ -3,6 +3,7 @@ package database.schema
 import com.google.gson.Gson
 import database.Redis
 import interfaces.Schema
+import org.json.JSONArray
 import org.json.JSONObject
 import java.sql.ResultSet
 
@@ -163,7 +164,7 @@ class Guild(
         get() = "guilds"
 
     override fun dropTable() {
-        database.Postgres.dataSource?.connection.use { connection ->
+        database.Database.dataSource?.connection.use { connection ->
             val statement = connection!!.prepareStatement("DROP TABLE IF EXISTS guilds")
             statement.execute()
         }
@@ -172,7 +173,7 @@ class Guild(
     override fun save(): Guild {
 
         if (exists()) {
-            database.Postgres.dataSource?.connection.use { connection ->
+            database.Database.dataSource?.connection.use { connection ->
                 val statement = connection!!.prepareStatement(
                     """UPDATE guilds SET 
                     prefix = ?,
@@ -231,13 +232,38 @@ class Guild(
                 statement.setString(10, moderationLogsChannelId)
 
                 statement.setBoolean(11, antiLinksEnabled)
-                statement.setArray(12, connection.createArrayOf("text", antiLinksAllowedLinks))
+                statement.setString(12, JSONArray().let {
+                    antiLinksAllowedLinks.forEach { link ->
+                        it.put(link)
+                    }
+                    it
+                }.toString())
+
+                //statement.setArray(12, connection.createArrayOf("text", antiLinksAllowedLinks))
                 statement.setString(13, antiLinksChannelId)
-                statement.setArray(14, connection.createArrayOf("text", antiLinksIgnoredRoles))
-                statement.setArray(15, connection.createArrayOf("text", antiLinksIgnoredChannels))
+                statement.setString(14, JSONArray().let {
+                    antiLinksIgnoredRoles.forEach { role ->
+                        it.put(role)
+                    }
+                    it
+                }.toString())
+                //statement.setArray(14, connection.createArrayOf("text", antiLinksIgnoredRoles))
+                statement.setString(15, JSONArray().let {
+                    antiLinksIgnoredChannels.forEach { channel ->
+                        it.put(channel)
+                    }
+                    it
+                }.toString())
+                //statement.setArray(15, connection.createArrayOf("text", antiLinksIgnoredChannels))
                 statement.setBoolean(16, antiPhishingEnabled)
 
-                statement.setArray(17, connection.createArrayOf("json", customCommands))
+                statement.setString(17, JSONArray().let {
+                    customCommands.forEach { command ->
+                        it.put(command)
+                    }
+                    it
+                }.toString())
+                //statement.setArray(17, connection.createArrayOf("json", customCommands))
 
                 statement.setString(18, twitchChannel)
                 statement.setString(19, twitchAnnounceChannelId)
@@ -264,7 +290,7 @@ class Guild(
                 statement.execute()
             }
         } else {
-            database.Postgres.dataSource?.connection.use { connection ->
+            database.Database.dataSource?.connection.use { connection ->
                 val statement =
                     connection!!.prepareStatement(
                         """INSERT INTO guilds (
@@ -332,13 +358,37 @@ class Guild(
                 statement.setString(11, moderationLogsChannelId)
 
                 statement.setBoolean(12, antiLinksEnabled)
-                statement.setArray(13, connection.createArrayOf("text", antiLinksAllowedLinks))
+                statement.setString(13, JSONArray().let {
+                    antiLinksAllowedLinks.forEach { link ->
+                        it.put(link)
+                    }
+                    it
+                }.toString())
+                //statement.setArray(13, connection.createArrayOf("text", antiLinksAllowedLinks))
                 statement.setString(14, antiLinksChannelId)
-                statement.setArray(15, connection.createArrayOf("text", antiLinksIgnoredRoles))
-                statement.setArray(16, connection.createArrayOf("text", antiLinksIgnoredChannels))
+                statement.setString(15, JSONArray().let {
+                    antiLinksIgnoredRoles.forEach { role ->
+                        it.put(role)
+                    }
+                    it
+                }.toString())
+                //statement.setArray(15, connection.createArrayOf("text", antiLinksIgnoredRoles))
+                statement.setString(16, JSONArray().let {
+                    antiLinksIgnoredChannels.forEach { channel ->
+                        it.put(channel)
+                    }
+                    it
+                }.toString())
+                //statement.setArray(16, connection.createArrayOf("text", antiLinksIgnoredChannels))
                 statement.setBoolean(17, antiPhishingEnabled)
 
-                statement.setArray(18, connection.createArrayOf("json", customCommands))
+                statement.setString(18, JSONArray().let {
+                    customCommands.forEach { command ->
+                        it.put(command)
+                    }
+                    it
+                }.toString())
+                //statement.setArray(18, connection.createArrayOf("json", customCommands))
 
                 statement.setString(19, twitchChannel)
                 statement.setString(20, twitchAnnounceChannelId)
@@ -385,7 +435,7 @@ class Guild(
         if(!exists())
             return this
 
-        database.Postgres.dataSource?.connection.use { connection ->
+        database.Database.dataSource?.connection.use { connection ->
             val statement = connection!!.prepareStatement("DELETE FROM guilds WHERE id = ?")
             statement.setString(1, id)
             statement.execute()
@@ -396,7 +446,7 @@ class Guild(
     }
 
     override fun exists(): Boolean {
-        database.Postgres.dataSource?.connection.use { connection ->
+        database.Database.dataSource?.connection.use { connection ->
             val statement = connection!!.prepareStatement("SELECT * FROM guilds WHERE id = ?")
             statement.setString(1, id)
             val result = statement.executeQuery()
@@ -404,15 +454,17 @@ class Guild(
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
     companion object {
         fun createTable() {
 
-            database.Postgres.dataSource?.connection.use { connection ->
-                val statement = connection!!.prepareStatement(
+            database.Database.dataSource?.connection.use { connection ->
+
+                val isPostgres = connection!!.metaData.databaseProductName == "PostgreSQL"
+
+                val statement = connection.prepareStatement(
                     """
             CREATE TABLE IF NOT EXISTS guilds ( 
-                id TEXT PRIMARY KEY NOT NULL UNIQUE,
+                id ${if (isPostgres) "TEXT" else "VARCHAR(21)"} PRIMARY KEY NOT NULL UNIQUE,
                 prefix TEXT NOT NULL,
                 welcome_role_id TEXT NOT NULL,
                 welcome_channel_id TEXT NOT NULL,
@@ -424,12 +476,12 @@ class Guild(
                 logs_channel_id TEXT NOT NULL,
                 moderation_logs_channel_id TEXT NOT NULL,
                 anti_links_enabled BOOLEAN NOT NULL,
-                anti_links_allowed_links TEXT[] NOT NULL,
+                anti_links_allowed_links TEXT NOT NULL,
                 anti_links_channel_id TEXT NOT NULL,
-                anti_links_ignored_roles TEXT[] NOT NULL,
-                anti_links_ignored_channels TEXT[] NOT NULL,
+                anti_links_ignored_roles TEXT NOT NULL,
+                anti_links_ignored_channels TEXT NOT NULL,
                 anti_phishing_enabled BOOLEAN NOT NULL,
-                custom_commands JSON[] NOT NULL,
+                custom_commands JSON NOT NULL,
                 twitch_channel TEXT NOT NULL,
                 twitch_announce_channel_id TEXT NOT NULL,
                 twitch_announce_message TEXT NOT NULL,
@@ -467,7 +519,7 @@ class Guild(
                     }
                 }
 
-            database.Postgres.dataSource?.connection.use { connection ->
+            database.Database.dataSource?.connection.use { connection ->
                 val statement = connection!!.prepareStatement("SELECT * FROM guilds WHERE id = ?")
                 statement.setString(1, id)
                 val result = statement.executeQuery()
@@ -490,7 +542,7 @@ class Guild(
 
         @Suppress("unused")
         fun getAll(): List<Guild> {
-            database.Postgres.dataSource?.connection.use {connection ->
+            database.Database.dataSource?.connection.use { connection ->
                 val statement = connection!!.prepareStatement("SELECT * FROM guilds")
                 val result = statement.executeQuery()
 
@@ -503,7 +555,7 @@ class Guild(
         }
 
         fun getGuildsWithTwitchSubscriptions(): List<Guild> {
-            database.Postgres.dataSource?.connection.use {connection ->
+            database.Database.dataSource?.connection.use { connection ->
                 val statement = connection!!.prepareStatement("SELECT * FROM guilds WHERE twitch_channel <> ''")
                 val result = statement.executeQuery()
 
@@ -516,7 +568,7 @@ class Guild(
         }
 
         fun getGuildsWithTwitchSubscription(channel: String): List<Guild> {
-            database.Postgres.dataSource?.connection.use {connection ->
+            database.Database.dataSource?.connection.use { connection ->
                 val statement = connection!!.prepareStatement("SELECT * FROM guilds WHERE twitch_channel = ?")
                 statement.setString(1, channel)
                 val result = statement.executeQuery()
@@ -530,7 +582,7 @@ class Guild(
         }
 
         fun getGuildsWithYoutubeSubscriptions(): List<Guild> {
-            database.Postgres.dataSource?.connection.use {connection ->
+            database.Database.dataSource?.connection.use { connection ->
                 val statement = connection!!.prepareStatement("SELECT * FROM guilds WHERE youtube_channel <> ''")
                 val result = statement.executeQuery()
 
@@ -567,14 +619,18 @@ class Guild(
                 result.getString("moderation_logs_channel_id"),
 
                 result.getBoolean("anti_links_enabled"),
-                result.getArray("anti_links_allowed_links").array as Array<String>,
+                JSONArray(result.getString("anti_links_allowed_links")).toList().map { it.toString() }.toTypedArray(),
+                //result.getArray("anti_links_allowed_links").array as Array<String>,
                 result.getString("anti_links_channel_id"),
-                result.getArray("anti_links_ignored_roles").array as Array<String>,
-                result.getArray("anti_links_ignored_channels").array as Array<String>,
+                JSONArray(result.getString("anti_links_ignored_roles")).toList().map { it.toString() }.toTypedArray(),
+                //result.getArray("anti_links_ignored_roles").array as Array<String>,
+                JSONArray(result.getString("anti_links_ignored_channels")).toList().map { it.toString() }.toTypedArray(),
+                //result.getArray("anti_links_ignored_channels").array as Array<String>,
                 result.getBoolean("anti_phishing_enabled"),
 
                 //esta linea ha causado un daño permanente en mi cerebro
-                (result.getArray("custom_commands")?.array as Array<String>?)?.map { JSONObject(it) }?.toTypedArray() ?: arrayOf(),
+                //(result.getArray("custom_commands")?.array as Array<String>?)?.map { JSONObject(it) }?.toTypedArray() ?: arrayOf(),
+                JSONArray(result.getString("custom_commands")).toList().map { JSONObject(it.toString()) }.toTypedArray(),
 
                 result.getString("twitch_channel"),
                 result.getString("twitch_announce_channel_id"),

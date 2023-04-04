@@ -52,7 +52,7 @@ class Links(
         get() = "links"
 
     override fun dropTable() {
-        database.Postgres.dataSource?.connection.use { connection ->
+        database.Database.dataSource?.connection.use { connection ->
             val statement = connection!!.prepareStatement("DROP TABLE IF EXISTS links")
             statement.execute()
         }
@@ -61,7 +61,7 @@ class Links(
     override fun save(): Links {
 
         if (exists()) {
-            database.Postgres.dataSource?.connection.use { connection ->
+            database.Database.dataSource?.connection.use { connection ->
                 val statement = connection!!.prepareStatement("UPDATE links SET domain = ?, moderator_id = ?, action = ?, reason = ?, duration = ?, duration_raw = ?, blocked_at = ?, times_appeared = ?, under_revision = ? WHERE guild_id = ? AND domain = ?")
                 statement.setString(1, domain)
                 statement.setString(2, moderatorId)
@@ -77,7 +77,7 @@ class Links(
                 statement.execute()
             }
         } else {
-            database.Postgres.dataSource?.connection.use { connection ->
+            database.Database.dataSource?.connection.use { connection ->
                 val statement =
                     connection!!.prepareStatement("INSERT INTO links (guild_id, domain, moderator_id, action, reason, duration, duration_raw, blocked_at, times_appeared, under_revision) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
                 statement.setString(1, guildId)
@@ -106,7 +106,7 @@ class Links(
         if(!exists())
             return this
 
-        database.Postgres.dataSource?.connection.use { connection ->
+        database.Database.dataSource?.connection.use { connection ->
             val statement = connection!!.prepareStatement("DELETE FROM links WHERE guild_id = ? AND domain = ?")
             statement.setString(1, guildId)
             statement.setString(2, domain)
@@ -118,7 +118,7 @@ class Links(
     }
 
     override fun exists(): Boolean {
-        database.Postgres.dataSource?.connection.use { connection ->
+        database.Database.dataSource?.connection.use { connection ->
             val statement = connection!!.prepareStatement("SELECT * FROM links WHERE guild_id = ? AND domain = ?")
             statement.setString(1, guildId)
             statement.setString(2, domain)
@@ -130,7 +130,7 @@ class Links(
     companion object {
         fun createTable() {
 
-            database.Postgres.dataSource?.connection.use { connection ->
+            database.Database.dataSource?.connection.use { connection ->
                 val statement = connection!!.prepareStatement(
                     """
             CREATE TABLE IF NOT EXISTS links (
@@ -152,7 +152,7 @@ class Links(
         }
 
         fun get(domain: String, guildId: String): Links? {
-            database.Postgres.dataSource?.connection.use { connection ->
+            database.Database.dataSource?.connection.use { connection ->
                 val statement = connection!!.prepareStatement("SELECT * FROM links WHERE domain = ? AND guild_id = ?")
                 statement.setString(1, domain)
                 statement.setString(2, guildId)
@@ -177,7 +177,7 @@ class Links(
 
         @Suppress("unused")
         fun getAll(): List<Links> {
-            database.Postgres.dataSource?.connection.use {connection ->
+            database.Database.dataSource?.connection.use { connection ->
                 val statement = connection!!.prepareStatement("SELECT * FROM links")
                 val result = statement.executeQuery()
 
@@ -204,7 +204,7 @@ class Links(
 
         @Suppress("unused")
         fun getAll(guildId: String): List<Links> {
-            database.Postgres.dataSource?.connection.use {connection ->
+            database.Database.dataSource?.connection.use { connection ->
                 val statement = connection!!.prepareStatement("SELECT * FROM links WHERE guild_id = ?")
                 statement.setString(1, guildId)
                 val result = statement.executeQuery()
