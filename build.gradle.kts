@@ -32,7 +32,7 @@ dependencies {
 
     implementation("com.zaxxer:HikariCP:5.0.1")
     implementation("org.postgresql:postgresql:42.6.0")
-    implementation("com.mysql:mysql-connector-j:8.0.32")
+    implementation("com.mysql:mysql-connector-j:8.0.33")
     implementation("redis.clients:jedis:4.3.2")
 
     implementation(kotlin("reflect"))
