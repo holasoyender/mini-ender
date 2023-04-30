@@ -89,7 +89,7 @@ object GiveawayManager {
         val builder = JDAWebhookClient.from(webhook)
         val timestamp = System.currentTimeMillis() + time
 
-        val banner = when(style) {
+        val banner = when (style) {
             "ibai" -> ImageIO.read(URL("https://cdn.discordapp.com/attachments/859486644578025472/1046406289498058762/unknown.png"))
             else -> try {
                 Banner(guild).getBanner()
@@ -99,17 +99,15 @@ object GiveawayManager {
             }
         }
 
-        val os = ByteArrayOutputStream()
-        ImageIO.write(banner, "png", os)
-        val inputStream: InputStream = ByteArrayInputStream(os.toByteArray())
-
         val embed = EmbedBuilder()
             .setColor(0x2f3136)
-            .setImage("attachment://banner.png")
-            .setFooter("$winners ${if(winners == 1L) "Ganador" else "Ganadores"} | Acaba el")
+            .setFooter("$winners ${if (winners == 1L) "Ganador" else "Ganadores"} | Acaba el")
             .setTimestamp(Date(timestamp).toInstant())
 
-        when(style) {
+        if (banner != null)
+            embed.setImage("attachment://banner.png")
+
+        when (style) {
             "minimum" -> {
                 embed.setAuthor(
                     "Ha comenzado un sorteo!",
@@ -120,6 +118,7 @@ object GiveawayManager {
                     .addField("Tiempo restante", TimeFormat.RELATIVE.format(timestamp), true)
                     .addField("Alojado por", "<@!${host.id}>", true)
             }
+
             "ibai" -> {
                 embed.setTitle(prize)
                     .addField("Tiempo restante", TimeFormat.RELATIVE.format(timestamp), true)
@@ -148,13 +147,19 @@ object GiveawayManager {
             .addEmbeds(WebhookEmbedBuilder.fromJDA(embed.build()).build())
             .addComponents(
                 ActionRow.of(
-                    Button.primary("cmd::giveaway:enter", "Entrar al sorteo").withEmoji(PartialEmoji.of("tadaa", "1037465732159656117", true)),
+                    Button.primary("cmd::giveaway:enter", "Entrar al sorteo")
+                        .withEmoji(PartialEmoji.of("tadaa", "1037465732159656117", true)),
                 )
-            ).addFile("banner.png", inputStream)
+            )
 
-        println("Sending giveaway message...")
+        if (banner != null) {
+            val os = ByteArrayOutputStream()
+            ImageIO.write(banner, "png", os)
+            val inputStream: InputStream = ByteArrayInputStream(os.toByteArray())
+            message.addFile("banner.png", inputStream)
+        }
+
         builder.send(message.build()).whenComplete { msg, _ ->
-            println("Giveaway message sent!")
 
             val sorteo = Sorteo(
                 guildId = guild.id,
@@ -173,12 +178,15 @@ object GiveawayManager {
 
             sorteo.save()
 
-            builder.edit(msg.id, message.setComponents(
-                ActionRow.of(
-                    Button.primary("cmd::giveaway:enter", "Entrar al sorteo").withEmoji(PartialEmoji.of("tadaa", "1037465732159656117", true)),
-                    Button.link("${Env.API_URL}/sorteo/${msg.id}", "Ver sorteo")
+            builder.edit(
+                msg.id, message.setComponents(
+                    ActionRow.of(
+                        Button.primary("cmd::giveaway:enter", "Entrar al sorteo")
+                            .withEmoji(PartialEmoji.of("tadaa", "1037465732159656117", true)),
+                        Button.link("${Env.API_URL}/sorteo/${msg.id}", "Ver sorteo")
                     )
-            ).build())
+                ).build()
+            )
 
             builder.close()
         }
