@@ -41,7 +41,9 @@ class Sorteo: SlashCommand {
                 if(winners < 1 || winners > 10) return CommandResponse.error("El numero de ganadores debe estar entre 1 y 10")
 
                 event.reply("${Emojis.success} Sorteo creado en ${(channel as TextChannel).asMention}").queue {
-                    GiveawayManager.createGiveaway(event.guild!!, channel, formattedTime, winners, prize, host, style, it)
+                    val ok = GiveawayManager.createGiveaway(event.guild!!, channel, formattedTime, winners, prize, host, style, it)
+
+                    if(!ok) it.editOriginal("${f(Emojis.error)} No se ha podido crear el sorteo").queue()
                 }
 
             }
