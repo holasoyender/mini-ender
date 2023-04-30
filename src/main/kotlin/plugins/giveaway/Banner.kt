@@ -14,7 +14,7 @@ class Banner(guild: Guild) {
 
     init {
         image =  ImageIO.read(URL(guild.iconUrl ?: guild.jda.selfUser.avatarUrl ?: "https://cdn.discordapp.com/embed/avatars/0.png")) ?: throw Exception("No se ha podido cargar la imagen para el banner")
-        baseBanner = ImageIO.read(javaClass.classLoader.getResource("./img/sorteo.png") ?: throw Exception("No se ha podido leer el banner de sorteos")) ?: throw Exception("No se ha podido leer el banner de sorteos")
+        baseBanner = ImageIO.read(javaClass.classLoader.getResource("./img/sorteo.png") ?: throw Exception("No se ha podido leer el banner de sorteos")) ?: throw Exception("No se ha podido procesar el banner de sorteos")
         processedBanner = baseBanner
     }
 

@@ -91,7 +91,12 @@ object GiveawayManager {
 
         val banner = when(style) {
             "ibai" -> ImageIO.read(URL("https://cdn.discordapp.com/attachments/859486644578025472/1046406289498058762/unknown.png"))
-            else ->Banner(guild).getBanner()
+            else -> try {
+                Banner(guild).getBanner()
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
+            }
         }
 
         val os = ByteArrayOutputStream()
