@@ -1,7 +1,5 @@
 package database.schema
 
-import com.google.gson.Gson
-import database.Redis
 import interfaces.Schema
 import org.json.JSONArray
 import org.json.JSONObject
@@ -417,13 +415,6 @@ class Guild(
 
         isSaved = true
 
-        if (Redis.usingRedis)
-            try {
-            Redis.connection!!.setex("guilds:${id}", 3600, Gson().toJson(this))
-        } catch (_: Exception) {
-            Redis.usingRedis = false
-        }
-
         return this
     }
 
@@ -440,6 +431,7 @@ class Guild(
             statement.setString(1, id)
             statement.execute()
         }
+
         isSaved = false
         isDeleted = true
         return this
@@ -505,36 +497,14 @@ class Guild(
             }
         }
 
-        fun get(id: String, force: Boolean = false): Guild? {
-
-            if (Redis.usingRedis)
-                if (!force) {
-                    try {
-                        val cache = Redis.connection!!.get("guilds:$id")
-                        if (cache != null) {
-                            return Gson().fromJson(cache, Guild::class.java)
-                        }
-                    } catch (_: Exception) {
-                        Redis.usingRedis = false
-                    }
-                }
+        fun get(id: String): Guild? {
 
             database.Database.dataSource?.connection.use { connection ->
                 val statement = connection!!.prepareStatement("SELECT * FROM guilds WHERE id = ?")
                 statement.setString(1, id)
                 val result = statement.executeQuery()
                 if (result.next()) {
-
-                    val config = formatGuild(result)
-
-                    if (Redis.usingRedis)
-                        try {
-                            Redis.connection!!.setex("guilds:$id", 3600, Gson().toJson(config))
-                        }
-                        catch (_: Exception) {
-                            Redis.usingRedis = false
-                        }
-                    return config
+                    return formatGuild(result)
                 }
             }
             return null
@@ -595,6 +565,7 @@ class Guild(
         }
 
         private fun formatGuild(result: ResultSet): Guild {
+
             return Guild(
                 result.getString("id"),
                 result.getString("prefix"),
@@ -630,7 +601,7 @@ class Guild(
 
                 //esta linea ha causado un daño permanente en mi cerebro
                 //(result.getArray("custom_commands")?.array as Array<String>?)?.map { JSONObject(it) }?.toTypedArray() ?: arrayOf(),
-                JSONArray(result.getString("custom_commands")).toList().map { JSONObject(it.toString()) }.toTypedArray(),
+                JSONArray(result.getString("custom_commands")).map { JSONObject(it.toString()) }.toTypedArray(),
 
                 result.getString("twitch_channel"),
                 result.getString("twitch_announce_channel_id"),

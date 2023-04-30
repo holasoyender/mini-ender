@@ -7,12 +7,9 @@ import http.HttpManager
 import jda
 import net.dv8tion.jda.api.interactions.components.buttons.Button
 import org.json.XML
-import org.slf4j.LoggerFactory
 import java.net.URL
 
 object YouTubeManager {
-
-    private val logger = LoggerFactory.getLogger(YouTubeManager::class.java)
 
     fun start() {
 
@@ -36,7 +33,6 @@ object YouTubeManager {
                     val body = try {
                         HttpManager.request(URL("https://www.youtube.com/feeds/videos.xml?channel_id=$channel"))
                     } catch (e: Exception) {
-                        logger.error("Error while fetching YouTube feed for channel $channel", e)
                         null
                     }
 

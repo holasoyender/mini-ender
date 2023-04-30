@@ -23,7 +23,7 @@ class Exportar: Command {
                 Redis.usingRedis = false
             }
 
-        val newConfig = Guild.get(event.guild.id, true)
+        val newConfig = Guild.get(event.guild.id)
 
         if(newConfig != null) {
 
