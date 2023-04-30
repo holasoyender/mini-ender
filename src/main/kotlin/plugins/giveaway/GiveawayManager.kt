@@ -144,6 +144,7 @@ object GiveawayManager {
             ).addFile("banner.png", inputStream)
 
         builder.send(message.build()).whenComplete { msg, _ ->
+
             val sorteo = Sorteo(
                 guildId = guild.id,
                 channelId = channel.id,
@@ -159,6 +160,8 @@ object GiveawayManager {
                 style = style
             )
 
+            sorteo.save()
+
             builder.edit(msg.id, message.setComponents(
                 ActionRow.of(
                     Button.primary("cmd::giveaway:enter", "Entrar al sorteo").withEmoji(PartialEmoji.of("tadaa", "1037465732159656117", true)),
@@ -166,7 +169,6 @@ object GiveawayManager {
                     )
             ).build())
 
-            sorteo.save()
             builder.close()
         }
     }

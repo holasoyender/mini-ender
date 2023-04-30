@@ -23,7 +23,7 @@ class Exportar: SlashCommand {
             } catch (_: Exception) {
                 Redis.usingRedis = false
             }
-        val config = Guild.get(event.guild!!.id, true)
+        val config = Guild.get(event.guild!!.id)
 
         if(config != null) {
 
