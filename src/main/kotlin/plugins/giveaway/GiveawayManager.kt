@@ -53,9 +53,13 @@ object GiveawayManager {
 
                         val inputStream: InputStream = ByteArrayInputStream(os.toByteArray())
 
-                        channel.createWebhook("Sorteo").setAvatar(Icon.from(inputStream)).queue { wh ->
+                        channel.createWebhook("Sorteo").setAvatar(Icon.from(inputStream)).queue ({ wh ->
                             sendWithWebhook(wh, guild, channel, time, winners, prize, host, style)
-                        }
+                        }, { thr ->
+                            thr.printStackTrace()
+                            hook.editOriginal("No se ha podido crear el sorteo: \n`El webhook no se ha podido crear`")
+                                .queue()
+                        })
                     } catch (e: java.lang.Exception) {
                         e.printStackTrace()
                         hook.editOriginal("No se ha podido crear el sorteo: \n`El webhook no se ha podido crear`")
@@ -143,7 +147,9 @@ object GiveawayManager {
                 )
             ).addFile("banner.png", inputStream)
 
+        println("Sending giveaway message...")
         builder.send(message.build()).whenComplete { msg, _ ->
+            println("Giveaway message sent!")
 
             val sorteo = Sorteo(
                 guildId = guild.id,
