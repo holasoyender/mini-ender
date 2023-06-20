@@ -23,7 +23,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web:3.1.0")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
 
-    implementation("net.dv8tion:JDA:5.0.0-beta.10")
+    implementation("net.dv8tion:JDA:5.0.0-beta.11")
     //implementation("ch.qos.logback:logback-classic:1.4.4")
     implementation("io.github.cdimascio:dotenv-kotlin:6.4.1")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22")
