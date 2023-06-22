@@ -36,7 +36,7 @@ dependencies {
     implementation("redis.clients:jedis:4.4.3")
 
     implementation(kotlin("reflect"))
-    implementation("commons-codec:commons-codec:1.15")
+    implementation("commons-codec:commons-codec:1.16.0")
 }
 
 tasks.withType<KotlinCompile> {
