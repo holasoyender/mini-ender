@@ -6,7 +6,7 @@ plugins {
     kotlin("jvm") version "1.8.22"
     application
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("org.springframework.boot") version "3.1.0"
+    id("org.springframework.boot") version "3.1.1"
     id("io.spring.dependency-management") version "1.1.0"
     kotlin("plugin.spring") version "1.8.22"
 }
