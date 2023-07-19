@@ -72,7 +72,7 @@ fun main(args: Array<String>) {
         GatewayIntent.MESSAGE_CONTENT,
         GatewayIntent.GUILD_MEMBERS,
         GatewayIntent.GUILD_MESSAGE_REACTIONS,
-        GatewayIntent.GUILD_EMOJIS_AND_STICKERS,
+        GatewayIntent.GUILD_EMOJIS_AND_STICKERS
     )
     builder.setLargeThreshold(50)
 
