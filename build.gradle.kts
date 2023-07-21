@@ -20,7 +20,7 @@ repositories {
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter-web:3.1.0")
+    implementation("org.springframework.boot:spring-boot-starter-web:3.1.2")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
 
     implementation("net.dv8tion:JDA:5.0.0-beta.10")
