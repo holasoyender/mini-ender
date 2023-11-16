@@ -32,11 +32,11 @@ object Redis {
                 connection = conn.resource
                 usingRedis = true
             } else {
-                logger.error("Error al conectar con la base de datos de Redis, no se utilizará un servidor de cache.")
+                logger.error("Error al conectar con la base de datos de Redis, no se utilizará un servidor de cache. ERR_NOPING")
             }
 
         } catch (e: Exception) {
-            logger.error("Error al conectar con la base de datos de Redis, no se utilizará un servidor de cache.")
+            logger.error("Error al conectar con la base de datos de Redis, no se utilizará un servidor de cache.", e)
         }
     }
 

@@ -19,6 +19,8 @@ class Twitch {
         @RequestBody bodyString: String?,
     ): ResponseEntity<String> {
 
+        println(bodyString)
+
         val hmacMessage =
             request.getHeader("Twitch-Eventsub-Message-Id".lowercase()) + request.getHeader("Twitch-Eventsub-Message-Timestamp".lowercase()) + bodyString
         val secret = Env.TWITCH_CLIENT_SECRET

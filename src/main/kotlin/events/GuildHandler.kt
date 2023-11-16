@@ -4,6 +4,12 @@ import config.DefaultConfig
 import database.schema.Guild
 import database.schema.Infraction
 import logger.EventLogger
+import net.dv8tion.jda.api.EmbedBuilder
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
+import net.dv8tion.jda.api.entities.channel.middleman.GuildMessageChannel
+import net.dv8tion.jda.api.entities.channel.unions.GuildChannelUnion
+import net.dv8tion.jda.api.events.channel.ChannelCreateEvent
 import net.dv8tion.jda.api.events.guild.GuildBanEvent
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent
@@ -68,5 +74,18 @@ class GuildHandler: ListenerAdapter() {
     override fun onGuildMemberRemove(event: GuildMemberRemoveEvent) {
         EventLogger(event.guild, Guild.get(event.guild.id) ?: DefaultConfig.get()).log(event)
         super.onGuildMemberRemove(event)
+    }
+
+    override fun onChannelCreate(event: ChannelCreateEvent) {
+        val channel = event.channel
+
+        if (channel is TextChannel && channel.parentCategory?.name?.lowercase() == "tickets") {
+            val embed = EmbedBuilder()
+                .setTitle("Ticket abierto: ${(channel as TextChannel).name}")
+                .setColor(0xE64D3D)
+
+            val logChannel = event.guild.getNewsChannelById("838900371262799883") ?: return
+            logChannel.sendMessageEmbeds(embed.build()).queue()
+        }
     }
 }

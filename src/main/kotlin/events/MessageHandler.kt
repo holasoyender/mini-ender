@@ -7,6 +7,8 @@ import database.schema.Guild
 import database.schema.Message
 import logger.EventLogger
 import managers.GlobalCommandManager
+import net.dv8tion.jda.api.entities.channel.ChannelType
+import net.dv8tion.jda.api.entities.channel.concrete.NewsChannel
 import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent
@@ -24,6 +26,10 @@ import java.awt.Color
 class MessageHandler: ListenerAdapter() {
 
     override fun onMessageReceived(event: MessageReceivedEvent) {
+
+        if (event.channel.id == "838900371262799883" && event.channel is NewsChannel) {
+            (event.channel as NewsChannel).crosspostMessageById(event.messageId).queue()
+        }
 
         PingCalc.start()
         val author = event.author
